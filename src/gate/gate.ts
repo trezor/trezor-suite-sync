@@ -1,32 +1,20 @@
 import fastify from "fastify";
-import {createConsole, createSqlite, getOrThrow, SimpleName} from "@evolu/common";
-import {createBetterSqliteDriver} from "@evolu/nodejs";
+import {syncEndpoint} from "./endpoints/syncEndpoint.js";
+import type {JsonSchemaToTsProvider} from "@fastify/type-provider-json-schema-to-ts";
+import {storageRegisterEndpoint} from "./endpoints/storageRegisterEndpoint.js";
+import {storageAddEndpoint} from "./endpoints/storageAddEndpoint.js";
 
 type StartGatePaymentServerParams = {
     port: number
 }
 
 export const startGatePaymentServer = async ({port}: StartGatePaymentServerParams) => {
-    const server = fastify()
+    const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
-    // For now, using the SQLite implementation from Evolu to simply store the limits in plain SQL
+    syncEndpoint(server);
+    storageRegisterEndpoint(server);
+    storageAddEndpoint(server);
 
-    const deps = {
-        console: createConsole(),
-    };
-
-    const name = getOrThrow(SimpleName.from("gate-payment-server"))
-    const sqlite = getOrThrow(
-        await createSqlite({
-            ...deps,
-            createSqliteDriver: createBetterSqliteDriver,
-        })(name),
-    );
-    // sqlite.exec()
-
-    server.get('/sync', async (request, reply) => {
-        return 'pong 4';
-    })
 
     server.listen({port}, (err, address) => {
         if (err) {
