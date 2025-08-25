@@ -1,5 +1,7 @@
-import { sql, type Sqlite } from '@evolu/common';
+import { err, ok, sql, type Sqlite } from '@evolu/common';
 import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
+import { getLimitsForPubkey } from './getLimitsForPubkey.js';
+import { consistencyError } from '../../errors.js';
 
 export type AddLimitToPubkeyParams = {
     sqlite: Sqlite;
@@ -18,21 +20,20 @@ export const addLimitToPubkey = ({ sqlite, publicKey, size }: AddLimitToPubkeyPa
     `);
 
     if (!resultUpsert.ok) {
-        console.error('SQL error', resultUpsert.error.error);
-        return null;
+        return resultUpsert;
     }
 
-    const resultSelect = sqlite.exec<{ totalStorageSize: number; unspendStorageSize: number }>(sql`
-        select "totalStorageSize", "unspendStorageSize"
-        from ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)} limit 1;
-    `);
+    const resultSelect = getLimitsForPubkey({ sqlite, publicKey });
 
     if (!resultSelect.ok) {
-        console.error('SQL error', resultSelect.error.error);
-        return null;
+        return resultSelect;
     }
 
-    const [row] = resultSelect.value.rows;
+    if (resultSelect.value === null) {
+        return err(
+            consistencyError('Reselect of allowance after insert failed. This shall not happen.'),
+        );
+    }
 
-    return row ?? null;
+    return ok(resultSelect.value);
 };

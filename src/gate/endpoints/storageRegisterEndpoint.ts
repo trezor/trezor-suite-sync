@@ -1,4 +1,5 @@
 import type { EndpointDeps } from './Endpoint.js';
+import { exhaustive } from '../../exhaustive.js';
 
 const schema = {
     schema: {
@@ -23,13 +24,25 @@ export const storageRegisterEndpoint = ({ server, limitStorage }: EndpointDeps) 
 
         const result = limitStorage.addLimitToPubkey({ publicKey, size });
 
-        if (result === null) {
+        if (!result.ok) {
+            const errorType = result.error.type;
+
+            switch (errorType) {
+                case 'SqliteError':
+                case 'ConsistencyError':
+                    console.error(result);
+                    return reply.code(500).send();
+
+                default:
+                    exhaustive(errorType);
+            }
+
             return reply.code(400).send({ error: 'addLimitToPubkey failed (sql)' });
         }
 
         return reply.code(200).send({
-            unspendStorageSize: result.unspendStorageSize,
-            totalStorageSize: result.totalStorageSize,
+            unspendStorageSize: result.value.unspendStorageSize,
+            totalStorageSize: result.value.totalStorageSize,
         });
     });
 };

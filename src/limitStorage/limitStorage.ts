@@ -1,4 +1,11 @@
-import { createConsole, createSqlite, getOrThrow, SimpleName } from '@evolu/common';
+import {
+    createConsole,
+    createSqlite,
+    getOrThrow,
+    ok,
+    SimpleName,
+    type Sqlite,
+} from '@evolu/common';
 import { createBetterSqliteDriver } from '@evolu/nodejs';
 import { addLimitToPubkey, type AddLimitToPubkeyParams } from './methods/addLimitToPubkey.js';
 import {
@@ -12,7 +19,7 @@ import {
     type TransferSpaceLimitToOwnerParams,
 } from './methods/transferSpaceLimitToOwner.js';
 
-export const createLimitStorage = async () => {
+const prepareSqlite = async () => {
     const deps = {
         console: createConsole(),
     };
@@ -26,32 +33,41 @@ export const createLimitStorage = async () => {
         })(name),
     );
 
+    //
     const result1 = sqlite.exec(createPubkeyLimitTableQueryIfNotExists);
+
     if (!result1.ok) {
-        console.error(result1.error.error);
-        return null;
+        return result1;
     }
 
     const result2 = sqlite.exec(createOwnerLimitTableQueryIfNotExists);
+
     if (!result2.ok) {
-        console.error(result2.error.error);
-        return null;
+        return result2;
     }
 
-    return {
-        addLimitToPubkey: ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'sqlite'>) =>
-            addLimitToPubkey({ sqlite, publicKey, size }),
-        getLimitForPubkey: ({ publicKey }: Omit<GetLimitsForPubkey, 'sqlite'>) =>
-            getLimitsForPubkey({ sqlite, publicKey }),
-        getLimitForOwner: ({ ownerId }: Omit<GetLimitsForOwnerParams, 'sqlite'>) =>
-            getLimitsForOwner({ sqlite, ownerId }),
-        transferSpaceLimitToOwner: ({
-            ownerId,
-            publicKey,
-            size,
-        }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
-            transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
-    };
+    return ok(sqlite);
 };
 
-export type LimitStorage = Awaited<ReturnType<typeof createLimitStorage>>;
+const createStorage = (sqlite: Sqlite) => ({
+    addLimitToPubkey: ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'sqlite'>) =>
+        addLimitToPubkey({ sqlite, publicKey, size }),
+    getLimitForPubkey: ({ publicKey }: Omit<GetLimitsForPubkey, 'sqlite'>) =>
+        getLimitsForPubkey({ sqlite, publicKey }),
+    getLimitForOwner: ({ ownerId }: Omit<GetLimitsForOwnerParams, 'sqlite'>) =>
+        getLimitsForOwner({ sqlite, ownerId }),
+    transferSpaceLimitToOwner: ({
+        ownerId,
+        publicKey,
+        size,
+    }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
+        transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
+});
+
+export type LimitStorage = Awaited<ReturnType<typeof createStorage>>;
+
+export const createLimitStorage = async () => {
+    const sqlite = await prepareSqlite();
+
+    return sqlite.ok ? ok(createStorage(sqlite.value)) : sqlite;
+};

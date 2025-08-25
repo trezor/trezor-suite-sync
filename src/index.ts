@@ -12,7 +12,9 @@ process.chdir('data');
 
 const limitStorage = await createLimitStorage();
 
-if (limitStorage !== null) {
-    startEvoluRelay({ port: RELAY_PORT, limitStorage });
-    startGatePaymentServer({ port: GATE_PAYMENT_SERVER_PORT, limitStorage });
+if (limitStorage.ok) {
+    startEvoluRelay({ port: RELAY_PORT, limitStorage: limitStorage.value });
+    startGatePaymentServer({ port: GATE_PAYMENT_SERVER_PORT, limitStorage: limitStorage.value });
+} else {
+    console.error('Cannot start server, error: ', limitStorage.error);
 }
