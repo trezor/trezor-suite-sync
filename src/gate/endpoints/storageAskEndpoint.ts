@@ -1,27 +1,24 @@
-import type {ServerType} from "../server.ts";
-
+import type { ServerType } from '../server.ts';
 
 const schema = {
     schema: {
         querystring: {
             type: 'object',
             properties: {
-                ownerId: {type: 'string'},
-                publickKey: {type: 'string'},
+                ownerId: { type: 'string' },
+                publickKey: { type: 'string' },
             },
-            required: []
-        }
-    }
-} as const
+            required: [],
+        },
+    },
+} as const;
 
 export const storageAddEndpoint = (server: ServerType) => {
-    server.post('/storage/ask', schema,
-        (request, reply) => {
-            const {ownerId, publickKey} = request.query
+    server.post('/storage/ask', schema, (request, reply) => {
+        const { ownerId, publickKey } = request.query;
 
-            // Todo: implement
+        // Todo: implement
 
-            return {ownerId, publickKey}
-        }
-    )
-}
+        return { ownerId, publickKey };
+    });
+};

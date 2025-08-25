@@ -1,23 +1,24 @@
 {
-  "name": "@trezor/evolu-relay",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "@evolu/common": "^6.0.1-preview.18",
-    "@evolu/nodejs": "^1.0.1-preview.7",
-    "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
-    "fastify": "^5.5.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.3.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts"
-  },
-  "packageManager": "yarn@4.5.3"
+    "name": "@trezor/evolu-relay",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@evolu/common": "^6.0.1-preview.18",
+        "@evolu/nodejs": "^1.0.1-preview.7",
+        "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
+        "fastify": "^5.5.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.3.0",
+        "prettier": "3.6.2",
+        "tsx": "^4.20.5",
+        "typescript": "^5.9.2"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/index.js",
+        "dev": "tsx watch src/index.ts"
+    },
+    "packageManager": "yarn@4.5.3"
 }
