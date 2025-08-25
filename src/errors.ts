@@ -8,12 +8,12 @@ export const consistencyError = (message: string): ConsistencyError => ({
     message,
 });
 
-type NoStorageAllowance = {
+type NoSpaceAllowance = {
     type: 'NoStorageAllowance';
     message: string;
 };
 
-export const noStorageAllowanceErr = (message: string): NoStorageAllowance => ({
+export const noSpaceAllowanceErr = (message: string): NoSpaceAllowance => ({
     type: 'NoStorageAllowance',
     message,
 });
