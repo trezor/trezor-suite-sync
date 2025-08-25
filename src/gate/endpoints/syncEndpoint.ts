@@ -1,4 +1,4 @@
-import type { ServerType } from '../server.ts';
+import type { EndpointDeps } from './Endpoint.js';
 
 const schema = {
     schema: {
@@ -12,7 +12,7 @@ const schema = {
     },
 } as const;
 
-export const syncEndpoint = (server: ServerType) => {
+export const syncEndpoint = ({ server }: EndpointDeps) => {
     server.get('/sync', schema, (request, reply) => {
         const { ownerId } = request.query;
 

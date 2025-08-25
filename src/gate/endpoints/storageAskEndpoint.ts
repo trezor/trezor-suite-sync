@@ -1,4 +1,4 @@
-import type { ServerType } from '../server.ts';
+import type { EndpointDeps } from './Endpoint.js';
 
 const schema = {
     schema: {
@@ -6,19 +6,19 @@ const schema = {
             type: 'object',
             properties: {
                 ownerId: { type: 'string' },
-                publickKey: { type: 'string' },
+                publicKey: { type: 'string' },
             },
             required: [],
         },
     },
 } as const;
 
-export const storageAddEndpoint = (server: ServerType) => {
+export const storageAskEndpoint = ({ server, limitStorage }: EndpointDeps) => {
     server.post('/storage/ask', schema, (request, reply) => {
-        const { ownerId, publickKey } = request.query;
+        const { ownerId, publicKey } = request.query;
 
         // Todo: implement
 
-        return { ownerId, publickKey };
+        return { ownerId, publicKey };
     });
 };
