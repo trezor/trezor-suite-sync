@@ -1,4 +1,4 @@
-import type { ServerType } from '../server.ts';
+import type { EndpointDeps } from './Endpoint.js';
 
 const schema = {
     schema: {
@@ -6,7 +6,7 @@ const schema = {
             type: 'object',
             properties: {
                 publicKey: { type: 'string' }, // donor
-                ownerId: { type: 'number' }, // recipient
+                ownerId: { type: 'string' }, // recipient
                 size: { type: 'number' },
                 proof: { type: 'string' },
                 timestamp: { type: 'number' },
@@ -16,11 +16,13 @@ const schema = {
     },
 } as const;
 
-export const storageAddEndpoint = (server: ServerType) => {
+export const storageAddEndpoint = ({ server, limitStorage }: EndpointDeps) => {
     server.post('/storage/add', schema, (request, reply) => {
-        const { proof, size, timestamp, publicKey } = request.body;
+        const { proof, size, timestamp, publicKey, ownerId } = request.body;
 
-        // Todo: implement
+        // Todo: implement checks
+
+        limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
 
         return { proof, size, timestamp, publicKey };
     });
