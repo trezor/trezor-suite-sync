@@ -1,4 +1,4 @@
-import { sql, type Sqlite } from '@evolu/common';
+import { ok, sql, type Sqlite } from '@evolu/common';
 import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 export type GetLimitsForPubkey = {
@@ -13,10 +13,10 @@ export const getLimitsForPubkey = ({ sqlite }: GetLimitsForPubkey) => {
     `);
 
     if (!result.ok) {
-        return null;
+        return result;
     }
 
     const [row] = result.value.rows;
 
-    return row ?? null;
+    return ok(row ?? null);
 };
