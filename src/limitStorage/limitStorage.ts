@@ -19,7 +19,13 @@ import {
     type TransferSpaceLimitToOwnerParams,
 } from './methods/transferSpaceLimitToOwner.js';
 
-const prepareSqlite = async () => {
+type PrepareSqliteParams = {
+    inMemory?: boolean;
+};
+
+export const prepareSqlite = async (params: PrepareSqliteParams = {}) => {
+    const { inMemory } = params;
+
     const deps = {
         console: createConsole(),
     };
@@ -30,7 +36,7 @@ const prepareSqlite = async () => {
         await createSqlite({
             ...deps,
             createSqliteDriver: createBetterSqliteDriver,
-        })(name),
+        })(name, { memory: inMemory ?? false }),
     );
 
     //

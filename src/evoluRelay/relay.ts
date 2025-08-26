@@ -16,6 +16,12 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayPar
         port,
         enableLogging: false,
 
+        // Todo: implement some callback to validate that the `OwnerId` is known,
+        //       and only for them the Evolu Relay will open (upgrade) connection to Websocket
+        // validateConnection: ({ ownerId }) => {
+        //     return limitStorage.isOwnerRegisterd({ ownerId });
+        // },
+
         // Todo: implement the storage check on-write. Something like:
         // onWrite: ({ used, ownerId }) => {
         //     const limit = limitStorage.getLimitForOwner({ ownerId });
