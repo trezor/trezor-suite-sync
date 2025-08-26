@@ -7,7 +7,7 @@ const RELAY_PORT = 4000; // Todo: from ENV
 const GATE_PAYMENT_SERVER_PORT = 4001; // Todo: from ENV
 
 // Ensure the database is created in a predictable location for Docker.
-mkdirSync('data', { recursive: true });
+mkdirSync('data', { recursive: true }); // Todo: path to `data` from ENV
 process.chdir('data');
 
 const limitStorage = await createLimitStorage();

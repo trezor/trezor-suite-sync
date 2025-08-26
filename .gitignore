@@ -10,5 +10,7 @@
 node_modules
 dist
 
+test.db
+
 # Evolu Relay database
 data

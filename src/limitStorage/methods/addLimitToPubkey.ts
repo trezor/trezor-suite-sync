@@ -1,7 +1,7 @@
-import { err, ok, sql, type Sqlite } from '@evolu/common';
+import { err, ok, type Result, sql, type Sqlite, type SqliteError } from '@evolu/common';
 import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
-import { getLimitsForPubkey } from './getLimitsForPubkey.js';
-import { consistencyError } from '../../errors.js';
+import { getLimitsForPubkey, type GetLimitsForPubkeyResponse } from './getLimitsForPubkey.js';
+import { type ConsistencyError, consistencyError } from '../../errors.js';
 
 export type AddLimitToPubkeyParams = {
     sqlite: Sqlite;
@@ -9,7 +9,11 @@ export type AddLimitToPubkeyParams = {
     size: number; // size to add to the limit
 };
 
-export const addLimitToPubkey = ({ sqlite, publicKey, size }: AddLimitToPubkeyParams) => {
+export const addLimitToPubkey = ({
+    sqlite,
+    publicKey,
+    size,
+}: AddLimitToPubkeyParams): Result<GetLimitsForPubkeyResponse, ConsistencyError | SqliteError> => {
     const resultUpsert = sqlite.exec<{}>(sql.prepared`
         INSERT INTO ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)} ("publicKey", "totalStorageSize", "unspendStorageSize")
         VALUES (${publicKey}, ${size}, ${size}) ON CONFLICT("publicKey")
