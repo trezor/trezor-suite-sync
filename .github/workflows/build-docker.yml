@@ -1,4 +1,4 @@
-name: "[Build] evolu-relay image"
+name: "[Build/Deploy] test evolu-relay image"
 
 on:
   push:
@@ -56,3 +56,11 @@ jobs:
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-evolu-relay-image:
+    runs-on: evolu-deploy
+    needs: build-evolu-relay-image
+    steps:
+      - name: Restart service to pull new image
+        run: |
+           sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service
