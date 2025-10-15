@@ -1,0 +1,39 @@
+{
+    "printWidth": 100,
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "singleQuote": true,
+    "semi": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "bracketSameLine": false,
+    "overrides": [
+        {
+            "files": ["*.yml"],
+            "options": {
+                "tabWidth": 2,
+                "singleQuote": false
+            }
+        },
+        {
+            "files": ["[*.yaml]"],
+            "options": {
+                "tabWidth": 2,
+                "singleQuote": false
+            }
+        },
+        {
+            "files": ["packages/suite-data/files/translations/*.json"],
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": ["tsconfig.json"],
+            "options": {
+                "trailingComma": "none",
+                "printWidth": 50
+            }
+        }
+    ]
+}
