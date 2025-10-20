@@ -1,4 +1,6 @@
 import type { EndpointDeps } from './Endpoint.js';
+import type { ServerType } from '../server.js';
+import type { LimitStorage } from '../../limitStorage/limitStorage.js';
 
 const schema = {
     schema: {

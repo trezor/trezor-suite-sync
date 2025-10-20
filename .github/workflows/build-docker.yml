@@ -3,7 +3,7 @@ name: "[Build/Deploy] test evolu-relay image"
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
     branches:
       - main
@@ -63,4 +63,4 @@ jobs:
     steps:
       - name: Restart service to pull new image
         run: |
-           sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service
+          sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service

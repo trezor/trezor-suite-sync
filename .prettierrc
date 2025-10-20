@@ -23,12 +23,6 @@
             }
         },
         {
-            "files": ["packages/suite-data/files/translations/*.json"],
-            "options": {
-                "tabWidth": 2
-            }
-        },
-        {
             "files": ["tsconfig.json"],
             "options": {
                 "trailingComma": "none",
