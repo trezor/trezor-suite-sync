@@ -1,5 +1,6 @@
-import type { EndpointDeps } from './Endpoint.js';
 import { exhaustive } from '../../exhaustive.js';
+import { LimitStorage } from '../../limitStorage/limitStorage.js';
+import { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -16,11 +17,19 @@ const schema = {
     },
 } as const;
 
-export const storageRegisterEndpoint = ({ server, limitStorage }: EndpointDeps) => {
+export type StorageRegisterEndpointDeps = {
+    server: ServerType;
+    limitStorage: Pick<LimitStorage, 'addLimitToPubkey'>;
+};
+
+export const storageRegisterEndpoint = ({ server, limitStorage }: StorageRegisterEndpointDeps) => {
     server.post('/storage/register', schema, (request, reply) => {
         const { proof, size, timestamp, publicKey } = request.body;
 
-        // Todo: implement checks
+        //Proof verification - validation of the Trezor signature
+        //Timestamp validation - replay attack protection
+        //Space limit validation - check against device storage limits
+        //Device ID tracking - mechanism to prevent multiple requests per device per second ???? maybe here
 
         const result = limitStorage.addLimitToPubkey({ publicKey, size });
 

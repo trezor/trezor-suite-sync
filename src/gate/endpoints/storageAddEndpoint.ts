@@ -1,5 +1,6 @@
-import type { EndpointDeps } from './Endpoint.js';
 import { exhaustive } from '../../exhaustive.js';
+import { LimitStorage } from '../../limitStorage/limitStorage.js';
+import { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -17,7 +18,12 @@ const schema = {
     },
 } as const;
 
-export const storageAddEndpoint = ({ server, limitStorage }: EndpointDeps) => {
+export type StorageAddEndpointDeps = {
+    server: ServerType;
+    limitStorage: Pick<LimitStorage, 'transferSpaceLimitToOwner'>;
+};
+
+export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointDeps) => {
     server.post('/storage/add', schema, (request, reply) => {
         const { proof, size, timestamp, publicKey, ownerId } = request.body;
 
