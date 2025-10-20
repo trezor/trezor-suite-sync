@@ -1,4 +1,5 @@
 import type { EndpointDeps } from './Endpoint.js';
+import { exhaustive } from '../../exhaustive.js';
 
 const schema = {
     schema: {
@@ -8,17 +9,57 @@ const schema = {
                 ownerId: { type: 'string' },
                 publicKey: { type: 'string' },
             },
-            required: [],
+            // At least one must be provided
+            anyOf: [
+                { required: ['ownerId'] },
+                { required: ['publicKey'] }
+            ]
         },
     },
 } as const;
 
 export const storageAskEndpoint = ({ server, limitStorage }: EndpointDeps) => {
-    server.post('/storage/ask', schema, (request, reply) => {
+    server.get('/storage/ask', schema, (request, reply) => {
         const { ownerId, publicKey } = request.query;
+        if(ownerId){
+            const result = limitStorage.getLimitForOwner({ ownerId });
+            if (!result.ok) {
+                const errorType = result.error.type;
+                switch (errorType) {
+                    case 'SqliteError':
+                        console.error(result);
+                        return reply.code(500).send({ error: 'Internal server error' });
+                    default:
+                        return exhaustive(errorType);
+                }
+            }
+            if (result.value === null) {
+                return reply.code(404).send({ error: 'Owner not found' });
+            }
+            
+            return reply.code(200).send({ totalSpace: result.value });
+        }
 
-        // Todo: implement
-
-        return { ownerId, publicKey };
+        if (publicKey) {
+            const result = limitStorage.getLimitForPubkey({ publicKey });
+            if (!result.ok) {
+                const errorType = result.error.type;
+                switch (errorType) {
+                    case 'SqliteError':
+                        console.error(result);
+                        return reply.code(500).send({ error: 'Internal server error' }); 
+                    default:
+                        return exhaustive(errorType);
+                }
+            }
+            if (result.value === null) {
+                return reply.code(404).send({ error: 'Public key not found' });
+            }
+            
+            return reply.code(200).send({ 
+                totalSpace: result.value.totalStorageSize,
+                unspentSpace: result.value.unspendStorageSize 
+            });
+        }     
     });
 };
