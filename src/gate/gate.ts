@@ -5,6 +5,7 @@ import { storageRegisterEndpoint } from './endpoints/storageRegisterEndpoint.js'
 import { storageAddEndpoint } from './endpoints/storageAddEndpoint.js';
 import type { LimitStorage } from '../limitStorage/limitStorage.js';
 import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
+import { storageDeleteEndpoint } from './endpoints/storageDeleteEndpoint.js';
 
 type StartGatePaymentServerParams = {
     port: number;
@@ -21,6 +22,7 @@ export const startGatePaymentServer = async ({
     storageRegisterEndpoint({ server, limitStorage });
     storageAddEndpoint({ server, limitStorage });
     storageAskEndpoint({ server, limitStorage });
+    storageDeleteEndpoint({ server, limitStorage });
 
     server.listen({ port, host: '0.0.0.0' }, (err, address) => {
         if (err) {

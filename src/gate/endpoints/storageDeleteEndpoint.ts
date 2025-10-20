@@ -1,0 +1,33 @@
+import type { EndpointDeps } from './Endpoint.js';
+import { exhaustive } from '../../exhaustive.js';
+
+const schema = {
+    schema: {
+        body: {
+            type: 'object',
+            properties: {
+                publicKey: { type: 'string' }, 
+                ownerId: { type: 'string' },
+                recipientOwnerId: { type: 'string' },
+            },
+            required: ['publicKey', 'ownerId'],
+        },
+    },
+} as const;
+
+export const storageDeleteEndpoint = ({ server, limitStorage }: EndpointDeps) => {
+    server.post('/storage/delete', schema, (request, reply) => {
+        const { publicKey, ownerId, recipientOwnerId } = request.body;
+
+        //calls deleteOwner(ownerId) at Evolu Relay  
+        //removes total space for ownerId, syncs with Evolu
+        //removes ownerId from the database
+        //if publickey/recipientOwnerId is provided, adds total space to recipientOwnerId 
+        //for publickey, adds unspend space to publickey
+        //if none provided, the freed space is lost 
+
+        
+
+        return { publicKey };
+    });
+};
