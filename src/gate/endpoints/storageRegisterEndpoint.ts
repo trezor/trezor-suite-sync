@@ -29,15 +29,16 @@ export const storageRegisterEndpoint = ({ server, limitStorage }: EndpointDeps) 
 
             switch (errorType) {
                 case 'SqliteError':
+                    return reply.code(400).send({ error: 'addLimitToPubkey failed (sql)' });
+           
+           
                 case 'ConsistencyError':
                     console.error(result);
                     return reply.code(500).send();
 
                 default:
-                    exhaustive(errorType);
+                    return exhaustive(errorType);
             }
-
-            return reply.code(400).send({ error: 'addLimitToPubkey failed (sql)' });
         }
 
         return reply.code(200).send({
