@@ -1162,6 +1162,7 @@ __metadata:
     "@fastify/type-provider-json-schema-to-ts": "npm:^5.0.0"
     "@jest/globals": "npm:^30.0.5"
     "@types/node": "npm:^24.3.0"
+    dotenv: "npm:^17.2.3"
     fastify: "npm:^5.5.0"
     prettier: "npm:3.6.2"
     tsx: "npm:^4.20.5"
@@ -1797,6 +1798,13 @@ __metadata:
   version: 2.0.4
   resolution: "detect-libc@npm:2.0.4"
   checksum: 10c0/c15541f836eba4b1f521e4eecc28eefefdbc10a94d3b8cb4c507689f332cc111babb95deda66f2de050b22122113189986d5190be97d51b5a2b23b938415e67c
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^17.2.3":
+  version: 17.2.3
+  resolution: "dotenv@npm:17.2.3"
+  checksum: 10c0/c884403209f713214a1b64d4d1defa4934c2aa5b0002f5a670ae298a51e3c3ad3ba79dfee2f8df49f01ae74290fcd9acdb1ab1d09c7bfb42b539036108bb2ba0
   languageName: node
   linkType: hard
 

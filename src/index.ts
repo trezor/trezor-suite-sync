@@ -1,20 +1,29 @@
+import 'dotenv/config';
 import { startGatePaymentServer } from './gate/gate.js';
 import { startEvoluRelay } from './evoluRelay/relay.js';
-import { createLimitStorage } from './limitStorage/limitStorage.js';
+import { createAppStorage } from './storage.js';
 import { mkdirSync } from 'fs';
+import { join } from 'path';
 
-const RELAY_PORT = 4000; // Todo: from ENV
-const GATE_PAYMENT_SERVER_PORT = 4001; // Todo: from ENV
+const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
+const GATE_PAYMENT_SERVER_PORT = process.env.GATE_PORT ? parseInt(process.env.GATE_PORT, 10) : 4001;
+const DATA_DIR = process.env.DATA_DIR || 'data';
 
-// Ensure the database is created in a predictable location for Docker.
-mkdirSync('data', { recursive: true }); // Todo: path to `data` from ENV
-process.chdir('data');
+const dataPath = join(process.cwd(), DATA_DIR);
+mkdirSync(dataPath, { recursive: true });
+process.chdir(dataPath);
 
-const limitStorage = await createLimitStorage();
+const storage = await createAppStorage();
 
-if (limitStorage.ok) {
-    startEvoluRelay({ port: RELAY_PORT, limitStorage: limitStorage.value });
-    startGatePaymentServer({ port: GATE_PAYMENT_SERVER_PORT, limitStorage: limitStorage.value });
+if (storage.ok) {
+    const { limitStorage, challengeStorage } = storage.value;
+    
+    startEvoluRelay({ port: RELAY_PORT, limitStorage });
+    startGatePaymentServer({ 
+        port: GATE_PAYMENT_SERVER_PORT, 
+        limitStorage,
+        challengeStorage 
+    });
 } else {
-    console.error('Cannot start server, error: ', limitStorage.error);
+    console.error('Cannot start server, error: ', storage.error);
 }
