@@ -30,7 +30,6 @@ export const prepareSqlite = async (params: PrepareSqliteParams = {}) => {
         console: createConsole(),
     };
 
-    // For now, using the SQLite implementation from Evolu to simply store the limits in plain SQL
     const name = getOrThrow(SimpleName.from('gate-payment-server'));
     const sqlite = getOrThrow(
         await createSqlite({
@@ -39,7 +38,6 @@ export const prepareSqlite = async (params: PrepareSqliteParams = {}) => {
         })(name, { memory: inMemory ?? false }),
     );
 
-    //
     const result1 = sqlite.exec(createPubkeyLimitTableQueryIfNotExists);
 
     if (!result1.ok) {
@@ -55,7 +53,7 @@ export const prepareSqlite = async (params: PrepareSqliteParams = {}) => {
     return ok(sqlite);
 };
 
-const createStorage = (sqlite: Sqlite) => ({
+export const createLimitStorage = (sqlite: Sqlite) => ({
     addLimitToPubkey: ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'sqlite'>) =>
         addLimitToPubkey({ sqlite, publicKey, size }),
     getLimitForPubkey: ({ publicKey }: Omit<GetLimitsForPubkey, 'sqlite'>) =>
@@ -70,10 +68,4 @@ const createStorage = (sqlite: Sqlite) => ({
         transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
 });
 
-export type LimitStorage = Awaited<ReturnType<typeof createStorage>>;
-
-export const createLimitStorage = async () => {
-    const sqlite = await prepareSqlite();
-
-    return sqlite.ok ? ok(createStorage(sqlite.value)) : sqlite;
-};
+export type LimitStorage = ReturnType<typeof createLimitStorage>;
