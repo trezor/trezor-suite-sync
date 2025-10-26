@@ -82,7 +82,9 @@ describe(challengeEndpoint.name, () => {
         });
 
         const body = JSON.parse(response.body);
-        const isValid = getOrThrow(challengeStorage.validateAndConsumeChallenge('session-123', body.challenge));
+        const isValid = getOrThrow(
+            challengeStorage.validateAndConsumeChallenge('session-123', body.challenge),
+        );
 
         expect(isValid).toBe(true);
     });
