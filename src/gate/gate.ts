@@ -22,7 +22,7 @@ export const startGatePaymentServer = async ({
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
     syncEndpoint({ server, limitStorage });
-    challengeEndpoint({ server, challengeStorage }); 
+    challengeEndpoint({ server, challengeStorage });
     storageRegisterEndpoint({ server, limitStorage });
     storageAddEndpoint({ server, limitStorage });
     storageAskEndpoint({ server, limitStorage });

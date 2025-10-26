@@ -17,12 +17,12 @@ const storage = await createAppStorage();
 
 if (storage.ok) {
     const { limitStorage, challengeStorage } = storage.value;
-    
+
     startEvoluRelay({ port: RELAY_PORT, limitStorage });
-    startGatePaymentServer({ 
-        port: GATE_PAYMENT_SERVER_PORT, 
+    startGatePaymentServer({
+        port: GATE_PAYMENT_SERVER_PORT,
         limitStorage,
-        challengeStorage 
+        challengeStorage,
     });
 } else {
     console.error('Cannot start server, error: ', storage.error);
