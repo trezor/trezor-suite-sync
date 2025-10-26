@@ -6,15 +6,19 @@ import { storageAddEndpoint } from './endpoints/storageAddEndpoint.js';
 import type { LimitStorage } from '../limitStorage/limitStorage.js';
 import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
 import { storageDeleteEndpoint } from './endpoints/storageDeleteEndpoint.js';
+import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
+import { ChallengeStorage } from '../challengeStorage/challengeStorage.js';
 
 type StartGatePaymentServerParams = {
     port: number;
     limitStorage: LimitStorage;
+    challengeStorage: ChallengeStorage;
 };
 
 export const startGatePaymentServer = async ({
     port,
     limitStorage,
+    challengeStorage,
 }: StartGatePaymentServerParams) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
@@ -22,6 +26,7 @@ export const startGatePaymentServer = async ({
     //       to show it is adding an endpoint to the server
 
     syncEndpoint({ server, limitStorage });
+    challengeEndpoint({ server, challengeStorage });
     storageRegisterEndpoint({ server, limitStorage });
     storageAddEndpoint({ server, limitStorage });
     storageAskEndpoint({ server, limitStorage });
