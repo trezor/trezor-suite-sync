@@ -23,7 +23,6 @@
         "dev": "tsx watch src/index.ts",
         "test": "vitest",
         "format": "prettier --write ."
-
     },
     "packageManager": "yarn@4.5.3"
 }
