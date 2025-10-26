@@ -23,7 +23,8 @@
         "start": "node dist/index.js",
         "dev": "tsx watch src/index.ts",
         "test": "vitest",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
     },
     "packageManager": "yarn@4.10.3"
 }

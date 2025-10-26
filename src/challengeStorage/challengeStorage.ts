@@ -1,8 +1,15 @@
 import { sql, type Sqlite, type SqliteError, ok, type Result } from '@evolu/common';
 
 export type ChallengeStorage = {
-    validateAndConsumeChallenge: (sessionId: string, challenge: string) => Result<boolean, SqliteError>;
-    storeChallenge: (sessionId: string, challenge: string, expiresInSeconds?: number) => Result<void, SqliteError>;
+    validateAndConsumeChallenge: (
+        sessionId: string,
+        challenge: string,
+    ) => Result<boolean, SqliteError>;
+    storeChallenge: (
+        sessionId: string,
+        challenge: string,
+        expiresInSeconds?: number,
+    ) => Result<void, SqliteError>;
     cleanupExpiredChallenges: () => Result<void, SqliteError>;
 };
 
@@ -29,9 +36,13 @@ export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): Chal
     }
 
     return {
-        storeChallenge: (sessionId: string, challenge: string, expiresInSeconds: number = 300): Result<void, SqliteError> => {
+        storeChallenge: (
+            sessionId: string,
+            challenge: string,
+            expiresInSeconds: number = 300,
+        ): Result<void, SqliteError> => {
             const now = Date.now();
-            const expiresAt = now + (expiresInSeconds * 1000);
+            const expiresAt = now + expiresInSeconds * 1000;
 
             const result = sqlite.exec(sql`
                 INSERT OR REPLACE INTO ${sql.identifier(CHALLENGES_TABLE_NAME)} (sessionId, challenge, createdAt, expiresAt)
@@ -41,7 +52,10 @@ export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): Chal
             return result.ok ? ok(undefined) : result;
         },
 
-        validateAndConsumeChallenge: (sessionId: string, challenge: string): Result<boolean, SqliteError> => {
+        validateAndConsumeChallenge: (
+            sessionId: string,
+            challenge: string,
+        ): Result<boolean, SqliteError> => {
             const selectResult = sqlite.exec<{ challenge: string; expiresAt: number }>(sql`
                 SELECT challenge, expiresAt FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
                 WHERE sessionId = ${sessionId}
@@ -56,16 +70,16 @@ export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): Chal
             }
 
             const [row] = selectResult.value.rows;
-            
+
             if (!row || row.challenge !== challenge) {
-                return ok(false); 
+                return ok(false);
             }
 
             if (Date.now() > row.expiresAt) {
                 sqlite.exec(sql`
                     DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} WHERE sessionId = ${sessionId}
                 `);
-                return ok(false); 
+                return ok(false);
             }
 
             const deleteResult = sqlite.exec(sql`
@@ -76,7 +90,7 @@ export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): Chal
                 return deleteResult;
             }
 
-            return ok(true); 
+            return ok(true);
         },
 
         cleanupExpiredChallenges: (): Result<void, SqliteError> => {
@@ -87,6 +101,6 @@ export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): Chal
             `);
 
             return result.ok ? ok(undefined) : result;
-        }
+        },
     };
 };
