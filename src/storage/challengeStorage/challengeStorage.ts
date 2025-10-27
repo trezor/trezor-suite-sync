@@ -13,10 +13,6 @@ export type ChallengeStorage = {
     cleanupExpiredChallenges: () => Result<void, SqliteError>;
 };
 
-export type ChallengeStorageParams = {
-    sqlite: Sqlite;
-};
-
 const CHALLENGES_TABLE_NAME = 'challenges';
 
 const createChallengesTableQuery = sql`
@@ -28,7 +24,13 @@ const createChallengesTableQuery = sql`
     ) strict;
 `;
 
-export const createChallengeStorage = ({ sqlite }: ChallengeStorageParams): ChallengeStorage => {
+export type ChallengeStorageDependencies = {
+    sqlite: Sqlite;
+};
+
+export const createChallengeStorage = ({
+    sqlite,
+}: ChallengeStorageDependencies): ChallengeStorage => {
     const createTableResult = sqlite.exec(createChallengesTableQuery);
 
     if (!createTableResult.ok) {

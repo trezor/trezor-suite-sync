@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { addLimitToPubkey } from './addLimitToPubkey.js';
 import { getOrThrow } from '@evolu/common';
-import { prepareSqlite } from '../limitStorage.js';
+import { prepareSqlite } from '../../prepareSqlite.js';
 
 describe(addLimitToPubkey.name, () => {
     it('adds limit to the pubkey', async () => {
