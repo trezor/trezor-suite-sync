@@ -26,10 +26,10 @@ export const storageRegisterEndpoint = ({ server, limitStorage }: StorageRegiste
     server.post('/storage/register', schema, (request, reply) => {
         const { proof, size, timestamp, publicKey } = request.body;
 
-        //Proof verification - validation of the Trezor signature
-        //Timestamp validation - replay attack protection
-        //Space limit validation - check against device storage limits
-        //Device ID tracking - mechanism to prevent multiple requests per device per second ???? maybe here
+        // Proof verification - validation of the Trezor signature
+        // Timestamp validation - replay attack protection
+        // Space limit validation - check against device storage limits
+        // Device ID tracking - mechanism to prevent multiple requests per device per second ???? maybe here
 
         const result = limitStorage.addLimitToPubkey({ publicKey, size });
 

@@ -17,6 +17,7 @@ describe(addLimitToPubkey.name, () => {
         const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
 
         addLimitToPubkey({ sqlite, publicKey: 'pubkey_ABCDEFGH', size: 50 });
+
         const result = getOrThrow(
             addLimitToPubkey({ sqlite, publicKey: 'pubkey_ABCDEFGH', size: 30 }),
         );
@@ -27,17 +28,19 @@ describe(addLimitToPubkey.name, () => {
 
     it('handles zero size addition', async () => {
         const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
+
         const result = getOrThrow(
             addLimitToPubkey({ sqlite, publicKey: 'pubkey_ABCDEFGH', size: 0 }),
         );
+
         expect(result.totalStorageSize).toBe(0);
         expect(result.unspendStorageSize).toBe(0);
     });
 
     it('handles different pubkeys independently', async () => {
         const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
-
         addLimitToPubkey({ sqlite, publicKey: 'pubkey_AAAA', size: 100 });
+
         const result = getOrThrow(
             addLimitToPubkey({ sqlite, publicKey: 'pubkey_BBBB', size: 200 }),
         );
