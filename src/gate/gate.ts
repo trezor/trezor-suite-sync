@@ -3,12 +3,12 @@ import { syncEndpoint } from './endpoints/syncEndpoint.js';
 import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import { storageRegisterEndpoint } from './endpoints/storageRegisterEndpoint.js';
 import { storageAddEndpoint } from './endpoints/storageAddEndpoint.js';
-import type { LimitStorage } from '../limitStorage/limitStorage.js';
 import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
 import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
-import { ChallengeStorage } from '../challengeStorage/challengeStorage.js';
+import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
+import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
 
-type StartGatePaymentServerParams = {
+type StartGatePaymentServerDependencies = {
     port: number;
     limitStorage: LimitStorage;
     challengeStorage: ChallengeStorage;
@@ -18,7 +18,7 @@ export const startGatePaymentServer = async ({
     port,
     limitStorage,
     challengeStorage,
-}: StartGatePaymentServerParams) => {
+}: StartGatePaymentServerDependencies) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
     syncEndpoint({ server, limitStorage });

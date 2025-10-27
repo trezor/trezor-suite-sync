@@ -1,7 +1,7 @@
 import { err, ok, type Result, sql, type Sqlite, type SqliteError } from '@evolu/common';
 import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { getLimitsForPubkey, type GetLimitsForPubkeyResponse } from './getLimitsForPubkey.js';
-import { type ConsistencyError, consistencyError } from '../../errors.js';
+import { type ConsistencyError, consistencyError } from '../../../errors.js';
 
 export type AddLimitToPubkeyParams = {
     sqlite: Sqlite;

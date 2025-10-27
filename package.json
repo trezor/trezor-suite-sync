@@ -22,7 +22,7 @@
         "build": "tsc -p tsconfig.json",
         "start": "node dist/index.js",
         "dev": "tsx watch src/index.ts",
-        "test": "vitest",        
+        "test": "vitest",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },

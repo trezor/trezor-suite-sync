@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { getOrThrow } from '@evolu/common';
-import { prepareSqlite } from '../limitStorage/limitStorage.js';
 import { createChallengeStorage } from './challengeStorage.js';
+import { prepareSqlite } from '../prepareSqlite.js';
 
 describe('challengeStorage', () => {
     let challengeStorage: ReturnType<typeof createChallengeStorage>;

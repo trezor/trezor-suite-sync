@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { challengeEndpoint } from './challengeEndpoint.js';
 import { getOrThrow } from '@evolu/common';
 import Fastify from 'fastify';
-import { prepareSqlite } from '../../limitStorage/limitStorage.js';
-import { createChallengeStorage } from '../../challengeStorage/challengeStorage.js';
+import { prepareSqlite } from '../../storage/prepareSqlite.js';
+import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
 
 const createApp = async () => {
     const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));

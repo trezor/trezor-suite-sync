@@ -1,13 +1,10 @@
 import { ok, type Result, type SqliteError } from '@evolu/common';
-import {
-    prepareSqlite,
-    createLimitStorage,
-    type LimitStorage,
-} from './limitStorage/limitStorage.js';
+import { createLimitStorage, type LimitStorage } from './storage/limitStorage/limitStorage.js';
 import {
     createChallengeStorage,
     type ChallengeStorage,
-} from './challengeStorage/challengeStorage.js';
+} from './storage/challengeStorage/challengeStorage.js';
+import { prepareSqlite } from './storage/prepareSqlite.js';
 
 export type AppStorage = {
     limitStorage: LimitStorage;
@@ -21,7 +18,7 @@ export const createAppStorage = async (): Promise<Result<AppStorage, SqliteError
         return sqlite;
     }
 
-    const limitStorage = createLimitStorage(sqlite.value);
+    const limitStorage = createLimitStorage({ sqlite: sqlite.value });
     const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
 
     return ok({

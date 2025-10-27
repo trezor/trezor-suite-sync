@@ -1,13 +1,13 @@
 import { createConsole } from '@evolu/common';
 import { createNodeJsRelay } from '@evolu/nodejs';
-import type { LimitStorage } from '../limitStorage/limitStorage.js';
+import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
-type StartEvoluRelayParams = {
+type StartEvoluRelayDependencies = {
     port: number;
     limitStorage: LimitStorage;
 };
 
-export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayParams) => {
+export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDependencies) => {
     const deps = {
         console: createConsole(),
     };
