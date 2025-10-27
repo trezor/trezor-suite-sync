@@ -14,41 +14,55 @@ export type ChallengeStorage = {
 };
 
 const CHALLENGES_TABLE_NAME = 'challenges';
+const DEFAULT_EXPIRATION_SECONDS = 30;
 
 const createChallengesTableQuery = sql`
     create table if not exists ${sql.identifier(CHALLENGES_TABLE_NAME)} (
         sessionId text primary key,
         challenge text not null,
-        createdAt integer not null,
-        expiresAt integer not null
+        createdAt integer not null
     ) strict;
 `;
 
 export type ChallengeStorageDependencies = {
     sqlite: Sqlite;
+    createTime?: () => number;
 };
 
 export const createChallengeStorage = ({
     sqlite,
+    createTime = () => Date.now(),
 }: ChallengeStorageDependencies): ChallengeStorage => {
     const createTableResult = sqlite.exec(createChallengesTableQuery);
 
     if (!createTableResult.ok) {
-        throw new Error('Failed to create challenges table');
+        return {
+            storeChallenge: () => createTableResult,
+            validateAndConsumeChallenge: () => createTableResult,
+            cleanupExpiredChallenges: () => createTableResult,
+        };
     }
+
+    const deleteChallenge = (sessionId: string): Result<void, SqliteError> => {
+        const deleteResult = sqlite.exec(sql`
+            DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
+            WHERE sessionId = ${sessionId}
+        `);
+
+        return deleteResult.ok ? ok(undefined) : deleteResult;
+    };
 
     return {
         storeChallenge: (
             sessionId: string,
             challenge: string,
-            expiresInSeconds: number = 300,
+            expiresInSeconds: number = DEFAULT_EXPIRATION_SECONDS,
         ): Result<void, SqliteError> => {
-            const now = Date.now();
-            const expiresAt = now + expiresInSeconds * 1000;
+            const now = createTime();
 
             const result = sqlite.exec(sql`
-                INSERT OR REPLACE INTO ${sql.identifier(CHALLENGES_TABLE_NAME)} (sessionId, challenge, createdAt, expiresAt)
-                VALUES (${sessionId}, ${challenge}, ${now}, ${expiresAt})
+                INSERT OR REPLACE INTO ${sql.identifier(CHALLENGES_TABLE_NAME)} (sessionId, challenge, createdAt)
+                VALUES (${sessionId}, ${challenge}, ${now})
             `);
 
             return result.ok ? ok(undefined) : result;
@@ -58,9 +72,12 @@ export const createChallengeStorage = ({
             sessionId: string,
             challenge: string,
         ): Result<boolean, SqliteError> => {
-            const selectResult = sqlite.exec<{ challenge: string; expiresAt: number }>(sql`
-                SELECT challenge, expiresAt FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
-                WHERE sessionId = ${sessionId}
+            const now = createTime();
+            const expirationThreshold = now - (DEFAULT_EXPIRATION_SECONDS * 1000);
+
+            const selectResult = sqlite.exec<{ challenge: string }>(sql`
+                SELECT challenge FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
+                WHERE sessionId = ${sessionId} AND createdAt > ${expirationThreshold}
             `);
 
             if (!selectResult.ok) {
@@ -77,16 +94,7 @@ export const createChallengeStorage = ({
                 return ok(false);
             }
 
-            if (Date.now() > row.expiresAt) {
-                sqlite.exec(sql`
-                    DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} WHERE sessionId = ${sessionId}
-                `);
-                return ok(false);
-            }
-
-            const deleteResult = sqlite.exec(sql`
-                DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} WHERE sessionId = ${sessionId}
-            `);
+            const deleteResult = deleteChallenge(sessionId);
 
             if (!deleteResult.ok) {
                 return deleteResult;
@@ -96,10 +104,12 @@ export const createChallengeStorage = ({
         },
 
         cleanupExpiredChallenges: (): Result<void, SqliteError> => {
-            const now = Date.now();
+            const now = createTime();
+            const expirationThreshold = now - (DEFAULT_EXPIRATION_SECONDS * 1000);
+
             const result = sqlite.exec(sql`
                 DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
-                WHERE expiresAt < ${now}
+                WHERE createdAt <= ${expirationThreshold}
             `);
 
             return result.ok ? ok(undefined) : result;
