@@ -5,11 +5,18 @@ import Fastify from 'fastify';
 import { prepareSqlite } from '../../storage/prepareSqlite.js';
 import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
 
+const staticCreateRandomBytes = () =>
+    '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
+
 const createApp = async () => {
     const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
     const challengeStorage = createChallengeStorage({ sqlite });
     const app = Fastify();
-    challengeEndpoint({ server: app, challengeStorage });
+    challengeEndpoint({
+        server: app,
+        challengeStorage,
+        createRandomBytes: staticCreateRandomBytes,
+    });
     return { app, challengeStorage };
 };
 
@@ -26,8 +33,9 @@ describe(challengeEndpoint.name, () => {
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
         expect(body).toHaveProperty('challenge');
-        expect(typeof body.challenge).toBe('string');
-        expect(body.challenge).toHaveLength(64);
+        expect(body.challenge).toBe(
+            '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61',
+        );
     });
 
     it('generates unique challenges for same sessionId on multiple calls', async () => {

@@ -7,6 +7,9 @@ import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
 import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
 import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
+import { randomBytes } from 'crypto';
+
+const createRandomBytes = (size: number) => randomBytes(size).toString('hex');
 
 type StartGatePaymentServerDependencies = {
     port: number;
@@ -22,7 +25,7 @@ export const startGatePaymentServer = async ({
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
     syncEndpoint({ server, limitStorage });
-    challengeEndpoint({ server, challengeStorage });
+    challengeEndpoint({ server, challengeStorage, createRandomBytes });
     storageRegisterEndpoint({ server, limitStorage });
     storageAddEndpoint({ server, limitStorage });
     storageAskEndpoint({ server, limitStorage });
