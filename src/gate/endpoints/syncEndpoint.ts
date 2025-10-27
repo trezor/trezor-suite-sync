@@ -1,6 +1,5 @@
-import type { EndpointDeps } from './Endpoint.js';
+import { LimitStorage } from '../../limitStorage/limitStorage.js';
 import type { ServerType } from '../server.js';
-import type { LimitStorage } from '../../limitStorage/limitStorage.js';
 
 const schema = {
     schema: {
@@ -14,7 +13,12 @@ const schema = {
     },
 } as const;
 
-export const syncEndpoint = ({ server }: EndpointDeps) => {
+export type StorageSyncEndpointDeps = {
+    server: ServerType;
+    limitStorage: Pick<LimitStorage, 'getLimitForOwner'>;
+};
+
+export const syncEndpoint = ({ server }: StorageSyncEndpointDeps) => {
     server.get('/sync', schema, (request, reply) => {
         const { ownerId } = request.query;
 
