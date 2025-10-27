@@ -19,7 +19,7 @@ export const transferSpaceLimitToOwner = ({
 }: TransferSpaceLimitToOwnerParams) => {
     // Todo: this operation is not atomic! Implement some lock/transactionality
 
-    // Checks that publicKey as enought space
+    // Checks that publicKey as enough space
 
     const limitsResult = getLimitsForPubkey({ sqlite, publicKey });
 

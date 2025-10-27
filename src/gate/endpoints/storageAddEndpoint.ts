@@ -25,8 +25,11 @@ export type StorageAddEndpointDeps = {
 
 export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointDeps) => {
     server.post('/storage/add', schema, (request, reply) => {
+        console.log("______", request.body);
+
         const { proof, size, timestamp, publicKey, ownerId } = request.body;
 
+        console.log('____publicKey', publicKey);
         // Todo: implement checks
 
         const result = limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
@@ -43,10 +46,8 @@ export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointD
                     return reply.code(400).send({ error: result.error.message });
 
                 default:
-                    exhaustive(errorType);
+                    return exhaustive(errorType);
             }
-
-            return reply.code(400).send({ error: 'addLimitToPubkey failed (sql)' });
         }
 
         return { proof, size, timestamp, publicKey };
