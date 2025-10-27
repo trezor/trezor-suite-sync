@@ -14,16 +14,26 @@ describe('challengeStorage', () => {
     it('stores challenge successfully', () => {
         const result = challengeStorage.storeChallenge('session-123', 'challenge-abc');
         expect(result.ok).toBe(true);
+        
+        const isValid = getOrThrow(
+            challengeStorage.validateAndConsumeChallenge('session-123', 'challenge-abc'),
+        );
+        expect(isValid).toBe(true);
     });
 
     it('replaces existing challenge for same sessionId', () => {
         challengeStorage.storeChallenge('session-123', 'challenge-old');
         challengeStorage.storeChallenge('session-123', 'challenge-new');
 
-        const isValid = getOrThrow(
+        const isOldValid = getOrThrow(
+            challengeStorage.validateAndConsumeChallenge('session-123', 'challenge-old'),
+        );
+        expect(isOldValid).toBe(false);
+
+        const isNewValid = getOrThrow(
             challengeStorage.validateAndConsumeChallenge('session-123', 'challenge-new'),
         );
-        expect(isValid).toBe(true);
+        expect(isNewValid).toBe(true);
     });
 
     it('validates correct challenge', () => {
@@ -66,13 +76,21 @@ describe('challengeStorage', () => {
     });
 
     it('returns false for expired challenge', async () => {
-        challengeStorage.storeChallenge('session-123', 'challenge-abc', 0);
+        let currentTime = 1000;
+        const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
+        const storageWithTime = createChallengeStorage({ 
+            sqlite,
+            createTime: () => currentTime 
+        });
+    
+        storageWithTime.storeChallenge('session-123', 'challenge-abc', 30 * 1000);
 
-        await new Promise(resolve => setTimeout(resolve, 10));
-
+        currentTime = 1000 + (31 * 1000);
+    
         const isValid = getOrThrow(
-            challengeStorage.validateAndConsumeChallenge('session-123', 'challenge-abc'),
+            storageWithTime.validateAndConsumeChallenge('session-123', 'challenge-abc'),
         );
         expect(isValid).toBe(false);
     });
+  
 });

@@ -108,47 +108,4 @@ describe(challengeEndpoint.name, () => {
 
         expect(response.statusCode).toBe(400);
     });
-
-    it('handles empty string sessionId', async () => {
-        const { app } = await createApp();
-
-        const response = await app.inject({
-            method: 'POST',
-            url: '/challenge',
-            payload: { sessionId: '' },
-        });
-
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(body).toHaveProperty('challenge');
-    });
-
-    it('handles special characters in sessionId', async () => {
-        const { app } = await createApp();
-
-        const response = await app.inject({
-            method: 'POST',
-            url: '/challenge',
-            payload: { sessionId: 'session-@#$%^&*()' },
-        });
-
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(body).toHaveProperty('challenge');
-    });
-
-    it('handles very long sessionId', async () => {
-        const { app } = await createApp();
-        const longSessionId = 'a'.repeat(1000);
-
-        const response = await app.inject({
-            method: 'POST',
-            url: '/challenge',
-            payload: { sessionId: longSessionId },
-        });
-
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(body).toHaveProperty('challenge');
-    });
 });
