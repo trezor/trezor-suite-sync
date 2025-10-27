@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@evolu/common": "^6.0.1-preview.18",
+        "@evolu/common": "^6.0.1-preview.19",
         "@evolu/nodejs": "^1.0.1-preview.7",
         "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
         "fastify": "^5.5.0"
