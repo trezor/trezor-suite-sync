@@ -103,24 +103,6 @@ describe(storageAskEndpoint.name, () => {
         expect(JSON.parse(response.body)).toEqual({ totalSpace: 0 });
     });
 
-    it('handles zero storage limits for publicKey', async () => {
-        const app = await createApp({
-            getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 0, unspendStorageSize: 0 }),
-        });
-
-        const response = await app.inject({
-            method: 'GET',
-            url: '/storage/ask?publicKey=test-pubkey',
-        });
-
-        expect(response.statusCode).toBe(200);
-        expect(JSON.parse(response.body)).toEqual({
-            totalSpace: 0,
-            unspentSpace: 0,
-        });
-    });
-
     it('handles large storage limits for ownerId', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(999999999),

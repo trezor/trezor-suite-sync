@@ -24,18 +24,23 @@ export type StorageAskEndpointDeps = {
 export const storageAskEndpoint = ({ server, limitStorage }: StorageAskEndpointDeps) => {
     server.get('/storage/ask', schema, (request, reply) => {
         const { ownerId, publicKey } = request.query;
-        if (ownerId) {
+
+        if (ownerId !== undefined) {
             const result = limitStorage.getLimitForOwner({ ownerId });
+
             if (!result.ok) {
                 const errorType = result.error.type;
+
                 switch (errorType) {
                     case 'SqliteError':
                         console.error(result);
+
                         return reply.code(500).send({ error: 'Internal server error' });
                     default:
                         return exhaustive(errorType);
                 }
             }
+
             if (result.value === null) {
                 return reply.code(404).send({ error: 'Owner not found' });
             }
@@ -45,16 +50,20 @@ export const storageAskEndpoint = ({ server, limitStorage }: StorageAskEndpointD
 
         if (publicKey) {
             const result = limitStorage.getLimitForPubkey({ publicKey });
+
             if (!result.ok) {
                 const errorType = result.error.type;
+
                 switch (errorType) {
                     case 'SqliteError':
                         console.error(result);
+
                         return reply.code(500).send({ error: 'Internal server error' });
                     default:
                         return exhaustive(errorType);
                 }
             }
+
             if (result.value === null) {
                 return reply.code(404).send({ error: 'Public key not found' });
             }
