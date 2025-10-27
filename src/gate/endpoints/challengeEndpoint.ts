@@ -7,7 +7,12 @@ const schema = {
         body: {
             type: 'object',
             properties: {
-                sessionId: { type: 'string' },
+                sessionId: { 
+                    type: 'string',
+                    minLength: 64,
+                    maxLength: 64,
+                    pattern: '^[a-fA-F0-9]{64}$'
+                },
             },
             required: ['sessionId'],
         },
