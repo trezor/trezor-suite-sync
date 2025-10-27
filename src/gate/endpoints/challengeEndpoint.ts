@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import type { ServerType } from '../server.js';
-import type { ChallengeStorage } from '../../challengeStorage/challengeStorage.js';
 import { exhaustive } from '../../exhaustive.js';
+import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
 
 const schema = {
     schema: {
