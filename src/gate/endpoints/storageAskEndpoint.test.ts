@@ -160,7 +160,7 @@ describe(storageAskEndpoint.name, () => {
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?publicKey=',
+            url: '/storage/ask?publicKey=a',
         });
 
         expect(response.statusCode).toBe(404);
