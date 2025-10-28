@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
 import { getOrThrow, sql } from '@evolu/common';
-import { prepareSqlite } from '../limitStorage.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
+import { prepareSqlite } from '../../prepareSqlite.js';
 
 describe(getLimitsForOwner.name, () => {
     it('returns null when no owner limit exists', async () => {

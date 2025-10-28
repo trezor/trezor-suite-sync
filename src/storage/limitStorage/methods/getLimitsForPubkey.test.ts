@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getLimitsForPubkey } from './getLimitsForPubkey.js';
 import { getOrThrow } from '@evolu/common';
-import { prepareSqlite } from '../limitStorage.js';
 import { addLimitToPubkey } from './addLimitToPubkey.js';
+import { prepareSqlite } from '../../prepareSqlite.js';
 
 describe(getLimitsForPubkey.name, () => {
     it('returns null when publicKey does not exist', async () => {
