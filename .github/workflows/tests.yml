@@ -27,3 +27,33 @@ jobs:
 
       - run: yarn install --immutable
       - run: yarn test
+
+  type-check:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Type Check
+        run: |
+          yarn install --immutable
+          yarn type-check
+
+  lint:
+    name: Linting and formatting
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Format
+        run: |
+          yarn install --immutable
+          yarn format:check
