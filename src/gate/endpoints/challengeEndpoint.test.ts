@@ -1,6 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 import { challengeEndpoint } from './challengeEndpoint.js';
-import { getOrThrow } from '@evolu/common';
 import Fastify from 'fastify';
 import { prepareSqlite } from '../../storage/prepareSqlite.js';
 import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
@@ -8,15 +7,24 @@ import { createChallengeStorage } from '../../storage/challengeStorage/challenge
 const staticCreateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
 
-const createApp = async () => {
-    const sqlite = getOrThrow(await prepareSqlite({ inMemory: true }));
-    const challengeStorage = createChallengeStorage({ sqlite });
+type CreateAppParams = {
+    createRandomBytes?: (size: number) => string;
+};
+
+const createApp = async (params?: CreateAppParams) => {
+    const sqlite = await prepareSqlite({ inMemory: true });
+    assert(sqlite.ok);
+
+    const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
+
     const app = Fastify();
+
     challengeEndpoint({
         server: app,
         challengeStorage,
-        createRandomBytes: staticCreateRandomBytes,
+        createRandomBytes: params?.createRandomBytes ?? staticCreateRandomBytes,
     });
+
     return { app, challengeStorage };
 };
 
@@ -27,7 +35,7 @@ describe(challengeEndpoint.name, () => {
         const response = await app.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-123' },
+            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
         expect(response.statusCode).toBe(200);
@@ -39,18 +47,19 @@ describe(challengeEndpoint.name, () => {
     });
 
     it('generates unique challenges for same sessionId on multiple calls', async () => {
-        const { app } = await createApp();
+        const { app: app1 } = await createApp();
 
-        const response1 = await app.inject({
+        const response1 = await app1.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-123' },
+            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const response2 = await app.inject({
+        const { app: app2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const response2 = await app2.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-123' },
+            payload: { sessionId: 'XYRnoWi8zKnDnRKlxzeRnfBm9hxYeh9D' },
         });
 
         const body1 = JSON.parse(response1.body);
@@ -65,7 +74,7 @@ describe(challengeEndpoint.name, () => {
         const response1 = await app.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-123' },
+            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
         const response2 = await app.inject({
@@ -77,6 +86,9 @@ describe(challengeEndpoint.name, () => {
         const body1 = JSON.parse(response1.body);
         const body2 = JSON.parse(response2.body);
 
+        console.log(response1.body);
+        console.log(response2.body);
+
         expect(body1.challenge).not.toBe(body2.challenge);
     });
 
@@ -86,15 +98,17 @@ describe(challengeEndpoint.name, () => {
         const response = await app.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-123' },
+            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
         const body = JSON.parse(response.body);
-        const isValid = getOrThrow(
-            challengeStorage.validateAndConsumeChallenge('session-123', body.challenge),
+        const isValid = challengeStorage.validateAndConsumeChallenge(
+            'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM',
+            body.challenge,
         );
 
-        expect(isValid).toBe(true);
+        assert(isValid.ok);
+        expect(isValid.value).toBe(true);
     });
 
     it('returns 400 when sessionId is missing', async () => {
