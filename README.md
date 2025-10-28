@@ -13,6 +13,11 @@ yarn build
 yarn start
 ```
 
+You can change ports by setting the ENV variables:
+```bash
+GATE_PORT=1111 RELAY_PORT=2222 yarn start
+```
+
 ### Dev
 
 ```bash
