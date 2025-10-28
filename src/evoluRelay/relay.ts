@@ -30,6 +30,11 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
         // },
     });
 
-    process.on('SIGINT', relay[Symbol.dispose]);
-    process.on('SIGTERM', relay[Symbol.dispose]);
+    const dispose = () => {
+        console.log('Evolu Relay is shutting down ...');
+        relay[Symbol.dispose]();
+    };
+
+    process.on('SIGINT', dispose);
+    process.on('SIGTERM', dispose);
 };

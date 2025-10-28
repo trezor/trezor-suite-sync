@@ -19,8 +19,8 @@
         "vitest": "^4.0.4"
     },
     "scripts": {
-        "build": "tsce -p tsconfig.json",
-        "start": "node dist/index.js",
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/src/index.js",
         "dev": "tsx watch src/index.ts",
         "test": "vitest",
         "format": "prettier --write src",
