@@ -1,6 +1,6 @@
 import { exhaustive } from '../../exhaustive.js';
 import type { ServerType } from '../server.js';
-import type { LimitStorage } from '../../limitStorage/limitStorage.js';
+import { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 
 const schema = {
     schema: {

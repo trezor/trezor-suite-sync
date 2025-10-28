@@ -3,7 +3,7 @@ name: "[Build/Deploy] test evolu-relay image"
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
     branches:
       - main
