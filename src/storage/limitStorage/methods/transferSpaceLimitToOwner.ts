@@ -1,6 +1,6 @@
 import { err, ok, sql, type Sqlite } from '@evolu/common';
 import { getLimitsForPubkey } from './getLimitsForPubkey.js';
-import { noSpaceAllowanceErr } from '../../errors.js';
+import { noSpaceAllowanceErr } from '../../../errors.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME, PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
 
