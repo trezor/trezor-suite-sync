@@ -34,15 +34,11 @@ export type ChallengeStorageDependencies = {
 export const createChallengeStorage = ({
     sqlite,
     createTime = () => Date.now(),
-}: ChallengeStorageDependencies): ChallengeStorage => {
+}: ChallengeStorageDependencies): Result<ChallengeStorage, SqliteError> => {
     const createTableResult = sqlite.exec(createChallengesTableQuery);
 
     if (!createTableResult.ok) {
-        return {
-            storeChallenge: () => createTableResult,
-            validateAndConsumeChallenge: () => createTableResult,
-            cleanupExpiredChallenges: () => createTableResult,
-        };
+        return createTableResult;
     }
 
     const deleteChallenge = (sessionId: string): Result<void, SqliteError> => {
@@ -54,7 +50,7 @@ export const createChallengeStorage = ({
         return deleteResult.ok ? ok(undefined) : deleteResult;
     };
 
-    return {
+    return ok({
         storeChallenge: (
             sessionId: string,
             challenge: string,
@@ -116,5 +112,5 @@ export const createChallengeStorage = ({
 
             return result.ok ? ok(undefined) : result;
         },
-    };
+    });
 };

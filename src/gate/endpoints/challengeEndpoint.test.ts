@@ -16,16 +16,17 @@ const createApp = async (params?: CreateAppParams) => {
     assert(sqlite.ok);
 
     const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
+    assert(challengeStorage.ok);
 
     const app = Fastify();
 
     challengeEndpoint({
         server: app,
-        challengeStorage,
+        challengeStorage: challengeStorage.value,
         createRandomBytes: params?.createRandomBytes ?? staticCreateRandomBytes,
     });
 
-    return { app, challengeStorage };
+    return { app, challengeStorage: challengeStorage.value };
 };
 
 describe(challengeEndpoint.name, () => {

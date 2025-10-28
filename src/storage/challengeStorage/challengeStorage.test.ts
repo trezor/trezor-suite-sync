@@ -1,15 +1,17 @@
 import { describe, expect, it, beforeEach, assert } from 'vitest';
-import { createChallengeStorage } from './challengeStorage.js';
+import { ChallengeStorage, createChallengeStorage } from './challengeStorage.js';
 import { prepareSqlite } from '../prepareSqlite.js';
 
 describe('challengeStorage', () => {
-    let challengeStorage: ReturnType<typeof createChallengeStorage>;
+    let challengeStorage: ChallengeStorage;
 
     beforeEach(async () => {
         const sqlite = await prepareSqlite({ inMemory: true });
         assert(sqlite.ok);
 
-        challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
+        const challengeStorageResult = createChallengeStorage({ sqlite: sqlite.value });
+        assert(challengeStorageResult.ok);
+        challengeStorage = challengeStorageResult.value;
     });
 
     it('stores challenge successfully', () => {
@@ -97,10 +99,12 @@ describe('challengeStorage', () => {
         const sqlite = await prepareSqlite({ inMemory: true });
         assert(sqlite.ok);
 
-        const storageWithTime = createChallengeStorage({
+        const storageWithTimeResult = createChallengeStorage({
             sqlite: sqlite.value,
             createTime: () => currentTime,
         });
+        assert(storageWithTimeResult.ok);
+        const storageWithTime = storageWithTimeResult.value;
 
         storageWithTime.storeChallenge('session-123', 'challenge-abc', 30 * 1000);
 
