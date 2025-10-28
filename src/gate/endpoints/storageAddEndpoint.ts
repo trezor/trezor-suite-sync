@@ -25,11 +25,8 @@ export type StorageAddEndpointDeps = {
 
 export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointDeps) => {
     server.post('/storage/add', schema, (request, reply) => {
-        console.log("______", request.body);
-
         const { proof, size, timestamp, publicKey, ownerId } = request.body;
 
-        console.log('____publicKey', publicKey);
         // Todo: implement checks
 
         const result = limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
