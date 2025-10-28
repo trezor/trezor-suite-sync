@@ -7,11 +7,11 @@ const schema = {
         body: {
             type: 'object',
             properties: {
-                sessionId: { 
+                sessionId: {
                     type: 'string',
                     minLength: 32,
                     maxLength: 32,
-                    pattern: '^[a-zA-Z0-9]{32}$'
+                    pattern: '^[a-zA-Z0-9]{32}$',
                 },
             },
             required: ['sessionId'],
