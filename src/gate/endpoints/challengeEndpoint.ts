@@ -9,9 +9,9 @@ const schema = {
             properties: {
                 sessionId: { 
                     type: 'string',
-                    minLength: 64,
-                    maxLength: 64,
-                    pattern: '^[a-fA-F0-9]{64}$'
+                    minLength: 32,
+                    maxLength: 32,
+                    pattern: '^[a-zA-Z0-9]{32}$'
                 },
             },
             required: ['sessionId'],
@@ -46,7 +46,7 @@ export const challengeEndpoint = ({
                     return reply.code(500).send();
 
                 default:
-                    exhaustive(errorType);
+                    return exhaustive(errorType);
             }
         }
 

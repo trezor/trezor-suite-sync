@@ -19,6 +19,11 @@ export const createAppStorage = async (): Promise<Result<AppStorage, SqliteError
     }
 
     const limitStorage = createLimitStorage({ sqlite: sqlite.value });
+
+    if (!limitStorage.ok) {
+        return limitStorage;
+    }
+
     const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
 
     return ok({

@@ -29,6 +29,8 @@ export type ChallengeStorageDependencies = {
     createTime?: () => number;
 };
 
+// Todo: split to functions, similar to LimitStorage
+
 export const createChallengeStorage = ({
     sqlite,
     createTime = () => Date.now(),
@@ -73,7 +75,7 @@ export const createChallengeStorage = ({
             challenge: string,
         ): Result<boolean, SqliteError> => {
             const now = createTime();
-            const expirationThreshold = now - (DEFAULT_EXPIRATION_SECONDS * 1000);
+            const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
 
             const selectResult = sqlite.exec<{ challenge: string }>(sql`
                 SELECT challenge FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 
@@ -105,7 +107,7 @@ export const createChallengeStorage = ({
 
         cleanupExpiredChallenges: (): Result<void, SqliteError> => {
             const now = createTime();
-            const expirationThreshold = now - (DEFAULT_EXPIRATION_SECONDS * 1000);
+            const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
 
             const result = sqlite.exec(sql`
                 DELETE FROM ${sql.identifier(CHALLENGES_TABLE_NAME)} 

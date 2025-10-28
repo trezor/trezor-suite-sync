@@ -1,4 +1,4 @@
-import { type Sqlite } from '@evolu/common';
+import { ok, type Sqlite } from '@evolu/common';
 import { addLimitToPubkey, type AddLimitToPubkeyParams } from './methods/addLimitToPubkey.js';
 import {
     createOwnerLimitTableQueryIfNotExists,
@@ -10,6 +10,7 @@ import {
     transferSpaceLimitToOwner,
     type TransferSpaceLimitToOwnerParams,
 } from './methods/transferSpaceLimitToOwner.js';
+import { UnwrapOk } from '../../types.js';
 
 type CreateLimitStorageDependencies = {
     sqlite: Sqlite;
@@ -28,7 +29,7 @@ export const createLimitStorage = ({ sqlite }: CreateLimitStorageDependencies) =
         return result2;
     }
 
-    return {
+    return ok({
         addLimitToPubkey: ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'sqlite'>) =>
             addLimitToPubkey({ sqlite, publicKey, size }),
         getLimitForPubkey: ({ publicKey }: Omit<GetLimitsForPubkey, 'sqlite'>) =>
@@ -41,7 +42,7 @@ export const createLimitStorage = ({ sqlite }: CreateLimitStorageDependencies) =
             size,
         }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
             transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
-    };
+    });
 };
 
-export type LimitStorage = ReturnType<typeof createLimitStorage>;
+export type LimitStorage = UnwrapOk<ReturnType<typeof createLimitStorage>>;
