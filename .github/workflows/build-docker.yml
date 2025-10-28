@@ -63,4 +63,4 @@ jobs:
     steps:
       - name: Restart service to pull new image
         run: |
-           sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service
+          sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service

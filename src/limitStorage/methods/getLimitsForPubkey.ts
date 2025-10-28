@@ -13,10 +13,13 @@ export type GetLimitsForPubkeyResponse = {
 
 export const getLimitsForPubkey = ({
     sqlite,
+    publicKey,
 }: GetLimitsForPubkey): Result<GetLimitsForPubkeyResponse | null, SqliteError> => {
     const result = sqlite.exec<GetLimitsForPubkeyResponse>(sql`
-        select totalStorageSize, unspendStorageSize
-        from ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)} limit 1;
+        SELECT totalStorageSize, unspendStorageSize
+        FROM ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)}
+        WHERE publicKey=${publicKey} 
+        LIMIT 1;
     `);
 
     if (!result.ok) {
