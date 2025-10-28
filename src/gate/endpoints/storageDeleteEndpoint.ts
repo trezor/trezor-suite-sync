@@ -1,5 +1,5 @@
-import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
-import type { ServerType } from '../server.js';
+import { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -22,7 +22,8 @@ export type StorageDeleteEndpointDeps = {
 
 export const storageDeleteEndpoint = ({ server, limitStorage }: StorageDeleteEndpointDeps) => {
     server.post('/storage/delete', schema, (request, reply) => {
-        const { publicKey } = request.body;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { publicKey, ownerId, recipientOwnerId } = request.body;
 
         // Todo: not implemented
 
