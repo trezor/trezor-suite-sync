@@ -1,8 +1,15 @@
-import { ok } from '@evolu/common';
+import { OwnerId, getOrThrow, ok } from '@evolu/common';
 import Fastify from 'fastify';
 import { describe, expect, it } from 'vitest';
 
-import { type StorageAskEndpointDeps, storageAskEndpoint } from './storageAskEndpoint.js';
+import { StorageAskEndpointDeps, storageAskEndpoint } from './storageAskEndpoint.js';
+import { Size } from '../../storage/limitStorage/limitStorage.js';
+
+const size150 = getOrThrow(Size.from(150));
+const size200 = getOrThrow(Size.from(200));
+
+const ownerId = getOrThrow(OwnerId.from('B4Tjjey5WmWnchjGDF123'));
+const ownerIdNonExistent = getOrThrow(OwnerId.from('FFFFFFFFFFFFFFFFFFFFF'));
 
 const createApp = (limitStorage: StorageAskEndpointDeps['limitStorage']) => {
     const app = Fastify();
@@ -15,12 +22,12 @@ describe(storageAskEndpoint.name, () => {
     it('returns total space for ownerId', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=test-owner',
+            url: `/storage/ask?ownerId=${ownerId}`,
         });
 
         expect(response.statusCode).toBe(200);
@@ -30,7 +37,7 @@ describe(storageAskEndpoint.name, () => {
     it('returns total and unspent space for publicKey', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
@@ -40,20 +47,20 @@ describe(storageAskEndpoint.name, () => {
 
         expect(response.statusCode).toBe(200);
         expect(JSON.parse(response.body)).toEqual({
-            totalSpace: 200,
-            unspentSpace: 150,
+            totalSpace: size200,
+            unspentSpace: size150,
         });
     });
 
     it('returns 404 when owner not found', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(null),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=nonexistent',
+            url: `/storage/ask?ownerId=${ownerIdNonExistent}`,
         });
 
         expect(response.statusCode).toBe(404);
@@ -78,7 +85,7 @@ describe(storageAskEndpoint.name, () => {
     it('returns 400 when neither parameter provided', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
@@ -92,12 +99,12 @@ describe(storageAskEndpoint.name, () => {
     it('handles zero storage limits for ownerId', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(0),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=test-owner',
+            url: `/storage/ask?ownerId=${ownerId}`,
         });
 
         expect(response.statusCode).toBe(200);
@@ -107,12 +114,12 @@ describe(storageAskEndpoint.name, () => {
     it('handles large storage limits for ownerId', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(999999999),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=test-owner',
+            url: `/storage/ask?ownerId=${ownerId}`,
         });
 
         expect(response.statusCode).toBe(200);
@@ -123,7 +130,10 @@ describe(storageAskEndpoint.name, () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
             getLimitForPubkey: () =>
-                ok({ totalStorageSize: 999999999, unspendStorageSize: 888888888 }),
+                ok({
+                    totalStorageSize: getOrThrow(Size.from(999999999)),
+                    unspendStorageSize: getOrThrow(Size.from(888888888)),
+                }),
         });
 
         const response = await app.inject({
@@ -138,10 +148,10 @@ describe(storageAskEndpoint.name, () => {
         });
     });
 
-    it('handles empty string ownerId', async () => {
+    it('empty OwnerId is not valid', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(null),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
@@ -149,8 +159,7 @@ describe(storageAskEndpoint.name, () => {
             url: '/storage/ask?ownerId=',
         });
 
-        expect(response.statusCode).toBe(404);
-        expect(JSON.parse(response.body)).toEqual({ error: 'Owner not found' });
+        expect(response.statusCode).toBe(400);
     });
 
     it('handles empty string publicKey', async () => {
@@ -171,12 +180,12 @@ describe(storageAskEndpoint.name, () => {
     it('handles special characters in ownerId', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=test-owner@domain.com',
+            url: '/storage/ask?ownerId=' + ownerIdNonExistent,
         });
 
         expect(response.statusCode).toBe(200);
@@ -186,7 +195,7 @@ describe(storageAskEndpoint.name, () => {
     it('handles special characters in publicKey', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
@@ -196,20 +205,20 @@ describe(storageAskEndpoint.name, () => {
 
         expect(response.statusCode).toBe(200);
         expect(JSON.parse(response.body)).toEqual({
-            totalSpace: 200,
-            unspentSpace: 150,
+            totalSpace: size200,
+            unspentSpace: size150,
         });
     });
 
     it('handles both parameters provided (ownerId takes precedence)', async () => {
         const app = await createApp({
             getLimitForOwner: () => ok(100),
-            getLimitForPubkey: () => ok({ totalStorageSize: 200, unspendStorageSize: 150 }),
+            getLimitForPubkey: () => ok({ totalStorageSize: size200, unspendStorageSize: size150 }),
         });
 
         const response = await app.inject({
             method: 'GET',
-            url: '/storage/ask?ownerId=test-owner&publicKey=test-pubkey',
+            url: `/storage/ask?ownerId=${ownerIdNonExistent}&publicKey=test-pubkey`,
         });
 
         expect(response.statusCode).toBe(200);

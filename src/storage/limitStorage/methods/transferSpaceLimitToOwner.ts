@@ -1,15 +1,16 @@
-import { type Sqlite, err, ok, sql } from '@evolu/common';
+import { OwnerId, type Sqlite, err, ok, sql } from '@evolu/common';
 
+import { getLimitsForPubkey } from './getLimitsForPubkey.js';
 import { noSpaceAllowanceErr } from '../../../errors.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME, PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
-import { getLimitsForPubkey } from './getLimitsForPubkey.js';
+import { PublicKey, Size } from '../limitStorage.js';
 
 export type TransferSpaceLimitToOwnerParams = {
     sqlite: Sqlite;
-    publicKey: string;
-    ownerId: string;
-    size: number; // To be transferred from `publicKey` to the `ownerId`;
+    publicKey: PublicKey;
+    ownerId: OwnerId;
+    size: Size; // To be transferred from `publicKey` to the `ownerId`;
 };
 
 export const transferSpaceLimitToOwner = ({

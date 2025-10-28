@@ -1,5 +1,7 @@
+import { OwnerId, object, optional } from '@evolu/common';
+
 import { exhaustive } from '../../exhaustive.js';
-import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import { LimitStorage, PublicKey } from '../../storage/limitStorage/limitStorage.js';
 import type { ServerType } from '../server.js';
 
 const schema = {
@@ -16,6 +18,11 @@ const schema = {
     },
 } as const;
 
+const schemaEvolu = object({
+    publicKey: optional(PublicKey),
+    ownerId: optional(OwnerId),
+});
+
 export type StorageAskEndpointDeps = {
     server: ServerType;
     limitStorage: Pick<LimitStorage, 'getLimitForOwner' | 'getLimitForPubkey'>;
@@ -23,7 +30,13 @@ export type StorageAskEndpointDeps = {
 
 export const storageAskEndpoint = ({ server, limitStorage }: StorageAskEndpointDeps) => {
     server.get('/storage/ask', schema, (request, reply) => {
-        const { ownerId, publicKey } = request.query;
+        const resultEvolu = schemaEvolu.from(request.query);
+
+        if (!resultEvolu.ok) {
+            return reply.code(400).send({ error: resultEvolu.error });
+        }
+
+        const { ownerId, publicKey } = resultEvolu.value;
 
         if (ownerId !== undefined) {
             const result = limitStorage.getLimitForOwner({ ownerId });
@@ -48,7 +61,7 @@ export const storageAskEndpoint = ({ server, limitStorage }: StorageAskEndpointD
             return reply.code(200).send({ totalSpace: result.value });
         }
 
-        if (publicKey) {
+        if (publicKey !== undefined) {
             const result = limitStorage.getLimitForPubkey({ publicKey });
 
             if (!result.ok) {

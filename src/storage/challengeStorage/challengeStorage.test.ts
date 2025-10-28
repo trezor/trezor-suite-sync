@@ -1,7 +1,21 @@
+import { getOrThrow } from '@evolu/common';
 import { assert, beforeEach, describe, expect, it } from 'vitest';
 
+import {
+    Challenge,
+    ChallengeStorage,
+    SessionId,
+    createChallengeStorage,
+} from './challengeStorage.js';
 import { prepareSqlite } from '../prepareSqlite.js';
-import { type ChallengeStorage, createChallengeStorage } from './challengeStorage.js';
+
+const session123 = getOrThrow(SessionId.from('session-123'));
+const sessionNonExistent = getOrThrow(SessionId.from('session-non-existent'));
+
+const challengeABC = getOrThrow(Challenge.from('challenge-abc'));
+const challengeNew = getOrThrow(Challenge.from('challenge-old'));
+const challengeOld = getOrThrow(Challenge.from('challenge-new'));
+const challengeWrong = getOrThrow(Challenge.from('challenge-wrong'));
 
 describe('challengeStorage', () => {
     let challengeStorage: ChallengeStorage;
@@ -16,81 +30,60 @@ describe('challengeStorage', () => {
     });
 
     it('stores challenge successfully', () => {
-        const result = challengeStorage.storeChallenge('session-123', 'challenge-abc');
+        const result = challengeStorage.storeChallenge(session123, challengeABC);
         expect(result.ok).toBe(true);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-abc',
-        );
+        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid.ok);
         expect(isValid.value).toBe(true);
     });
 
     it('replaces existing challenge for same sessionId', () => {
-        challengeStorage.storeChallenge('session-123', 'challenge-old');
-        challengeStorage.storeChallenge('session-123', 'challenge-new');
+        challengeStorage.storeChallenge(session123, challengeOld);
+        challengeStorage.storeChallenge(session123, challengeNew);
 
-        const isOldValid = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-old',
-        );
+        const isOldValid = challengeStorage.validateAndConsumeChallenge(session123, challengeOld);
         assert(isOldValid.ok);
         expect(isOldValid.value).toBe(false);
 
-        const isNewValid = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-new',
-        );
+        const isNewValid = challengeStorage.validateAndConsumeChallenge(session123, challengeNew);
         assert(isNewValid.ok);
         expect(isNewValid.value).toBe(true);
     });
 
     it('validates correct challenge', () => {
-        challengeStorage.storeChallenge('session-123', 'challenge-abc');
+        challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-abc',
-        );
+        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid.ok);
         expect(isValid.value).toBe(true);
     });
 
     it('returns false for non-existent sessionId', () => {
         const isValid = challengeStorage.validateAndConsumeChallenge(
-            'non-existent',
-            'challenge-abc',
+            sessionNonExistent,
+            challengeABC,
         );
         assert(isValid.ok);
         expect(isValid.value).toBe(false);
     });
 
     it('returns false for wrong challenge', () => {
-        challengeStorage.storeChallenge('session-123', 'challenge-abc');
+        challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'wrong-challenge',
-        );
+        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeWrong);
         assert(isValid.ok);
         expect(isValid.value).toBe(false);
     });
 
     it('consumes challenge after validation', () => {
-        challengeStorage.storeChallenge('session-123', 'challenge-abc');
+        challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid1 = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-abc',
-        );
+        const isValid1 = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid1.ok);
         expect(isValid1.value).toBe(true);
 
-        const isValid2 = challengeStorage.validateAndConsumeChallenge(
-            'session-123',
-            'challenge-abc',
-        );
+        const isValid2 = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid2.ok);
         expect(isValid2.value).toBe(false);
     });
@@ -107,11 +100,11 @@ describe('challengeStorage', () => {
         assert(storageWithTimeResult.ok);
         const storageWithTime = storageWithTimeResult.value;
 
-        storageWithTime.storeChallenge('session-123', 'challenge-abc', 30 * 1000);
+        storageWithTime.storeChallenge(session123, challengeABC, 30 * 1000);
 
         currentTime = 1000 + 31 * 1000;
 
-        const isValid = storageWithTime.validateAndConsumeChallenge('session-123', 'challenge-abc');
+        const isValid = storageWithTime.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid.ok);
         expect(isValid.value).toBe(false);
     });
