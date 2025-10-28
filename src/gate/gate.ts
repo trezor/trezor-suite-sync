@@ -40,6 +40,14 @@ export const startGatePaymentServer = async ({
             console.error(err);
             process.exit(1);
         }
-        console.log(`Gate server started on ${address}`);
+        console.log(`Payment Server (Gate) started on ${address}`);
     });
+
+    const close = () => {
+        console.log('Payment Server (Gate) is shutting down...');
+        server.close();
+    };
+
+    process.on('SIGINT', close);
+    process.on('SIGTERM', close);
 };
