@@ -1,6 +1,14 @@
+import { OwnerId, object } from '@evolu/common';
+
 import { exhaustive } from '../../exhaustive.js';
-import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
-import type { ServerType } from '../server.js';
+import {
+    LimitStorage,
+    Proof,
+    PublicKey,
+    Size,
+    Timestamp,
+} from '../../storage/limitStorage/limitStorage.js';
+import { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -18,6 +26,14 @@ const schema = {
     },
 } as const;
 
+const schemaEvolu = object({
+    proof: Proof,
+    size: Size,
+    timestamp: Timestamp,
+    publicKey: PublicKey,
+    ownerId: OwnerId,
+});
+
 export type StorageAddEndpointDeps = {
     server: ServerType;
     limitStorage: Pick<LimitStorage, 'transferSpaceLimitToOwner'>;
@@ -25,7 +41,13 @@ export type StorageAddEndpointDeps = {
 
 export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointDeps) => {
     server.post('/storage/add', schema, (request, reply) => {
-        const { proof, size, timestamp, publicKey, ownerId } = request.body;
+        const resultEvolu = schemaEvolu.from(request.body);
+
+        if (!resultEvolu.ok) {
+            return reply.code(400).send({ error: resultEvolu.error });
+        }
+
+        const { proof, size, timestamp, publicKey, ownerId } = resultEvolu.value;
 
         // Todo: implement checks
 

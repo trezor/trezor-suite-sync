@@ -1,5 +1,11 @@
+import { object } from '@evolu/common';
+
 import { exhaustive } from '../../exhaustive.js';
-import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
+import {
+    Challenge,
+    ChallengeStorage,
+    SessionId,
+} from '../../storage/challengeStorage/challengeStorage.js';
 import type { ServerType } from '../server.js';
 
 const schema = {
@@ -19,6 +25,10 @@ const schema = {
     },
 } as const;
 
+const schemaEvolu = object({
+    sessionId: SessionId,
+});
+
 export type ChallengeEndpointDeps = {
     server: ServerType;
     challengeStorage: ChallengeStorage;
@@ -31,9 +41,23 @@ export const challengeEndpoint = ({
     createRandomBytes,
 }: ChallengeEndpointDeps) => {
     server.post('/challenge', schema, (request, reply) => {
-        const { sessionId } = request.body;
+        const resultEvolu = schemaEvolu.from(request.body);
 
-        const challenge = createRandomBytes(32);
+        if (!resultEvolu.ok) {
+            return reply.code(400).send({ error: resultEvolu.error });
+        }
+
+        const { sessionId } = resultEvolu.value;
+
+        const challengeResult = Challenge.from(createRandomBytes(32));
+
+        if (!challengeResult.ok) {
+            console.error(challengeResult.error);
+
+            return reply.code(500).send();
+        }
+
+        const challenge = challengeResult.value;
 
         const result = challengeStorage.storeChallenge(sessionId, challenge);
 
