@@ -1,6 +1,6 @@
 import { exhaustive } from '../../exhaustive.js';
-import { ServerType } from '../server.js';
-import { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import type { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -37,6 +37,7 @@ export const storageAddEndpoint = ({ server, limitStorage }: StorageAddEndpointD
             switch (errorType) {
                 case 'SqliteError':
                     console.error(result);
+
                     return reply.code(500).send();
 
                 case 'NoStorageAllowance':

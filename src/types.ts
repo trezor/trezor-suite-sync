@@ -1,4 +1,4 @@
-import { Ok } from '@evolu/common';
+import type { Ok } from '@evolu/common';
 
 /**
  * @deprecated Use InferOk from Evolu after update to newer version

@@ -1,8 +1,9 @@
-import { assert, describe, expect, it } from 'vitest';
-import { challengeEndpoint } from './challengeEndpoint.js';
 import Fastify from 'fastify';
-import { prepareSqlite } from '../../storage/prepareSqlite.js';
+import { assert, describe, expect, it } from 'vitest';
+
+import { challengeEndpoint } from './challengeEndpoint.js';
 import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
+import { prepareSqlite } from '../../storage/prepareSqlite.js';
 
 const staticCreateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';

@@ -1,6 +1,6 @@
-import type { ServerType } from '../server.js';
 import { exhaustive } from '../../exhaustive.js';
 import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
+import type { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -43,6 +43,7 @@ export const challengeEndpoint = ({
             switch (errorType) {
                 case 'SqliteError':
                     console.error(result);
+
                     return reply.code(500).send();
 
                 default:

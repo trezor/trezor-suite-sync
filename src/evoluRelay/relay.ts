@@ -1,5 +1,6 @@
 import { createConsole } from '@evolu/common';
 import { createNodeJsRelay } from '@evolu/nodejs';
+
 import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
 type StartEvoluRelayDependencies = {
@@ -31,6 +32,7 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
     });
 
     const dispose = () => {
+        // eslint-disable-next-line no-console
         console.log('Evolu Relay is shutting down ...');
         relay[Symbol.dispose]();
     };

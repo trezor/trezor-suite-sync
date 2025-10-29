@@ -1,7 +1,8 @@
 import { assert, describe, expect, it } from 'vitest';
-import { addLimitToPubkey } from './addLimitToPubkey.js';
+
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { createLimitStorage } from '../limitStorage.js';
+import { addLimitToPubkey } from './addLimitToPubkey.js';
 
 const prepareSql = async () => {
     const sqlite = await prepareSqlite({ inMemory: true });
