@@ -1,4 +1,4 @@
-import { sql, type Sqlite, type SqliteError, ok, type Result } from '@evolu/common';
+import { type Result, type Sqlite, type SqliteError, ok, sql } from '@evolu/common';
 
 export type ChallengeStorage = {
     validateAndConsumeChallenge: (
@@ -88,7 +88,7 @@ export const createChallengeStorage = ({
 
             const [row] = selectResult.value.rows;
 
-            if (!row || row.challenge !== challenge) {
+            if (row?.challenge !== challenge) {
                 return ok(false);
             }
 

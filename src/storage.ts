@@ -1,9 +1,10 @@
-import { ok, type Result, type SqliteError } from '@evolu/common';
-import { createLimitStorage, type LimitStorage } from './storage/limitStorage/limitStorage.js';
+import { type Result, type SqliteError, ok } from '@evolu/common';
+
 import {
-    createChallengeStorage,
     type ChallengeStorage,
+    createChallengeStorage,
 } from './storage/challengeStorage/challengeStorage.js';
+import { type LimitStorage, createLimitStorage } from './storage/limitStorage/limitStorage.js';
 import { prepareSqlite } from './storage/prepareSqlite.js';
 
 export type AppStorage = {

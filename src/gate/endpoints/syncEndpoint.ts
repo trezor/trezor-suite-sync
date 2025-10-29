@@ -1,5 +1,5 @@
+import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import type { ServerType } from '../server.js';
-import { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 
 const schema = {
     schema: {
