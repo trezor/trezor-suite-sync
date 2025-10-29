@@ -1,4 +1,5 @@
-import { ok, sql, type Sqlite } from '@evolu/common';
+import { type Sqlite, ok, sql } from '@evolu/common';
+
 import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 export type GetLimitsForOwnerParams = {
@@ -9,7 +10,9 @@ export type GetLimitsForOwnerParams = {
 export const getLimitsForOwner = ({ sqlite, ownerId }: GetLimitsForOwnerParams) => {
     const result = sqlite.exec<{ storageLimit: number }>(sql`
         select storageLimit
-        from ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} limit 1;
+        from ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)}
+        where ownerId = ${ownerId}
+        limit 1;
     `);
 
     if (!result.ok) {

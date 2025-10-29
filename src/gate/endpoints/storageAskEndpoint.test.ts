@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { storageAskEndpoint, StorageAskEndpointDeps } from './storageAskEndpoint.js';
 import { ok } from '@evolu/common';
 import Fastify from 'fastify';
+import { describe, expect, it } from 'vitest';
+
+import { type StorageAskEndpointDeps, storageAskEndpoint } from './storageAskEndpoint.js';
 
 const createApp = (limitStorage: StorageAskEndpointDeps['limitStorage']) => {
     const app = Fastify();

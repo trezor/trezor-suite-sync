@@ -1,4 +1,4 @@
-import { createConsole, createSqlite, getOrThrow, SimpleName } from '@evolu/common';
+import { SimpleName, createConsole, createSqlite, getOrThrow } from '@evolu/common';
 import { createBetterSqliteDriver } from '@evolu/nodejs';
 
 type PrepareSqliteParams = {

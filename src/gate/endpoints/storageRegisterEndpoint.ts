@@ -1,6 +1,6 @@
 import { exhaustive } from '../../exhaustive.js';
-import { ServerType } from '../server.js';
-import { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
+import type { ServerType } from '../server.js';
 
 const schema = {
     schema: {
@@ -24,7 +24,7 @@ export type StorageRegisterEndpointDeps = {
 
 export const storageRegisterEndpoint = ({ server, limitStorage }: StorageRegisterEndpointDeps) => {
     server.post('/storage/register', schema, (request, reply) => {
-        const { proof, size, timestamp, publicKey } = request.body;
+        const { size, publicKey } = request.body;
 
         // Proof verification - validation of the Trezor signature
         // Timestamp validation - replay attack protection
@@ -40,6 +40,7 @@ export const storageRegisterEndpoint = ({ server, limitStorage }: StorageRegiste
                 case 'SqliteError':
                 case 'ConsistencyError':
                     console.error(result);
+
                     return reply.code(500).send();
 
                 default:

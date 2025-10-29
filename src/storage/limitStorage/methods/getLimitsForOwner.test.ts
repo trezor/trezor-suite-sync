@@ -1,9 +1,10 @@
-import { assert, describe, expect, it } from 'vitest';
-import { getLimitsForOwner } from './getLimitsForOwner.js';
 import { sql } from '@evolu/common';
-import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
+import { assert, describe, expect, it } from 'vitest';
+
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { createLimitStorage } from '../limitStorage.js';
+import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
+import { getLimitsForOwner } from './getLimitsForOwner.js';
 
 const prepareSql = async () => {
     const sqlite = await prepareSqlite({ inMemory: true });
