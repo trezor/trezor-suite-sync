@@ -8,14 +8,19 @@
         "@evolu/nodejs": "^1.0.1-preview.7",
         "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
         "dotenv": "^17.2.3",
+        "eslint-plugin-import": "^2.32.0",
         "fastify": "^5.5.0"
     },
     "devDependencies": {
+        "@eslint/js": "^9.38.0",
         "@jest/globals": "^30.2.0",
         "@types/node": "^24.9.1",
+        "eslint": "^9.38.0",
+        "globals": "^16.4.0",
         "prettier": "^3.6.2",
         "tsx": "^4.20.6",
         "typescript": "^5.9.3",
+        "typescript-eslint": "^8.46.2",
         "vitest": "^4.0.4"
     },
     "scripts": {
@@ -25,7 +30,9 @@
         "test": "vitest",
         "format": "prettier --write src",
         "format:check": "prettier --check src",
-        "type-check": "tsc --build tsconfig.json"
+        "type-check": "tsc --build tsconfig.json",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
     },
     "packageManager": "yarn@4.10.3"
 }
