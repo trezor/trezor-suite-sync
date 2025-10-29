@@ -1,6 +1,7 @@
-import { describe, expect, it, beforeEach, assert } from 'vitest';
-import { ChallengeStorage, createChallengeStorage } from './challengeStorage.js';
+import { assert, beforeEach, describe, expect, it } from 'vitest';
+
 import { prepareSqlite } from '../prepareSqlite.js';
+import { type ChallengeStorage, createChallengeStorage } from './challengeStorage.js';
 
 describe('challengeStorage', () => {
     let challengeStorage: ChallengeStorage;

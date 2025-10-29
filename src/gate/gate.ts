@@ -1,14 +1,15 @@
-import fastify from 'fastify';
-import { syncEndpoint } from './endpoints/syncEndpoint.js';
 import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
-import { storageRegisterEndpoint } from './endpoints/storageRegisterEndpoint.js';
+import { randomBytes } from 'crypto';
+import fastify from 'fastify';
+
+import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
 import { storageAddEndpoint } from './endpoints/storageAddEndpoint.js';
 import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
 import { storageDeleteEndpoint } from './endpoints/storageDeleteEndpoint.js';
-import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
-import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
+import { storageRegisterEndpoint } from './endpoints/storageRegisterEndpoint.js';
+import { syncEndpoint } from './endpoints/syncEndpoint.js';
 import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
-import { randomBytes } from 'crypto';
+import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
 const createRandomBytes = (size: number) => randomBytes(size).toString('hex');
 
@@ -18,7 +19,7 @@ type StartGatePaymentServerDependencies = {
     challengeStorage: ChallengeStorage;
 };
 
-export const startGatePaymentServer = async ({
+export const startGatePaymentServer = ({
     port,
     limitStorage,
     challengeStorage,
@@ -40,10 +41,12 @@ export const startGatePaymentServer = async ({
             console.error(err);
             process.exit(1);
         }
+        // eslint-disable-next-line no-console
         console.log(`Payment Server (Gate) started on ${address}`);
     });
 
     const close = () => {
+        // eslint-disable-next-line no-console
         console.log('Payment Server (Gate) is shutting down...');
         server.close();
     };

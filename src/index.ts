@@ -1,9 +1,10 @@
 import 'dotenv/config';
-import { startGatePaymentServer } from './gate/gate.js';
-import { startEvoluRelay } from './evoluRelay/relay.js';
-import { createAppStorage } from './storage.js';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
+
+import { startEvoluRelay } from './evoluRelay/relay.js';
+import { startGatePaymentServer } from './gate/gate.js';
+import { createAppStorage } from './storage.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
 const GATE_PAYMENT_SERVER_PORT = process.env.GATE_PORT ? parseInt(process.env.GATE_PORT, 10) : 4001;
