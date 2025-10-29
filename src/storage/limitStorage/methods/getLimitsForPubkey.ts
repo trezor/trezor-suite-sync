@@ -1,15 +1,16 @@
 import { type Result, type Sqlite, type SqliteError, ok, sql } from '@evolu/common';
 
+import { PublicKey, Size } from '../limitStorage.js';
 import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 export type GetLimitsForPubkey = {
     sqlite: Sqlite;
-    publicKey: string;
+    publicKey: PublicKey;
 };
 
 export type GetLimitsForPubkeyResponse = {
-    totalStorageSize: number;
-    unspendStorageSize: number;
+    totalStorageSize: Size;
+    unspendStorageSize: Size;
 };
 
 export const getLimitsForPubkey = ({

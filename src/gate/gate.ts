@@ -26,6 +26,23 @@ export const startGatePaymentServer = ({
 }: StartGatePaymentServerDependencies) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
+    // Todo: solve type-inference from Evolu, remove
+
+    // server.setValidatorCompiler<ObjectType<any>>(({ schema }) => {
+    //     return data => {
+    //         try {
+    //             const result = schema.from(data);
+    //             if (!result.ok) {
+    //                 return { error: new Error(result.error) };
+    //             }
+    //
+    //             return { value: result.value };
+    //         } catch (e) {
+    //             return { error: e as Error };
+    //         }
+    //     };
+    // });
+
     // Todo: rename to something like: configureSyncEndpoint or attachSyncEndpoint, ...
     //       to show it is adding an endpoint to the server
 
@@ -41,6 +58,7 @@ export const startGatePaymentServer = ({
             console.error(err);
             process.exit(1);
         }
+
         // eslint-disable-next-line no-console
         console.log(`Payment Server (Gate) started on ${address}`);
     });

@@ -1,12 +1,18 @@
+import { getOrThrow } from '@evolu/common';
 import Fastify from 'fastify';
 import { assert, describe, expect, it } from 'vitest';
 
 import { challengeEndpoint } from './challengeEndpoint.js';
-import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
+import {
+    SessionId,
+    createChallengeStorage,
+} from '../../storage/challengeStorage/challengeStorage.js';
 import { prepareSqlite } from '../../storage/prepareSqlite.js';
 
 const staticCreateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
+
+const session1 = getOrThrow(SessionId.from('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
 
 type CreateAppParams = {
     createRandomBytes?: (size: number) => string;
@@ -61,7 +67,7 @@ describe(challengeEndpoint.name, () => {
         const response2 = await app2.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'XYRnoWi8zKnDnRKlxzeRnfBm9hxYeh9D' },
+            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
         const body1 = JSON.parse(response1.body);
@@ -79,17 +85,15 @@ describe(challengeEndpoint.name, () => {
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const response2 = await app.inject({
+        const { app: app2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const response2 = await app2.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'session-456' },
+            payload: { sessionId: 'XYRnoWi8zKnDnRKlxzeRnfBm9hxYeh9D' },
         });
 
         const body1 = JSON.parse(response1.body);
         const body2 = JSON.parse(response2.body);
-
-        console.log(response1.body);
-        console.log(response2.body);
 
         expect(body1.challenge).not.toBe(body2.challenge);
     });
@@ -100,14 +104,11 @@ describe(challengeEndpoint.name, () => {
         const response = await app.inject({
             method: 'POST',
             url: '/challenge',
-            payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
+            payload: { sessionId: session1.toString() },
         });
 
         const body = JSON.parse(response.body);
-        const isValid = challengeStorage.validateAndConsumeChallenge(
-            'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM',
-            body.challenge,
-        );
+        const isValid = challengeStorage.validateAndConsumeChallenge(session1, body.challenge);
 
         assert(isValid.ok);
         expect(isValid.value).toBe(true);
