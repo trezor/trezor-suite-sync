@@ -16,12 +16,11 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
     const relay = await createNodeJsRelay(deps)({
         port,
         enableLogging: false,
+        authenticateOwner: ownerId => {
+            const result = limitStorage.getLimitForOwner({ ownerId });
 
-        // Todo: implement some callback to validate that the `OwnerId` is known,
-        //       and only for them the Evolu Relay will open (upgrade) connection to Websocket
-        // validateConnection: ({ ownerId }) => {
-        //     return limitStorage.isOwnerRegisterd({ ownerId });
-        // },
+            return Promise.resolve(result.ok && result.value !== null && result.value > 0);
+        },
 
         // Todo: implement the storage check on-write. Something like:
         // onWrite: ({ used, ownerId }) => {
@@ -31,10 +30,16 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
         // },
     });
 
+    if (!relay.ok) {
+        console.error('Relay failed', relay.error);
+
+        return;
+    }
+
     const dispose = () => {
         // eslint-disable-next-line no-console
         console.log('Evolu Relay is shutting down ...');
-        relay[Symbol.dispose]();
+        relay.value[Symbol.dispose]();
     };
 
     process.on('SIGINT', dispose);

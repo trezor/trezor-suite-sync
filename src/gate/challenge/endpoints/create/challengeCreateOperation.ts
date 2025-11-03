@@ -22,7 +22,7 @@ export type ChallengeCreateOperationOutput = {
     challenge: Challenge;
 };
 
-export const createChallengeOperation = (
+export const challengeCreateOperation = (
     deps: ChallengeCreateOperationDeps,
     input: ChallengeCreateOperationInput,
 ): Result<ChallengeCreateOperationOutput, ChallengeCreateError> => {

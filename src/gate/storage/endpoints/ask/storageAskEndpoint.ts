@@ -1,8 +1,8 @@
+import { storageAskHandler } from './storageAskHandler.js';
 import { storageAskRequestSchema } from './storageAskSchema.js';
-import { storgeAskHandler } from './storgeAskHandler.js';
 import { EndpointDescriptor } from '../../../../EndpointDescriptor.js';
 
-export const storgeAskEndpoint = {
+export const storageAskEndpoint = {
     schema: storageAskRequestSchema,
-    createHandler: storgeAskHandler,
+    createHandler: storageAskHandler,
 } satisfies EndpointDescriptor;

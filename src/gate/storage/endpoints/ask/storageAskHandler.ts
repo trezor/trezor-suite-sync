@@ -13,7 +13,7 @@ type AskRequest = FastifyRequest<{
     Querystring: FromSchema<typeof storageAskRequestSchema.schema.querystring>;
 }>;
 
-export const storgeAskHandler =
+export const storageAskHandler =
     (deps: AskHandlerDeps) => (request: AskRequest, reply: FastifyReply) => {
         const validationResult = askEvoluSchema.from(request.query);
 
