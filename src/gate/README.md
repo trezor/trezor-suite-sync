@@ -1,39 +1,13 @@
 # Storage Endpoint Architecture
 
-This document describes the modular endpoint architecture used for storage-related API endpoints in the Trezor Evolu Relay project.
+This document describes the modular endpoint architecture used for
+storage-related API endpoints in the Trezor Evolu Relay project.
 
 ## Overview
 
-The storage endpoints follow a **modular, separation-of-concerns** architecture where each endpoint is organized into its own directory with clearly defined responsibilities:
-
-```
-src/gate/storage/
-├── endpoints/
-│   ├── transfer/          # POST /storage/add - Transfer storage from pubkey to owner
-│   │   ├── endpoint.ts    # Endpoint descriptor (metadata)
-│   │   ├── handler.ts     # HTTP layer (request/response handling)
-│   │   ├── operation.ts   # Business logic (pure functions)
-│   │   ├── schema.ts      # Validation schemas (Fastify + Evolu)
-│   │   └── serializer.ts  # Response serialization
-│   │
-│   ├── ask/               # GET /storage/ask - Query storage by owner/pubkey
-│   │   ├── endpoint.ts
-│   │   ├── handler.ts
-│   │   ├── operation.ts
-│   │   ├── schema.ts
-│   │   └── serializer.ts
-│   │
-│   └── register/          # POST /storage/register - Register new storage
-│       ├── endpoint.ts
-│       ├── handler.ts
-│       ├── operation.ts
-│       ├── schema.ts
-│       └── serializer.ts
-│
-├── registerStorageEndpoints.ts  # Central registration function
-├── storage.routes.ts            # Route path constants
-└── README.md                    # This file
-```
+The storage endpoints follow a **modular, separation-of-concerns**
+architecture where each endpoint is organized into its own directory
+with clearly defined responsibilities:
 
 ## Architecture Principles
 
@@ -41,11 +15,14 @@ src/gate/storage/
 
 Each file has a single, well-defined responsibility:
 
-- **`endpoint.ts`**: Metadata only (method, path, schema reference)
-- **`handler.ts`**: HTTP layer (validation, error mapping, response codes)
-- **`operation.ts`**: Pure business logic (no HTTP concepts)
-- **`schema.ts`**: Input validation (Fastify + Evolu schemas)
-- **`serializer.ts`**: Output formatting (transforms operation result to HTTP response)
+- **`xyzEndpoint.ts`**: Configuration object of the endpoint
+- **`xyzHandler.ts`**: HTTP layer (validation, error mapping, response codes)
+- **`xyzOperation.ts`**: Pure business logic (no HTTP concepts)
+- **`xyzSchema.ts`**: Input validation schemas
+- **`xyzSerializer.ts`**: Output formatting (transforms operation result to HTTP response)
+
+> **Note**: If endpoint is very simple, one or multiple of the files can be omitted.
+> Most simple endpoints will just have `xyzEndpoint.ts` and `xyzHandler.tsx`.
 
 ### 2. **Dependency Injection**
 
@@ -87,14 +64,12 @@ This prevents mixing incompatible string types at compile time.
 
 ## File Responsibilities
 
-### `endpoint.ts`
+### `xyzEndpoint.ts`
 
 **Purpose**: Endpoint descriptor containing metadata for registration.
 
 **Contains**:
 
-- HTTP method (`GET`, `POST`, etc.)
-- URL path
 - Reference to Fastify validation schema
 - Factory function for creating the handler with dependencies
 
@@ -102,8 +77,6 @@ This prevents mixing incompatible string types at compile time.
 
 ```typescript
 export const transferEndpoint = {
-    method: 'POST' as const,
-    path: '/storage/add',
     schema: transferRequestSchema,
     createHandler: (deps: TransferHandlerDeps) => transferHandler(deps),
 };
@@ -113,7 +86,7 @@ export const transferEndpoint = {
 
 ---
 
-### `handler.ts`
+### `xyzHandler.ts`
 
 **Purpose**: HTTP layer - bridges web requests to business logic.
 
@@ -153,7 +126,7 @@ export const transferHandler =
 
 ---
 
-### `operation.ts`
+### `xyzOperation.ts`
 
 **Purpose**: Pure business logic - no HTTP, no side effects (except through dependencies).
 
@@ -162,33 +135,34 @@ export const transferHandler =
 - Core business rules
 - Orchestrating calls to dependencies (database, external services)
 - Error handling (business errors, not HTTP errors)
-- Data transformation
 
 **Example**:
 
 ```typescript
-export const transferStorageOperation = (
-    deps: TransferOperationDeps,
-    input: TransferOperationInput,
-): Result<TransferOperationOutput, TransferStorageError> => {
-    const { size, publicKey, ownerId } = input;
+export const nefariousOperation = (
+    deps: NefariousOperationDeps,
+    input: NefariousOperationInput,
+): Result<NefariousOperationOutput, NefariousStorageError> => {
+    const { curses, potions, spells, charms } = input;
 
-    const result = deps.limitStorage.transferSpaceLimitToOwner({
-        publicKey,
-        ownerId,
-        size,
-    });
+    const result = [];
 
-    if (!result.ok) {
-        return { ok: false, error: { type: result.error.type } };
+    const a = deps.a.doSomeMagic(curses, charms);
+    const b = deps.b.doMoreMagic(spells);
+
+    if (potions !== null) {
+        result.push(brewPotions());
     }
 
-    return {
-        ok: true,
-        value: {
-            /* ... */
-        },
-    };
+    const c = combineMagicsInNefariousWay(a, b);
+
+    if (!c.isNefariousEnough()) {
+        return err({ type: 'NotEvilEnough' });
+    }
+
+    result.push(c);
+
+    return ok(result);
 };
 ```
 
@@ -200,56 +174,25 @@ export const transferStorageOperation = (
 
 ---
 
-### `schema.ts`
+### `xyzSchema.ts`
 
 **Purpose**: Input validation schemas.
 
 **Contains**:
 
-- **Fastify JSON Schema**: Fast validation, OpenAPI generation
-- **Evolu Schema**: Runtime type creation, branded types
-- TypeScript types derived from schemas
-
-**Example**:
-
-```typescript
-// Fastify schema (for fast validation)
-export const transferRequestSchema = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                publicKey: { type: 'string' },
-                ownerId: { type: 'string' },
-                size: { type: 'number' },
-            },
-            required: ['publicKey', 'ownerId', 'size'],
-        },
-    },
-} as const;
-
-// Evolu schema (for branded types)
-export const transferEvoluSchema = object({
-    publicKey: PublicKey,
-    ownerId: OwnerId,
-    size: Size,
-});
-```
-
-**Why**: Dual validation approach provides both performance (Fastify) and type safety (Evolu).
+- Schema to be used in Fastify/Handler (depends on implementation)
+  to validate (and transform) HTTP body/query into Typed inputs.
 
 ---
 
-### `serializer.ts`
+### `xyzSerializer.ts`
 
 **Purpose**: Transform operation output into HTTP response format.
 
 **Responsibilities**:
 
-- Field renaming (if needed)
-- Data formatting
-- Adding metadata
-- Response structure standardization
+- Converts the business operation result to HTTP data
+- Compatibility, versions, ...
 
 **Example**:
 
@@ -275,9 +218,9 @@ export const serializeTransferResponse = (data: {
 
 ---
 
-### `registerStorageEndpoints.ts`
+### `registerXyzEndpoints.ts`
 
-**Purpose**: Central registration of all storage endpoints.
+**Purpose**: Central registration of all endpoints (from Xyz domain).
 
 **Responsibilities**:
 
@@ -290,137 +233,23 @@ export const serializeTransferResponse = (data: {
 ```typescript
 export const registerStorageEndpoints = ({
     server,
-    limitStorage,
+    otherDependency,
 }: RegisterStorageEndpointsDeps) => {
     // Register transfer endpoint
     server.post(
-        transferEndpoint.path,
+        '/register',
         transferEndpoint.schema,
-        transferEndpoint.createHandler({ limitStorage }),
+        transferEndpoint.createHandler({ otherDependency }),
     );
 
     // Register ask endpoint
-    server.get(askEndpoint.path, askEndpoint.schema, askEndpoint.createHandler({ limitStorage }));
+    server.get('/ask', askEndpoint.schema, askEndpoint.createHandler({ otherDependency }));
 
     // ... more endpoints
 };
 ```
 
 **Why**: Single location to see all storage routes, easy to add/remove endpoints.
-
-## Adding a New Endpoint
-
-Follow these steps to add a new endpoint:
-
-### 1. Create Endpoint Directory
-
-```bash
-mkdir -p src/gate/storage/endpoints/myendpoint
-```
-
-### 2. Create `schema.ts`
-
-Define Fastify and Evolu validation schemas:
-
-```typescript
-import { object } from '@evolu/common';
-import { MyInput } from '../../../../types.js';
-
-export const myEndpointRequestSchema = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                field: { type: 'string' },
-            },
-            required: ['field'],
-        },
-    },
-} as const;
-
-export const myEndpointEvoluSchema = object({
-    field: MyInput,
-});
-```
-
-### 3. Create `operation.ts`
-
-Implement business logic:
-
-```typescript
-import { Result } from '../../../types.js';
-
-export type MyOperationDeps = {
-    // Define dependencies
-};
-
-export const myOperation = (deps: MyOperationDeps, input: MyInput): Result<MyOutput, MyError> => {
-    // Business logic here
-};
-```
-
-### 4. Create `serializer.ts`
-
-Format the response:
-
-```typescript
-export const serializeMyResponse = (data: MyOutput): MyResponse => ({
-    // Transform data
-});
-```
-
-### 5. Create `handler.ts`
-
-Handle HTTP requests:
-
-```typescript
-import { FastifyReply, FastifyRequest } from 'fastify';
-
-export const myHandler =
-    (deps: MyHandlerDeps) => (request: FastifyRequest, reply: FastifyReply) => {
-        const validationResult = myEndpointEvoluSchema.from(request.body);
-
-        if (!validationResult.ok) {
-            return reply.code(400).send({ error: validationResult.error });
-        }
-
-        const result = myOperation(deps, validationResult.value);
-
-        if (!result.ok) {
-            // Handle errors
-            return reply.code(500).send({ error: 'Error' });
-        }
-
-        return reply.code(200).send(serializeMyResponse(result.value));
-    };
-```
-
-### 6. Create `endpoint.ts`
-
-Define endpoint descriptor:
-
-```typescript
-export const myEndpoint = {
-    method: 'POST' as const,
-    path: '/storage/my-endpoint',
-    schema: myEndpointRequestSchema,
-    createHandler: (deps: MyHandlerDeps) => myHandler(deps),
-};
-```
-
-### 7. Register in `registerStorageEndpoints.ts`
-
-Add to registration function:
-
-```typescript
-import { myEndpoint } from './endpoints/myendpoint/endpoint.js';
-
-export const registerStorageEndpoints = ({ server, limitStorage }) => {
-    // ... existing endpoints
-
-    server.post(myEndpoint.path, myEndpoint.schema, myEndpoint.createHandler({ limitStorage }));
-};
-```
 
 ## Testing Strategy
 
@@ -434,33 +263,3 @@ export const registerStorageEndpoints = ({ server, limitStorage }) => {
 
 - **Handlers**: Test HTTP layer with Fastify's `.inject()` method
 - **Full Endpoint**: Test end-to-end with real Fastify server
-
-Example operation test:
-
-```typescript
-describe('transferStorageOperation', () => {
-    it('transfers storage successfully', () => {
-        const mockLimitStorage = {
-            transferSpaceLimitToOwner: vi.fn(() => ({ ok: true, value: {} })),
-        };
-
-        const result = transferStorageOperation(
-            { limitStorage: mockLimitStorage },
-            { publicKey, ownerId, size },
-        );
-
-        expect(result.ok).toBe(true);
-        expect(mockLimitStorage.transferSpaceLimitToOwner).toHaveBeenCalled();
-    });
-});
-```
-
-## Future Enhancements
-
-Potential improvements to this architecture:
-
-1. **Shared Error Handler**: Extract common error handling to reduce duplication
-2. **Middleware**: Add authentication, rate limiting as separate middleware
-3. **OpenAPI Generation**: Generate API docs from endpoint descriptors
-4. **Validation Helpers**: Create utilities for common validation patterns
-5. **Response Transformers**: Add middleware for common response transformations

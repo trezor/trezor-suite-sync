@@ -2,7 +2,7 @@ import { OwnerId, object, optional } from '@evolu/common';
 
 import { PublicKey } from '../../../../storage/limitStorage/limitStorage.js';
 
-export const askRequestSchema = {
+export const storageAskRequestSchema = {
     schema: {
         querystring: {
             type: 'object',
@@ -20,8 +20,3 @@ export const askEvoluSchema = object({
     publicKey: optional(PublicKey),
     ownerId: optional(OwnerId),
 });
-
-export type AskRequestQuery = {
-    publicKey?: PublicKey;
-    ownerId?: OwnerId;
-};

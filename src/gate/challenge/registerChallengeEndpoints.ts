@@ -1,6 +1,6 @@
 import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
 import type { ServerType } from '../server.js';
-import { challengeCreateEndpoint } from './endpoints/create/endpoint.js';
+import { challengeCreateEndpoint } from './endpoints/create/challengeCreateEndpoint.js';
 
 export type RegisterChallengeEndpointsDeps = {
     server: ServerType;
@@ -13,9 +13,8 @@ export const registerChallengeEndpoints = ({
     challengeStorage,
     createRandomBytes,
 }: RegisterChallengeEndpointsDeps) => {
-    // POST /challenge
     server.post(
-        challengeCreateEndpoint.path,
+        '/challenge',
         challengeCreateEndpoint.schema,
         challengeCreateEndpoint.createHandler({ challengeStorage, createRandomBytes }),
     );

@@ -2,12 +2,13 @@ import { getOrThrow } from '@evolu/common';
 import Fastify from 'fastify';
 import { assert, describe, expect, it } from 'vitest';
 
-import { challengeEndpoint } from './challengeEndpoint.js';
+import { challengeCreateHandler } from './challengeCreateHandler.js';
 import {
     SessionId,
     createChallengeStorage,
-} from '../../storage/challengeStorage/challengeStorage.js';
-import { prepareSqlite } from '../../storage/prepareSqlite.js';
+} from '../../../../storage/challengeStorage/challengeStorage.js';
+import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
+import { registerChallengeEndpoints } from '../../registerChallengeEndpoints.js';
 
 const staticCreateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
@@ -25,22 +26,23 @@ const createApp = async (params?: CreateAppParams) => {
     const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
     assert(challengeStorage.ok);
 
-    const app = Fastify();
+    const server = Fastify();
 
-    challengeEndpoint({
-        server: app,
+    registerChallengeEndpoints({
+        server,
         challengeStorage: challengeStorage.value,
         createRandomBytes: params?.createRandomBytes ?? staticCreateRandomBytes,
     });
 
-    return { app, challengeStorage: challengeStorage.value };
+    return { server, challengeStorage: challengeStorage.value };
 };
 
-describe(challengeEndpoint.name, () => {
+// Todo: audit this test, some of test-cases shall be tested on lower level
+describe(challengeCreateHandler.name, () => {
     it('returns challenge for valid sessionId', async () => {
-        const { app } = await createApp();
+        const { server } = await createApp();
 
-        const response = await app.inject({
+        const response = await server.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
@@ -55,16 +57,16 @@ describe(challengeEndpoint.name, () => {
     });
 
     it('generates unique challenges for same sessionId on multiple calls', async () => {
-        const { app: app1 } = await createApp();
+        const { server: server1 } = await createApp();
 
-        const response1 = await app1.inject({
+        const response1 = await server1.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const { app: app2 } = await createApp({ createRandomBytes: () => 'ABC' });
-        const response2 = await app2.inject({
+        const { server: server2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const response2 = await server2.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
@@ -77,16 +79,16 @@ describe(challengeEndpoint.name, () => {
     });
 
     it('generates different challenges for different sessionIds', async () => {
-        const { app } = await createApp();
+        const { server } = await createApp();
 
-        const response1 = await app.inject({
+        const response1 = await server.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const { app: app2 } = await createApp({ createRandomBytes: () => 'ABC' });
-        const response2 = await app2.inject({
+        const { server: server2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const response2 = await server2.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: 'XYRnoWi8zKnDnRKlxzeRnfBm9hxYeh9D' },
@@ -99,9 +101,9 @@ describe(challengeEndpoint.name, () => {
     });
 
     it('stores challenge that can be validated', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { server, challengeStorage } = await createApp();
 
-        const response = await app.inject({
+        const response = await server.inject({
             method: 'POST',
             url: '/challenge',
             payload: { sessionId: session1.toString() },
@@ -115,9 +117,9 @@ describe(challengeEndpoint.name, () => {
     });
 
     it('returns 400 when sessionId is missing', async () => {
-        const { app } = await createApp();
+        const { server } = await createApp();
 
-        const response = await app.inject({
+        const response = await server.inject({
             method: 'POST',
             url: '/challenge',
             payload: {},

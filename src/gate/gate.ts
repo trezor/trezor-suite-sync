@@ -23,7 +23,6 @@ export const startGatePaymentServer = ({
 }: StartGatePaymentServerDependencies) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
-    // Register all endpoints
     registerStorageEndpoints({ server, limitStorage });
     registerSyncEndpoints({ server });
     registerChallengeEndpoints({ server, challengeStorage, createRandomBytes });
