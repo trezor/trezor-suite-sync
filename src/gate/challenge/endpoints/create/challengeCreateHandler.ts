@@ -1,9 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import type { FromSchema } from 'json-schema-to-ts';
 
-import { ChallengeCreateOperationDeps, createChallengeOperation } from './operation.js';
-import { challengeCreateEvoluSchema, challengeCreateRequestSchema } from './schema.js';
-import { serializeChallengeCreateResponse } from './serializer.js';
+import {
+    challengeCreateEvoluSchema,
+    challengeCreateRequestSchema,
+} from './challengeCreateSchema.js';
+import {
+    ChallengeCreateOperationDeps,
+    createChallengeOperation,
+} from './createChallengeOperation.js';
+import { serializeChallengeCreateResponse } from './serializeChallengeCreateResponse.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
 export type ChallengeCreateHandlerDeps = ChallengeCreateOperationDeps;

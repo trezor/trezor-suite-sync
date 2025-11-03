@@ -7,7 +7,7 @@ import {
     Timestamp,
 } from '../../../../storage/limitStorage/limitStorage.js';
 
-export const registerRequestSchema = {
+export const storageRegisterRequestSchema = {
     schema: {
         body: {
             type: 'object',
@@ -22,16 +22,9 @@ export const registerRequestSchema = {
     },
 } as const;
 
-export const registerEvoluSchema = object({
+export const storageRegisterEvoluSchema = object({
     publicKey: PublicKey,
     size: Size,
     proof: Proof,
     timestamp: Timestamp,
 });
-
-export type RegisterRequestBody = {
-    publicKey: PublicKey;
-    size: Size;
-    proof: Proof;
-    timestamp: Timestamp;
-};

@@ -1,12 +1,11 @@
+import { err } from '@evolu/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import type { FromSchema } from 'json-schema-to-ts';
 
-import { SyncOperationDeps, syncOperation } from './operation.js';
-import { syncGetEvoluSchema, syncGetRequestSchema } from './schema.js';
-import { serializeSyncGetResponse } from './serializer.js';
+import { syncGetEvoluSchema, syncGetRequestSchema } from './syncGetSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
-export type SyncGetHandlerDeps = SyncOperationDeps;
+export type SyncGetHandlerDeps = {};
 
 type SyncGetRequest = FastifyRequest<{
     Querystring: FromSchema<typeof syncGetRequestSchema.schema.querystring>;
@@ -20,7 +19,8 @@ export const syncGetHandler =
             return reply.code(400).send({ error: validationResult.error });
         }
 
-        const result = syncOperation(deps, validationResult.value);
+        // Todo: implement
+        const result = err({ type: 'NotImplemented' as const });
 
         if (!result.ok) {
             const { type } = result.error;
@@ -34,5 +34,5 @@ export const syncGetHandler =
             }
         }
 
-        return reply.code(200).send(serializeSyncGetResponse(result.value));
+        return reply.code(200).send({});
     };

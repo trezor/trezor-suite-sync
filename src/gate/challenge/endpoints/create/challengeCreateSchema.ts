@@ -22,7 +22,3 @@ export const challengeCreateRequestSchema = {
 export const challengeCreateEvoluSchema = object({
     sessionId: SessionId,
 });
-
-export type ChallengeCreateRequestBody = {
-    sessionId: SessionId;
-};
