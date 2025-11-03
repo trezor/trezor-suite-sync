@@ -2,12 +2,9 @@ import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-
 import { randomBytes } from 'crypto';
 import fastify from 'fastify';
 
-import { challengeEndpoint } from './endpoints/challengeEndpoint.js';
-import { storageAddEndpoint } from './endpoints/storageAddEndpoint.js';
-import { storageAskEndpoint } from './endpoints/storageAskEndpoint.js';
-import { storageDeleteEndpoint } from './endpoints/storageDeleteEndpoint.js';
-import { storageRegisterEndpoint } from './endpoints/storageRegisterEndpoint.js';
-import { syncEndpoint } from './endpoints/syncEndpoint.js';
+import { registerChallengeEndpoints } from './challenge/registerChallengeEndpoints.js';
+import { registerStorageEndpoints } from './storage/registerStorageEndpoints.js';
+import { registerSyncEndpoints } from './sync/registerSyncEndpoints.js';
 import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
 import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
@@ -26,32 +23,10 @@ export const startGatePaymentServer = ({
 }: StartGatePaymentServerDependencies) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
-    // Todo: solve type-inference from Evolu, remove
-
-    // server.setValidatorCompiler<ObjectType<any>>(({ schema }) => {
-    //     return data => {
-    //         try {
-    //             const result = schema.from(data);
-    //             if (!result.ok) {
-    //                 return { error: new Error(result.error) };
-    //             }
-    //
-    //             return { value: result.value };
-    //         } catch (e) {
-    //             return { error: e as Error };
-    //         }
-    //     };
-    // });
-
-    // Todo: rename to something like: configureSyncEndpoint or attachSyncEndpoint, ...
-    //       to show it is adding an endpoint to the server
-
-    syncEndpoint({ server, limitStorage });
-    challengeEndpoint({ server, challengeStorage, createRandomBytes });
-    storageRegisterEndpoint({ server, limitStorage });
-    storageAddEndpoint({ server, limitStorage });
-    storageAskEndpoint({ server, limitStorage });
-    storageDeleteEndpoint({ server, limitStorage });
+    // Register all endpoints
+    registerStorageEndpoints({ server, limitStorage });
+    registerSyncEndpoints({ server });
+    registerChallengeEndpoints({ server, challengeStorage, createRandomBytes });
 
     server.listen({ port, host: '0.0.0.0' }, (err, address) => {
         if (err) {
