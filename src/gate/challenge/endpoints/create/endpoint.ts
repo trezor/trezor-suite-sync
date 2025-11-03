@@ -1,12 +1,12 @@
-import { ChallengeCreateHandlerDeps, challengeCreateHandler } from './handler.js';
+import { challengeCreateHandler } from './handler.js';
 import { challengeCreateRequestSchema } from './schema.js';
+import { EndpointDescriptor } from '../../../../EndpointDescriptor.js';
 
 export const challengeCreateEndpoint = {
-    method: 'POST' as const,
+    method: 'POST',
     path: '/challenge',
     schema: challengeCreateRequestSchema,
-
-    createHandler: (deps: ChallengeCreateHandlerDeps) => challengeCreateHandler(deps),
-};
+    createHandler: challengeCreateHandler,
+} satisfies EndpointDescriptor;
 
 export type ChallengeCreateEndpoint = typeof challengeCreateEndpoint;
