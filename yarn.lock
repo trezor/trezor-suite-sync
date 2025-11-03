@@ -1328,6 +1328,7 @@ __metadata:
     eslint-plugin-import: "npm:^2.32.0"
     fastify: "npm:^5.5.0"
     globals: "npm:^16.4.0"
+    json-schema-to-ts: "npm:^3.1.1"
     prettier: "npm:^3.6.2"
     tsx: "npm:^4.20.6"
     typescript: "npm:^5.9.3"
@@ -4025,7 +4026,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-to-ts@npm:^3.1.0":
+"json-schema-to-ts@npm:^3.1.0, json-schema-to-ts@npm:^3.1.1":
   version: 3.1.1
   resolution: "json-schema-to-ts@npm:3.1.1"
   dependencies:
