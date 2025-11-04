@@ -34,10 +34,6 @@ export const challengeCreateHandler =
 
             switch (type) {
                 case 'SqliteError':
-                    console.error(result.error);
-
-                    return reply.code(500).send({ error: 'Internal server error' });
-
                 case 'InvalidChallenge':
                     console.error(result.error);
 

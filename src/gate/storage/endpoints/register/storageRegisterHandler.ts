@@ -33,10 +33,6 @@ export const storageRegisterHandler =
 
             switch (type) {
                 case 'SqliteError':
-                    console.error(result.error);
-
-                    return reply.code(500).send({ error: 'Internal server error' });
-
                 case 'ConsistencyError':
                     console.error(result.error);
 

@@ -27,7 +27,7 @@ export const syncGetHandler =
 
             switch (type) {
                 case 'NotImplemented':
-                    return reply.code(501).send({ error: 'Not implemented' });
+                    return reply.code(400).send({ error: type });
 
                 default:
                     return exhaustive(type);
