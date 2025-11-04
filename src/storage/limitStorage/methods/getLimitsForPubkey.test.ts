@@ -1,17 +1,17 @@
-import { getOrThrow } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
 import { addLimitToPubkey } from './addLimitToPubkey.js';
 import { getLimitsForPubkey } from './getLimitsForPubkey.js';
+import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
 
-const PublicKeyABCDEFGH = getOrThrow(PublicKey.from('pubkey_ABCDEFGH'));
-const PublicKeyNonExistent = getOrThrow(PublicKey.from('PublicKeyNonExistent'));
+const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.from('pubkey_ABCDEFGH'));
+const PublicKeyNonExistent = getOrThrowTest(PublicKey.from('PublicKeyNonExistent'));
 
-const size30 = getOrThrow(Size.from(30));
-const size50 = getOrThrow(Size.from(50));
-const size100 = getOrThrow(Size.from(100));
+const size30 = getOrThrowTest(Size.from(30));
+const size50 = getOrThrowTest(Size.from(50));
+const size100 = getOrThrowTest(Size.from(100));
 
 const prepareSql = async () => {
     const sqlite = await prepareSqlite({ inMemory: true });
