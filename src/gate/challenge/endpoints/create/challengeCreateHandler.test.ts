@@ -1,8 +1,8 @@
-import { getOrThrow } from '@evolu/common';
 import Fastify from 'fastify';
 import { assert, describe, expect, it } from 'vitest';
 
 import { challengeCreateHandler } from './challengeCreateHandler.js';
+import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import {
     SessionId,
     createChallengeStorage,
@@ -13,7 +13,7 @@ import { registerChallengeEndpoints } from '../../registerChallengeEndpoints.js'
 const staticCreateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
 
-const session1 = getOrThrow(SessionId.from('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
+const session1 = getOrThrowTest(SessionId.from('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
 
 type CreateAppParams = {
     createRandomBytes?: (size: number) => string;
