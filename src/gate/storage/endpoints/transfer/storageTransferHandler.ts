@@ -1,18 +1,19 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import type { FromSchema } from 'json-schema-to-ts';
 
-import { TransferOperationDeps, transferStorageOperation } from './operation.js';
-import { transferEvoluSchema, transferRequestSchema } from './schema.js';
-import { serializeTransferResponse } from './serializer.js';
+import { transferEvoluSchema, transferRequestSchema } from './storageTransferSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
+import { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 
-export type TransferHandlerDeps = TransferOperationDeps;
+export type TransferHandlerDeps = {
+    limitStorage: LimitStorage;
+};
 
 type TransferRequest = FastifyRequest<{
     Body: FromSchema<typeof transferRequestSchema.schema.body>;
 }>;
 
-export const transferHandler =
+export const storageTransferHandler =
     (deps: TransferHandlerDeps) => (request: TransferRequest, reply: FastifyReply) => {
         const validationResult = transferEvoluSchema.from(request.body);
 
@@ -20,7 +21,9 @@ export const transferHandler =
             return reply.code(400).send({ error: validationResult.error });
         }
 
-        const result = transferStorageOperation(deps, validationResult.value);
+        const { publicKey, ownerId, size } = validationResult.value;
+
+        const result = deps.limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
 
         if (!result.ok) {
             const { type } = result.error;
@@ -39,5 +42,7 @@ export const transferHandler =
             }
         }
 
-        return reply.code(200).send(serializeTransferResponse(result.value));
+        return reply.code(200).send({
+            storageLimit: result.value,
+        });
     };

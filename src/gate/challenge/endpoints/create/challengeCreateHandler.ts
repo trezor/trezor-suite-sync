@@ -1,9 +1,15 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import type { FromSchema } from 'json-schema-to-ts';
 
-import { ChallengeCreateOperationDeps, createChallengeOperation } from './operation.js';
-import { challengeCreateEvoluSchema, challengeCreateRequestSchema } from './schema.js';
-import { serializeChallengeCreateResponse } from './serializer.js';
+import {
+    ChallengeCreateOperationDeps,
+    challengeCreateOperation,
+} from './challengeCreateOperation.js';
+import {
+    challengeCreateEvoluSchema,
+    challengeCreateRequestSchema,
+} from './challengeCreateSchema.js';
+import { serializeChallengeCreateResponse } from './serializeChallengeCreateResponse.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
 export type ChallengeCreateHandlerDeps = ChallengeCreateOperationDeps;
@@ -21,7 +27,7 @@ export const challengeCreateHandler =
             return reply.code(400).send({ error: validationResult.error });
         }
 
-        const result = createChallengeOperation(deps, validationResult.value);
+        const result = challengeCreateOperation(deps, validationResult.value);
 
         if (!result.ok) {
             const { type } = result.error;

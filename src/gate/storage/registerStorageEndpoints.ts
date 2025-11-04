@@ -1,8 +1,8 @@
 import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import type { ServerType } from '../server.js';
-import { askEndpoint } from './endpoints/ask/endpoint.js';
-import { registerEndpoint } from './endpoints/register/endpoint.js';
-import { transferEndpoint } from './endpoints/transfer/endpoint.js';
+import { storageAskEndpoint } from './endpoints/ask/storageAskEndpoint.js';
+import { storageRegisterEndpoint } from './endpoints/register/storageRegisterEndpoint.js';
+import { storageTransferEndpoint } from './endpoints/transfer/storageTransferEndpoint.js';
 
 export type RegisterStorageEndpointsDeps = {
     server: ServerType;
@@ -13,20 +13,19 @@ export const registerStorageEndpoints = ({
     server,
     limitStorage,
 }: RegisterStorageEndpointsDeps) => {
-    // POST /storage/add
     server.post(
-        transferEndpoint.path,
-        transferEndpoint.schema,
-        transferEndpoint.createHandler({ limitStorage }),
+        '/storage/add',
+        storageTransferEndpoint.schema,
+        storageTransferEndpoint.createHandler({ limitStorage }),
     );
-
-    // GET /storage/ask
-    server.get(askEndpoint.path, askEndpoint.schema, askEndpoint.createHandler({ limitStorage }));
-
-    // POST /storage/register
+    server.get(
+        '/storage/ask',
+        storageAskEndpoint.schema,
+        storageAskEndpoint.createHandler({ limitStorage }),
+    );
     server.post(
-        registerEndpoint.path,
-        registerEndpoint.schema,
-        registerEndpoint.createHandler({ limitStorage }),
+        '/storage/register',
+        storageRegisterEndpoint.schema,
+        storageRegisterEndpoint.createHandler({ limitStorage }),
     );
 };

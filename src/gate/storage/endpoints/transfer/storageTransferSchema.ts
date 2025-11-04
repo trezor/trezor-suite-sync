@@ -30,11 +30,3 @@ export const transferEvoluSchema = object({
     publicKey: PublicKey,
     ownerId: OwnerId,
 });
-
-export type TransferRequestBody = {
-    proof: Proof;
-    size: Size;
-    timestamp: Timestamp;
-    publicKey: PublicKey;
-    ownerId: OwnerId;
-};

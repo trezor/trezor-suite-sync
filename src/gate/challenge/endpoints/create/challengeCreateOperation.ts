@@ -1,3 +1,5 @@
+import { err, ok } from '@evolu/common';
+
 import {
     Challenge,
     ChallengeStorage,
@@ -20,7 +22,7 @@ export type ChallengeCreateOperationOutput = {
     challenge: Challenge;
 };
 
-export const createChallengeOperation = (
+export const challengeCreateOperation = (
     deps: ChallengeCreateOperationDeps,
     input: ChallengeCreateOperationInput,
 ): Result<ChallengeCreateOperationOutput, ChallengeCreateError> => {
@@ -29,10 +31,7 @@ export const createChallengeOperation = (
     const challengeResult = Challenge.from(deps.createRandomBytes(32));
 
     if (!challengeResult.ok) {
-        return {
-            ok: false,
-            error: { type: 'InvalidChallenge' },
-        };
+        return err({ type: 'InvalidChallenge' });
     }
 
     const challenge = challengeResult.value;
@@ -40,17 +39,11 @@ export const createChallengeOperation = (
     const storeResult = deps.challengeStorage.storeChallenge(sessionId, challenge);
 
     if (!storeResult.ok) {
-        return {
-            ok: false,
-            error: { type: storeResult.error.type },
-        };
+        return err({ type: storeResult.error.type });
     }
 
-    // Cleanup expired challenges (best effort, don't fail if this errors)
+    // Cleanup expired challenges (the best effort, don't fail if it errors)
     deps.challengeStorage.cleanupExpiredChallenges();
 
-    return {
-        ok: true,
-        value: { challenge },
-    };
+    return ok({ challenge });
 };
