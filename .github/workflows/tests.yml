@@ -13,20 +13,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-unit:
+  lint:
+    name: Linting and formatting
     runs-on: ubuntu-latest
-    if: github.repository == 'trezor/trezor-evolu-relay'
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-
-      - run: yarn install --immutable
-      - run: yarn test
+          submodules: true
+      - name: Format
+        run: |
+          yarn install --immutable
+          yarn format:check
+          yarn lint
 
   type-check:
     name: Type Checking
@@ -43,17 +44,21 @@ jobs:
           yarn install --immutable
           yarn type-check
 
-  lint:
-    name: Linting and formatting
+  test-unit:
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: --max-old-space-size=6144
+    if: github.repository == 'trezor/trezor-evolu-relay'
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          submodules: true
-      - name: Format
-        run: |
-          yarn install --immutable
-          yarn format:check
+          node-version-file: ".nvmrc"
+
+      - run: yarn install --immutable
+      - run: yarn test
+
+
+
+

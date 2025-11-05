@@ -1,4 +1,3 @@
-import { getOrThrow } from '@evolu/common';
 import { assert, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -7,15 +6,16 @@ import {
     SessionId,
     createChallengeStorage,
 } from './challengeStorage.js';
+import { getOrThrowTest } from '../../getOrThrowTest.js';
 import { prepareSqlite } from '../prepareSqlite.js';
 
-const session123 = getOrThrow(SessionId.from('session-123'));
-const sessionNonExistent = getOrThrow(SessionId.from('session-non-existent'));
+const session123 = getOrThrowTest(SessionId.from('session-123'));
+const sessionNonExistent = getOrThrowTest(SessionId.from('session-non-existent'));
 
-const challengeABC = getOrThrow(Challenge.from('challenge-abc'));
-const challengeNew = getOrThrow(Challenge.from('challenge-old'));
-const challengeOld = getOrThrow(Challenge.from('challenge-new'));
-const challengeWrong = getOrThrow(Challenge.from('challenge-wrong'));
+const challengeABC = getOrThrowTest(Challenge.from('challenge-abc'));
+const challengeNew = getOrThrowTest(Challenge.from('challenge-old'));
+const challengeOld = getOrThrowTest(Challenge.from('challenge-new'));
+const challengeWrong = getOrThrowTest(Challenge.from('challenge-wrong'));
 
 describe('challengeStorage', () => {
     let challengeStorage: ChallengeStorage;
