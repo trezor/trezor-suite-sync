@@ -1,19 +1,19 @@
-import { getOrThrow } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
 import { addLimitToPubkey } from './addLimitToPubkey.js';
+import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
 
-const PublicKeyAAA = getOrThrow(PublicKey.from('pubkey_AAAA'));
-const PublicKeyBBB = getOrThrow(PublicKey.from('pubkey_BBBB'));
-const PublicKeyABCDEFGH = getOrThrow(PublicKey.from('pubkey_ABCDEFGH'));
+const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
+const PublicKeyBBB = getOrThrowTest(PublicKey.from('pubkey_BBBB'));
+const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.from('pubkey_ABCDEFGH'));
 
-const size0 = getOrThrow(Size.from(0));
-const size30 = getOrThrow(Size.from(30));
-const size50 = getOrThrow(Size.from(50));
-const size100 = getOrThrow(Size.from(100));
-const size200 = getOrThrow(Size.from(200));
+const size0 = getOrThrowTest(Size.from(0));
+const size30 = getOrThrowTest(Size.from(30));
+const size50 = getOrThrowTest(Size.from(50));
+const size100 = getOrThrowTest(Size.from(100));
+const size200 = getOrThrowTest(Size.from(200));
 
 const prepareSql = async () => {
     const sqlite = await prepareSqlite({ inMemory: true });

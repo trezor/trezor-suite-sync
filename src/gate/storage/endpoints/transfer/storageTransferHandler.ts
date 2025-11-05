@@ -35,7 +35,7 @@ export const storageTransferHandler =
                     return reply.code(500).send({ error: 'Internal server error' });
 
                 case 'NoStorageAllowance':
-                    return reply.code(400).send({ error: 'No storage allowance' });
+                    return reply.code(400).send({ error: type });
 
                 default:
                     return exhaustive(type);

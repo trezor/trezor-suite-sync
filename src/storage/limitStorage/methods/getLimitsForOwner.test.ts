@@ -1,13 +1,14 @@
-import { OwnerId, getOrThrow, sql } from '@evolu/common';
+import { OwnerId, sql } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
 import { getLimitsForOwner } from './getLimitsForOwner.js';
+import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { createLimitStorage } from '../limitStorage.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
-const ownerId123 = getOrThrow(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const ownerId456 = getOrThrow(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
+const ownerId123 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const ownerId456 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
 
 const prepareSql = async () => {
     const sqlite = await prepareSqlite({ inMemory: true });

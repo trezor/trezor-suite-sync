@@ -41,7 +41,7 @@ export const storageAskHandler =
             }
 
             if (result.value === null) {
-                return reply.code(404).send({ error: 'Owner not found' });
+                return reply.code(400).send({ error: 'OwnerNotFound' });
             }
 
             return reply.code(200).send({ totalSpace: result.value });
