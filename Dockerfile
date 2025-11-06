@@ -1,7 +1,7 @@
 FROM node:24-alpine as builder
 
 RUN corepack enable
-RUN corepack prepare yarn@4.5.3 --activate 
+RUN corepack prepare yarn@4.10.3 --activate 
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN yarn build
 FROM node:24-alpine
 
 RUN corepack enable
-RUN corepack prepare yarn@4.5.3 --activate 
+RUN corepack prepare yarn@4.10.3 --activate 
 
 WORKDIR /app
 
