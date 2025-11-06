@@ -66,6 +66,7 @@ jobs:
             BUILDKIT_INLINE_CACHE=1
 
   deploy-evolu-relay-image:
+    if: github.ref == 'refs/heads/main'
     runs-on: evolu-deploy
     needs: build-evolu-relay-image
     steps:
