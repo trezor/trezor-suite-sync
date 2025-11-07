@@ -15,12 +15,11 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
 
     const relay = await createNodeJsRelay(deps)({
         port,
-        enableLogging: false,
-        authenticateOwner: ownerId => {
-            const result = limitStorage.getLimitForOwner({ ownerId });
-
-            return Promise.resolve(result.ok && result.value !== null && result.value > 0);
-        },
+        enableLogging: true,
+        authenticateOwner: ownerId =>
+            // const result = limitStorage.getLimitForOwner({ ownerId });
+            // return Promise.resolve(result.ok && result.value !== null && result.value > 0);
+            Promise.resolve(true), // Todo: implement
 
         // Todo: implement the storage check on-write. Something like:
         // onWrite: ({ used, ownerId }) => {
