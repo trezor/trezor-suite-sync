@@ -12,7 +12,7 @@ export const prepareSqlite = async (params: PrepareSqliteParams = {}) => {
         console: createConsole(),
     };
 
-    const name = getOrThrow(SimpleName.from('gate-payment-server'));
+    const name = getOrThrow(SimpleName.from('quota-manager-payment-server'));
 
     return await createSqlite({
         ...deps,

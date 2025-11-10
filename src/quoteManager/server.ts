@@ -10,17 +10,17 @@ import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
 const createRandomBytes = (size: number) => randomBytes(size).toString('hex');
 
-type StartGatePaymentServerDependencies = {
+type StartQuotaManagerServerDependencies = {
     port: number;
     limitStorage: LimitStorage;
     challengeStorage: ChallengeStorage;
 };
 
-export const startGatePaymentServer = ({
+export const startQuotaManagerServer = ({
     port,
     limitStorage,
     challengeStorage,
-}: StartGatePaymentServerDependencies) => {
+}: StartQuotaManagerServerDependencies) => {
     const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
     registerStorageEndpoints({ server, limitStorage });
@@ -34,12 +34,12 @@ export const startGatePaymentServer = ({
         }
 
         // eslint-disable-next-line no-console
-        console.log(`Payment Server (Gate) started on ${address}`);
+        console.log(`Payment Server (Quota Manager) started on ${address}`);
     });
 
     const close = () => {
         // eslint-disable-next-line no-console
-        console.log('Payment Server (Gate) is shutting down...');
+        console.log('Payment Server (Quota Manager) is shutting down...');
         server.close();
     };
 
