@@ -1,5 +1,5 @@
 import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
-import type { ServerType } from '../server.js';
+import type { ServerType } from '../types.js';
 import { storageAskEndpoint } from './endpoints/ask/storageAskEndpoint.js';
 import { storageRegisterEndpoint } from './endpoints/register/storageRegisterEndpoint.js';
 import { storageTransferEndpoint } from './endpoints/transfer/storageTransferEndpoint.js';

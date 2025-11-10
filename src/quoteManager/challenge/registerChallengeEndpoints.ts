@@ -1,5 +1,5 @@
 import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
-import type { ServerType } from '../server.js';
+import type { ServerType } from '../types.js';
 import { challengeCreateEndpoint } from './endpoints/create/challengeCreateEndpoint.js';
 
 export type RegisterChallengeEndpointsDeps = {
