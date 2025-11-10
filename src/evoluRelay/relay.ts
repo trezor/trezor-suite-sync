@@ -1,16 +1,22 @@
 import { createConsole } from '@evolu/common';
 import { createNodeJsRelay } from '@evolu/nodejs';
 
+import { UpdateHealth } from '../health/startHealthServer.js';
 import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
 type StartEvoluRelayDependencies = {
     port: number;
     limitStorage: LimitStorage;
+    onHealthChange: UpdateHealth;
 };
 
 const forceAuthFreeAccess = true;
 
-export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDependencies) => {
+export const startEvoluRelay = async ({
+    port,
+    limitStorage,
+    onHealthChange,
+}: StartEvoluRelayDependencies) => {
     const deps = {
         console: createConsole(),
     };
@@ -51,16 +57,23 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
 
     if (!relay.ok) {
         console.error('Relay failed', relay.error);
+        onHealthChange({ relay: 'error' });
 
-        return;
+        return false;
     }
 
     const dispose = () => {
         // eslint-disable-next-line no-console
         console.log('Evolu Relay is shutting down ...');
-        relay.value[Symbol.dispose]();
+        onHealthChange({ relay: 'exiting' });
+
+        if (relay.ok) relay.value[Symbol.dispose]();
     };
 
     process.on('SIGINT', dispose);
     process.on('SIGTERM', dispose);
+
+    onHealthChange({ relay: 'ok' });
+
+    return true;
 };
