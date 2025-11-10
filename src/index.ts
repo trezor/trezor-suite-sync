@@ -3,11 +3,13 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 import { startEvoluRelay } from './evoluRelay/relay.js';
-import { startGatePaymentServer } from './quoteManager/gate.js';
+import { startQuotaManagerServer } from './quoteManager/server.js';
 import { createAppStorage } from './storage.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
-const GATE_PAYMENT_SERVER_PORT = process.env.GATE_PORT ? parseInt(process.env.GATE_PORT, 10) : 4001;
+const QUOTA_MANAGER_PORT = process.env.QUOTA_MANAGER_PORT
+    ? parseInt(process.env.QUOTA_MANAGER_PORT, 10)
+    : 4001;
 const DATA_DIR = process.env.DATA_DIR || 'data';
 
 const dataPath = join(process.cwd(), DATA_DIR);
@@ -20,8 +22,8 @@ if (storage.ok) {
     const { limitStorage, challengeStorage } = storage.value;
 
     startEvoluRelay({ port: RELAY_PORT, limitStorage });
-    startGatePaymentServer({
-        port: GATE_PAYMENT_SERVER_PORT,
+    startQuotaManagerServer({
+        port: QUOTA_MANAGER_PORT,
         limitStorage,
         challengeStorage,
     });
