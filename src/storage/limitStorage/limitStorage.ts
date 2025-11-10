@@ -8,6 +8,10 @@ import {
     transferSpaceLimitToOwner,
 } from './methods/transferSpaceLimitToOwner.js';
 import {
+    type AssignSpaceToOwnerParams,
+    assignSpaceToOwner,
+} from './methods/assignSpaceToOwner.js';
+import {
     createOwnerLimitTableQueryIfNotExists,
     createPubkeyLimitTableQueryIfNotExists,
 } from './tables.js';
@@ -74,6 +78,12 @@ export const createLimitStorage = ({ sqlite }: CreateLimitStorageDependencies) =
             size,
         }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
             transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
+        assignSpaceToOwner: ({
+            ownerId,
+            publicKey,
+            size,
+        }: Omit<AssignSpaceToOwnerParams, 'sqlite'>) =>
+            assignSpaceToOwner({ sqlite, ownerId, publicKey, size }),
     });
 };
 
