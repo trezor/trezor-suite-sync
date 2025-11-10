@@ -3,7 +3,7 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 import { startEvoluRelay } from './evoluRelay/relay.js';
-import { startGatePaymentServer } from './gate/gate.js';
+import { startGatePaymentServer } from './quoteManager/gate.js';
 import { createAppStorage } from './storage.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
