@@ -1,15 +1,15 @@
 import { OwnerId, type Result, type Sqlite, type SqliteError, err, ok, sql } from '@evolu/common';
 
-import { consistencyError, noSpaceAllowanceErr, type ConsistencyError } from '../../../errors.js';
+import { type ConsistencyError, consistencyError, noSpaceAllowanceErr } from '../../../errors.js';
 import {
     OWNER_STORAGE_LIMITS_TABLE_NAME,
     PUBKEY_STORAGE_LIMITS_TABLE_NAME,
 } from '../tables.js';
+import { getLimitsForOwner } from './getLimitsForOwner.js';
 import {
     type GetLimitsForPubkeyResponse,
     getLimitsForPubkey,
 } from './getLimitsForPubkey.js';
-import { getLimitsForOwner } from './getLimitsForOwner.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
 export type AssignSpaceToOwnerParams = {

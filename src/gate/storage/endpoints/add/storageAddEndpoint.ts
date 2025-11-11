@@ -6,4 +6,3 @@ export const storageAddEndpoint = {
     schema: storageAddRequestSchema,
     createHandler: storageAddHandler,
 } satisfies EndpointDescriptor;
-

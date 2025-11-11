@@ -1,4 +1,4 @@
-import { getOrThrow } from '@evolu/common';
+import { OwnerId } from '@evolu/common';
 import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import Fastify from 'fastify';
 import { assert, describe, expect, it, vi } from 'vitest';
@@ -6,6 +6,7 @@ import { assert, describe, expect, it, vi } from 'vitest';
 import { storageAddEndpoint } from './storageAddEndpoint.js';
 import { storageAddHandler } from './storageAddHandler.js';
 import type { StorageAddDeps } from './storageAddOperation.js';
+import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import {
     Challenge,
     SessionId,
@@ -17,22 +18,29 @@ import {
     Size,
     createLimitStorage,
 } from '../../../../storage/limitStorage/limitStorage.js';
-import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
-import { OwnerId } from '@evolu/common';
 import { addLimitToPubkey } from '../../../../storage/limitStorage/methods/addLimitToPubkey.js';
+import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
 
 type VerifyProofFn = NonNullable<StorageAddDeps['verifySignature']>;
 
-const publicKey = getOrThrow(PublicKey.from('049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88'));
-const ownerId = getOrThrow(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const publicKey = getOrThrowTest(
+    PublicKey.from(
+        '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
+    ),
+);
+const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
-const size50 = getOrThrow(Size.from(50));
-const size20 = getOrThrow(Size.from(20));
-const challengeValue = getOrThrow(Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'));
-const sessionId = getOrThrow(SessionId.from('session-1'));
-const anotherSessionId = getOrThrow(SessionId.from('session-2'));
-const proof = getOrThrow(Proof.from('deadbeef'));
-const anotherChallengeValue = getOrThrow(Challenge.from('3bd0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'));
+const size50 = getOrThrowTest(Size.from(50));
+const size20 = getOrThrowTest(Size.from(20));
+const challengeValue = getOrThrowTest(
+    Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
+);
+const sessionId = getOrThrowTest(SessionId.from('session-1'));
+const anotherSessionId = getOrThrowTest(SessionId.from('session-2'));
+const proof = getOrThrowTest(Proof.from('deadbeef'));
+const anotherChallengeValue = getOrThrowTest(
+    Challenge.from('3bd0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'),
+);
 
 const createApp = async (verifySignatureMock?: ReturnType<typeof vi.fn<VerifyProofFn>>) => {
     const sqlite = await prepareSqlite({ inMemory: true });
@@ -46,7 +54,8 @@ const createApp = async (verifySignatureMock?: ReturnType<typeof vi.fn<VerifyPro
 
     addLimitToPubkey({ sqlite: sqlite.value, publicKey, size: size50 });
 
-    const verifySignature: VerifyProofFn = verifySignatureMock ?? vi.fn<VerifyProofFn>().mockResolvedValue(true);
+    const verifySignature: VerifyProofFn =
+        verifySignatureMock ?? vi.fn<VerifyProofFn>().mockResolvedValue(true);
 
     const app = Fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
@@ -217,4 +226,3 @@ describe(storageAddHandler.name, () => {
         expect(body.error).toBe('NoStorageAllowance');
     });
 });
-

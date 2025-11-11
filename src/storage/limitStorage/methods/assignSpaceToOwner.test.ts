@@ -1,8 +1,8 @@
-import { assert, describe, expect, it } from 'vitest';
 import { OwnerId } from '@evolu/common';
+import { assert, describe, expect, it } from 'vitest';
 
-import { assignSpaceToOwner } from './assignSpaceToOwner.js';
 import { addLimitToPubkey } from './addLimitToPubkey.js';
+import { assignSpaceToOwner } from './assignSpaceToOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { prepareSqlite } from '../../prepareSqlite.js';
 import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';

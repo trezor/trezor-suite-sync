@@ -28,4 +28,3 @@ export const storageAddEvoluSchema = object({
     sessionId: SessionId,
     proof: Proof,
 });
-
