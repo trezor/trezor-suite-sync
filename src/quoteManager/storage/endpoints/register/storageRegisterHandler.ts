@@ -1,30 +1,20 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import type { FromSchema } from 'json-schema-to-ts';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import {
-    storageRegisterEvoluSchema,
-    storageRegisterRequestSchema,
-} from './storageRegisterSchema.js';
+import { storageRegisterEvoluSchema } from './storageRegisterSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
-import { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
+import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 
 export type RegisterHandlerDeps = {
     limitStorage: LimitStorage;
 };
 
 type RegisterRequest = FastifyRequest<{
-    Body: FromSchema<typeof storageRegisterRequestSchema.schema.body>;
+    Body: typeof storageRegisterEvoluSchema.Type;
 }>;
 
 export const storageRegisterHandler =
     (deps: RegisterHandlerDeps) => (request: RegisterRequest, reply: FastifyReply) => {
-        const validationResult = storageRegisterEvoluSchema.from(request.body);
-
-        if (!validationResult.ok) {
-            return reply.code(400).send({ error: validationResult.error });
-        }
-
-        const { publicKey, size } = validationResult.value;
+        const { publicKey, size } = request.body;
 
         const result = deps.limitStorage.addLimitToPubkey({ publicKey, size });
 
