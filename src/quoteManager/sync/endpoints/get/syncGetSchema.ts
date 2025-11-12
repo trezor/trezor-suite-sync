@@ -1,17 +1,5 @@
 import { OwnerId, object } from '@evolu/common';
 
-export const syncGetRequestSchema = {
-    schema: {
-        querystring: {
-            type: 'object',
-            properties: {
-                ownerId: { type: 'string' },
-            },
-            required: ['ownerId'],
-        },
-    },
-} as const;
-
 export const syncGetEvoluSchema = object({
     ownerId: OwnerId,
 });
@@ -19,3 +7,11 @@ export const syncGetEvoluSchema = object({
 export type SyncGetRequestQuery = {
     ownerId: OwnerId;
 };
+
+export const syncGetRequestSchema = {
+    schema: {
+        querystring: {
+            evoluSchema: syncGetEvoluSchema,
+        },
+    },
+} as const;

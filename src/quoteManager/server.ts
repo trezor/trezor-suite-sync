@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 import fastify from 'fastify';
 
 import { registerChallengeEndpoints } from './challenge/registerChallengeEndpoints.js';
-import { evoluValidatorCompiler } from './evoluValidator.js';
+import { evoluValidatorCompiler } from './evoluValidatorCompiler.js';
 import { registerStorageEndpoints } from './storage/registerStorageEndpoints.js';
 import { registerSyncEndpoints } from './sync/registerSyncEndpoints.js';
 import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
