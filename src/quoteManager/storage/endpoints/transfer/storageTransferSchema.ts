@@ -7,22 +7,6 @@ import {
     Timestamp,
 } from '../../../../storage/limitStorage/limitStorage.js';
 
-export const transferRequestSchema = {
-    schema: {
-        body: {
-            type: 'object',
-            properties: {
-                publicKey: { type: 'string' }, // donor
-                ownerId: { type: 'string' }, // recipient
-                size: { type: 'number' },
-                proof: { type: 'string' },
-                timestamp: { type: 'number' },
-            },
-            required: ['publicKey', 'ownerId', 'size', 'proof', 'timestamp'],
-        },
-    },
-} as const;
-
 export const transferEvoluSchema = object({
     proof: Proof,
     size: Size,
@@ -30,3 +14,11 @@ export const transferEvoluSchema = object({
     publicKey: PublicKey,
     ownerId: OwnerId,
 });
+
+export const transferRequestSchema = {
+    schema: {
+        body: {
+            evoluSchema: transferEvoluSchema,
+        },
+    },
+} as const;

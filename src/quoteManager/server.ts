@@ -1,8 +1,8 @@
-import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import { randomBytes } from 'crypto';
 import fastify from 'fastify';
 
 import { registerChallengeEndpoints } from './challenge/registerChallengeEndpoints.js';
+import { evoluValidatorCompiler } from './evoluValidatorCompiler.js';
 import { registerStorageEndpoints } from './storage/registerStorageEndpoints.js';
 import { registerSyncEndpoints } from './sync/registerSyncEndpoints.js';
 import type { ChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
@@ -21,7 +21,9 @@ export const startQuotaManagerServer = ({
     limitStorage,
     challengeStorage,
 }: StartQuotaManagerServerDependencies) => {
-    const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
+    const server = fastify();
+
+    server.setValidatorCompiler(evoluValidatorCompiler);
 
     registerStorageEndpoints({ server, limitStorage });
     registerSyncEndpoints({ server });
