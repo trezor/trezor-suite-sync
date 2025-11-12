@@ -1,7 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import type { FromSchema } from 'json-schema-to-ts';
 
-import { askEvoluSchema, storageAskRequestSchema } from './storageAskSchema.js';
+import { askEvoluSchema } from './storageAskSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
 import { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 
@@ -10,18 +9,12 @@ export type AskHandlerDeps = {
 };
 
 type AskRequest = FastifyRequest<{
-    Querystring: FromSchema<typeof storageAskRequestSchema.schema.querystring>;
+    Querystring: typeof askEvoluSchema.Type;
 }>;
 
 export const storageAskHandler =
     (deps: AskHandlerDeps) => (request: AskRequest, reply: FastifyReply) => {
-        const validationResult = askEvoluSchema.from(request.query);
-
-        if (!validationResult.ok) {
-            return reply.code(400).send({ error: validationResult.error });
-        }
-
-        const { ownerId, publicKey } = validationResult.value;
+        const { ownerId, publicKey } = request.query;
 
         if (ownerId !== undefined) {
             const result = deps.limitStorage.getLimitForOwner({ ownerId });

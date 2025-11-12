@@ -8,6 +8,7 @@ import {
     createChallengeStorage,
 } from '../../../../storage/challengeStorage/challengeStorage.js';
 import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
+import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { registerChallengeEndpoints } from '../../registerChallengeEndpoints.js';
 
 const staticCreateRandomBytes = () =>
@@ -27,6 +28,8 @@ const createApp = async (params?: CreateAppParams) => {
     assert(challengeStorage.ok);
 
     const server = Fastify();
+
+    server.setValidatorCompiler(evoluValidatorCompiler);
 
     registerChallengeEndpoints({
         server,

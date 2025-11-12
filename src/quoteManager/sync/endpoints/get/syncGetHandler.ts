@@ -1,23 +1,18 @@
 import { err } from '@evolu/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import type { FromSchema } from 'json-schema-to-ts';
 
-import { syncGetEvoluSchema, syncGetRequestSchema } from './syncGetSchema.js';
+import { syncGetEvoluSchema } from './syncGetSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
 export type SyncGetHandlerDeps = {};
 
 type SyncGetRequest = FastifyRequest<{
-    Querystring: FromSchema<typeof syncGetRequestSchema.schema.querystring>;
+    Querystring: typeof syncGetEvoluSchema.Type;
 }>;
 
 export const syncGetHandler =
     (deps: SyncGetHandlerDeps) => (request: SyncGetRequest, reply: FastifyReply) => {
-        const validationResult = syncGetEvoluSchema.from(request.query);
-
-        if (!validationResult.ok) {
-            return reply.code(400).send({ error: validationResult.error });
-        }
+        // const { ownerId } = request.query;
 
         // Todo: implement
         const result = err({ type: 'NotImplemented' as const });

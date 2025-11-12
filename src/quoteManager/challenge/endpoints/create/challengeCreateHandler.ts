@@ -1,33 +1,23 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import type { FromSchema } from 'json-schema-to-ts';
 
 import {
     ChallengeCreateOperationDeps,
     challengeCreateOperation,
 } from './challengeCreateOperation.js';
-import {
-    challengeCreateEvoluSchema,
-    challengeCreateRequestSchema,
-} from './challengeCreateSchema.js';
+import { challengeCreateEvoluSchema } from './challengeCreateSchema.js';
 import { serializeChallengeCreateResponse } from './serializeChallengeCreateResponse.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
 export type ChallengeCreateHandlerDeps = ChallengeCreateOperationDeps;
 
 type ChallengeCreateRequest = FastifyRequest<{
-    Body: FromSchema<typeof challengeCreateRequestSchema.schema.body>;
+    Body: typeof challengeCreateEvoluSchema.Type;
 }>;
 
 export const challengeCreateHandler =
     (deps: ChallengeCreateHandlerDeps) =>
     (request: ChallengeCreateRequest, reply: FastifyReply) => {
-        const validationResult = challengeCreateEvoluSchema.from(request.body);
-
-        if (!validationResult.ok) {
-            return reply.code(400).send({ error: validationResult.error });
-        }
-
-        const result = challengeCreateOperation(deps, validationResult.value);
+        const result = challengeCreateOperation(deps, request.body);
 
         if (!result.ok) {
             const { type } = result.error;

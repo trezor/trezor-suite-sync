@@ -19,7 +19,7 @@ export const evoluValidatorCompiler: FastifySchemaCompiler<SchemaWithEvolu> = ({
 
             if (!result.ok) {
                 return {
-                    error: new Error(JSON.stringify(result.error)),
+                    error: new Error(JSON.stringify(result.error.reason)),
                 };
             }
 
