@@ -8,6 +8,8 @@ type StartEvoluRelayDependencies = {
     limitStorage: LimitStorage;
 };
 
+const forceAuthFreeAccess = true;
+
 export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDependencies) => {
     const deps = {
         console: createConsole(),
@@ -16,17 +18,35 @@ export const startEvoluRelay = async ({ port, limitStorage }: StartEvoluRelayDep
     const relay = await createNodeJsRelay(deps)({
         port,
         enableLogging: true,
-        authenticateOwner: ownerId =>
-            // const result = limitStorage.getLimitForOwner({ ownerId });
-            // return Promise.resolve(result.ok && result.value !== null && result.value > 0);
-            Promise.resolve(true), // Todo: implement
+        /**
+         * Owner is allowed to access the relay if they have any registered storage limit.
+         */
+        isOwnerAllowed(ownerId) {
+            const result = limitStorage.getLimitForOwner({ ownerId });
 
-        // Todo: implement the storage check on-write. Something like:
-        // onWrite: ({ used, ownerId }) => {
-        //     const limit = limitStorage.getLimitForOwner({ ownerId });
-        //
-        //     return limit !== null && used < limit;
-        // },
+            // TEMP: until we implement in Trezor Suite
+            if (forceAuthFreeAccess) {
+                return Promise.resolve(true);
+            }
+
+            return Promise.resolve(result.ok && result.value !== null);
+        },
+        /**
+         * Owner is allowed to write if his usedBytes + requiredBytes <= storage limit.
+         * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.
+         */
+        isOwnerWithinQuota(ownerId, requiredBytes) {
+            const result = limitStorage.getLimitForOwner({ ownerId });
+
+            // TEMP: until we implement in Trezor Suite
+            if (forceAuthFreeAccess) {
+                return Promise.resolve(true);
+            }
+
+            return Promise.resolve(
+                result.ok && result.value !== null && result.value >= requiredBytes,
+            );
+        },
     });
 
     if (!relay.ok) {
