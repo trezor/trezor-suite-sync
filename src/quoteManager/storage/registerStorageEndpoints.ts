@@ -1,3 +1,4 @@
+import type { ChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
 import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import type { ServerType } from '../types.js';
 import { storageAskEndpoint } from './endpoints/ask/storageAskEndpoint.js';
@@ -7,11 +8,15 @@ import { storageTransferEndpoint } from './endpoints/transfer/storageTransferEnd
 export type RegisterStorageEndpointsDeps = {
     server: ServerType;
     limitStorage: LimitStorage;
+    challengeStorage: ChallengeStorage;
+    maxStoragePerDevice?: number;
 };
 
 export const registerStorageEndpoints = ({
     server,
     limitStorage,
+    challengeStorage,
+    maxStoragePerDevice,
 }: RegisterStorageEndpointsDeps) => {
     server.post(
         '/storage/add',
@@ -26,6 +31,10 @@ export const registerStorageEndpoints = ({
     server.post(
         '/storage/register',
         storageRegisterEndpoint.schema,
-        storageRegisterEndpoint.createHandler({ limitStorage }),
+        storageRegisterEndpoint.createHandler({
+            limitStorage,
+            challengeStorage,
+            maxStoragePerDevice,
+        }),
     );
 };
