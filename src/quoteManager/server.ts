@@ -25,7 +25,7 @@ export const startQuotaManagerServer = ({
 
     server.setValidatorCompiler(evoluValidatorCompiler);
 
-    registerStorageEndpoints({ server, limitStorage });
+    registerStorageEndpoints({ server, limitStorage, challengeStorage });
     registerSyncEndpoints({ server });
     registerChallengeEndpoints({ server, challengeStorage, createRandomBytes });
 
