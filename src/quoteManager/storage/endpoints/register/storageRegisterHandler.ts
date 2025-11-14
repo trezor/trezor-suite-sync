@@ -1,35 +1,46 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { RegisterOperationDeps, storageRegisterOperation } from './storageRegisterOperation.js';
 import { storageRegisterEvoluSchema } from './storageRegisterSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
-import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
-
-export type RegisterHandlerDeps = {
-    limitStorage: LimitStorage;
-};
 
 type RegisterRequest = FastifyRequest<{
     Body: typeof storageRegisterEvoluSchema.Type;
 }>;
 
 export const storageRegisterHandler =
-    (deps: RegisterHandlerDeps) => (request: RegisterRequest, reply: FastifyReply) => {
-        const { publicKey, size } = request.body;
+    (deps: RegisterOperationDeps) => async (request: RegisterRequest, reply: FastifyReply) => {
+        const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
+            request.body;
 
-        const result = deps.limitStorage.addLimitToPubkey({ publicKey, size });
+        const result = await storageRegisterOperation(deps, {
+            publicKey,
+            size,
+            challenge,
+            sessionId,
+            proof,
+            certificateChain,
+            deviceModel,
+        });
 
         if (!result.ok) {
-            const { type } = result.error;
+            const { error } = result;
 
-            switch (type) {
+            switch (error) {
                 case 'SqliteError':
                 case 'ConsistencyError':
-                    console.error(result.error);
+                    console.error(error);
 
-                    return reply.code(500).send({ error: 'Internal server error' });
+                    return reply.code(500).send({ error });
+
+                case 'ChallengeValidationFailed':
+                case 'StorageLimitExceeded':
+                case 'ProofValidationFailed':
+                case 'CertificateValidationFailed':
+                    return reply.code(400).send({ error });
 
                 default:
-                    return exhaustive(type);
+                    return exhaustive(error);
             }
         }
 

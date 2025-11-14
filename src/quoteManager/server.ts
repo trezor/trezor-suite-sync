@@ -32,7 +32,7 @@ export const startQuotaManagerServer = async ({
 
         server.setErrorHandler(createCustomErrorHandler(onHealthChange));
 
-        registerStorageEndpoints({ server, limitStorage });
+        registerStorageEndpoints({ server, limitStorage, challengeStorage });
         registerSyncEndpoints({ server });
         registerChallengeEndpoints({ server, challengeStorage, createRandomBytes });
 
