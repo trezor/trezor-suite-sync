@@ -1,0 +1,20 @@
+meta {
+  name: Storage - Ask by PublicKey
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://127.0.0.1:4001/storage/ask?publicKey=example_public_key_string
+  body: none
+  auth: inherit
+}
+
+params:query {
+  publicKey: example_public_key_string
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

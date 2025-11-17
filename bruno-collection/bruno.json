@@ -1,0 +1,12 @@
+{
+    "version": "1",
+    "name": "Trezor Relay Quota Manager",
+    "type": "collection",
+    "ignore": ["node_modules", ".git"],
+    "size": 0,
+    "filesCount": 0,
+    "presets": {
+        "requestType": "http",
+        "requestUrl": "http://127.0.0.1:4001"
+    }
+}
