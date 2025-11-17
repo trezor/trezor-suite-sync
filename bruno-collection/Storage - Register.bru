@@ -1,0 +1,25 @@
+meta {
+  name: Storage - Register
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://127.0.0.1:4001/storage/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "publicKey": "example_public_key_string",
+    "size": 1024,
+    "proof": "example_proof_string",
+    "timestamp": 1700000000000
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
