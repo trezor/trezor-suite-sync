@@ -1,0 +1,22 @@
+meta {
+  name: Challenge - Create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://127.0.0.1:4001/challenge
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "sessionId": "abc123def456ghi789jklmno"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
