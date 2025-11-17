@@ -1,0 +1,20 @@
+meta {
+  name: Storage - Ask by OwnerId
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://127.0.0.1:4001/storage/ask?ownerId=WU-mqNfFbteyKyzAbW-QeA
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ownerId: WU-mqNfFbteyKyzAbW-QeA
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

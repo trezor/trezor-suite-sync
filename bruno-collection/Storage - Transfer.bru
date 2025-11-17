@@ -1,0 +1,26 @@
+meta {
+  name: Storage - Transfer
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://127.0.0.1:4001/storage/add
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "publicKey": "example_public_key_string",
+    "ownerId": "WU-mqNfFbteyKyzAbW-QeA",
+    "size": 512,
+    "proof": "example_proof_string",
+    "timestamp": 1700000000000
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
