@@ -33,7 +33,7 @@ export const transferSpaceLimitToOwner = ({
         return err(noSpaceAllowanceErr('No space for the given publicKey'));
     }
 
-    if (limitsResult.value.unspendStorageSize >= size) {
+    if (limitsResult.value.unspendStorageSize < size) {
         return err(noSpaceAllowanceErr('Unsufficient space for the given publicKey'));
     }
 
@@ -42,7 +42,8 @@ export const transferSpaceLimitToOwner = ({
 
     const subtractSizeResult = sqlite.exec<{}>(sql.prepared`
         UPDATE ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)}
-        WHERE "publicKey" = ${publicKey} SET "unspendStorageSize" = "unspendStorageSize" - ${size};
+        SET "unspendStorageSize" = "unspendStorageSize" - ${size}
+        WHERE "publicKey" = ${publicKey};
     `);
 
     if (!subtractSizeResult.ok) {
