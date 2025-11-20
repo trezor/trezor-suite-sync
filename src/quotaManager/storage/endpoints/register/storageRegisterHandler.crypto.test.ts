@@ -194,4 +194,3 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
     // The SIGNATURE_OPTIGA constant in unit tests is for "AuthenticateDevice:"|challenge format,
     // not for the Evolu registration format, so it cannot be used here.
 });
-
