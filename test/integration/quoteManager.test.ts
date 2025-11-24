@@ -1,7 +1,6 @@
 import { OwnerId } from '@evolu/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../mocks/certificates.js';
 import { getOrThrowTest } from '../../src/getOrThrowTest.js';
 import { SessionId } from '../../src/storage/challengeStorage/challengeStorage.js';
 import {
@@ -9,9 +8,10 @@ import {
     PublicKey,
     Size,
 } from '../../src/storage/limitStorage/limitStorage.js';
+import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../mocks/certificates.js';
 import {
-    assignSpace,
     askSpace,
+    assignSpace,
     createApp,
     deleteOwner,
     getChallenge,
@@ -43,6 +43,7 @@ vi.mock('crypto', async () => {
 
             verify.update = vi.fn().mockImplementation(data => {
                 originalUpdate(data);
+
                 return verify;
             });
             verify.verify = vi.fn().mockReturnValue(true);

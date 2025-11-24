@@ -44,6 +44,13 @@ export default [
             '@typescript-eslint/no-explicit-any': 'off',
         },
     },
+    // Test utilities and mocks
+    {
+        files: ['test/**/*.{ts,js}'],
+        rules: {
+            'import/no-extraneous-dependencies': 'off',
+        },
+    },
 
     // ESLint config itself
     {

@@ -1,10 +1,13 @@
 import { OwnerId } from '@evolu/common';
-import Fastify from 'fastify';
 import { randomBytes } from 'crypto';
+import Fastify from 'fastify';
 import { assert, expect } from 'vitest';
 
-import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../mocks/certificates.js';
 import { getOrThrowTest } from '../../src/getOrThrowTest.js';
+import { registerChallengeEndpoints } from '../../src/quoteManager/challenge/registerChallengeEndpoints.js';
+import { evoluValidatorCompiler } from '../../src/quoteManager/evoluValidatorCompiler.js';
+import { registerStorageEndpoints } from '../../src/quoteManager/storage/registerStorageEndpoints.js';
+import { registerSyncEndpoints } from '../../src/quoteManager/sync/registerSyncEndpoints.js';
 import {
     Challenge,
     ChallengeStorage,
@@ -18,10 +21,7 @@ import {
     createLimitStorage,
 } from '../../src/storage/limitStorage/limitStorage.js';
 import { prepareSqlite } from '../../src/storage/prepareSqlite.js';
-import { evoluValidatorCompiler } from '../../src/quoteManager/evoluValidatorCompiler.js';
-import { registerChallengeEndpoints } from '../../src/quoteManager/challenge/registerChallengeEndpoints.js';
-import { registerStorageEndpoints } from '../../src/quoteManager/storage/registerStorageEndpoints.js';
-import { registerSyncEndpoints } from '../../src/quoteManager/sync/registerSyncEndpoints.js';
+import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../mocks/certificates.js';
 
 const createRandomBytes = (size: number) => randomBytes(size).toString('hex');
 
@@ -142,10 +142,12 @@ export const assignSpace = async (
     
     if (body.unspentSpace !== undefined) {
         expect(body).toHaveProperty('unspentSpace');
+
         return { storageLimit: 0, unspentSpace: body.unspentSpace };
     }
     
     expect(body).toHaveProperty('storageLimit');
+
     return { storageLimit: body.storageLimit };
 };
 
@@ -172,6 +174,7 @@ export const deleteOwner = async (
     });
 
     expect(response.statusCode).toBe(200);
+
     return JSON.parse(response.body);
 };
 
@@ -189,6 +192,7 @@ export const askSpace = async (
     });
 
     expect(response.statusCode).toBe(200);
+
     return JSON.parse(response.body);
 };
 
