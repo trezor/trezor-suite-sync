@@ -1,6 +1,7 @@
 import { Number, type Sqlite, String, brand, ok } from '@evolu/common';
 
 import { type AddLimitToPubkeyParams, addLimitToPubkey } from './methods/addLimitToPubkey.js';
+import { type AssignSpaceToOwnerParams, assignSpaceToOwner } from './methods/assignSpaceToOwner.js';
 import { type GetLimitsForOwnerParams, getLimitsForOwner } from './methods/getLimitsForOwner.js';
 import { type GetLimitsForPubkey, getLimitsForPubkey } from './methods/getLimitsForPubkey.js';
 import {
@@ -74,6 +75,12 @@ export const createLimitStorage = ({ sqlite }: CreateLimitStorageDependencies) =
             size,
         }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
             transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
+        assignSpaceToOwner: ({
+            ownerId,
+            publicKey,
+            size,
+        }: Omit<AssignSpaceToOwnerParams, 'sqlite'>) =>
+            assignSpaceToOwner({ sqlite, ownerId, publicKey, size }),
     });
 };
 

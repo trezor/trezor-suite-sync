@@ -4,7 +4,7 @@ import { join } from 'path';
 
 import { startEvoluRelay } from './evoluRelay/relay.js';
 import { startHealthServer } from './health/startHealthServer.js';
-import { startQuotaManagerServer } from './quoteManager/server.js';
+import { startQuotaManagerServer } from './quotaManager/server.js';
 import { createAppStorage } from './storage.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
