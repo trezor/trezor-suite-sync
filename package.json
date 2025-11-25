@@ -3,10 +3,21 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/src/index.js",
+        "dev": "tsx watch src/index.ts",
+        "test": "vitest",
+        "format": "prettier --write src",
+        "format:check": "prettier --check src",
+        "type-check": "tsc --build tsconfig.json",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
     "dependencies": {
         "@evolu/common": "7.2.3",
         "@evolu/nodejs": "2.2.1",
-        "@trezor/device-authenticity": "^1.0.1-beta.1",
+        "@trezor/device-authenticity": "^1.1.0-beta.1",
         "@trezor/protobuf": "^1.4.5-beta.1",
         "dotenv": "^17.2.3",
         "eslint-plugin-import": "^2.32.0",
@@ -24,17 +35,6 @@
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.2",
         "vitest": "^4.0.4"
-    },
-    "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "start": "node dist/src/index.js",
-        "dev": "tsx watch src/index.ts",
-        "test": "vitest",
-        "format": "prettier --write src",
-        "format:check": "prettier --check src",
-        "type-check": "tsc --build tsconfig.json",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
     },
     "packageManager": "yarn@4.10.3"
 }
