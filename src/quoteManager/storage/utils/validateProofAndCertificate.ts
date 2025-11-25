@@ -1,11 +1,11 @@
 import { err, ok } from '@evolu/common';
-import {
-    deviceAuthenticityBlacklistConfig,
-    deviceAuthenticityConfig,
-    verifyAuthenticityProof,
-} from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
+import {
+    getDeviceAuthenticityBlacklistConfig,
+    getDeviceAuthenticityConfig,
+    verifyAuthenticityProof,
+} from './deviceAuthenticationWrapper.js';
 import { getChunkSize, hexToBuffer, numberToBuffer } from './utils.js';
 import { Challenge } from '../../../storage/challengeStorage/challengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../storage/limitStorage/limitStorage.js';
@@ -20,6 +20,11 @@ export const validateProofAndCertificate = async (
     deviceModel: string,
 ): Promise<Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>> => {
     try {
+        const [config, blacklistConfig] = await Promise.all([
+            getDeviceAuthenticityConfig(),
+            getDeviceAuthenticityBlacklistConfig(),
+        ]);
+
         const challengePrefix = Buffer.from('EvoluSignRegistrationRequestV1:');
         const publicKeyBuffer = hexToBuffer(publicKey.toString());
         const challengeBuffer = hexToBuffer(challenge.toString());
@@ -41,8 +46,8 @@ export const validateProofAndCertificate = async (
             deviceModel: deviceModel as keyof typeof PROTO.DeviceModelInternal,
             certificates: [certificateChain.deviceCert, certificateChain.caCert],
             signature: proof,
-            config: deviceAuthenticityConfig,
-            blacklistConfig: deviceAuthenticityBlacklistConfig,
+            config,
+            blacklistConfig,
         });
 
         if (!authResult.valid) {
