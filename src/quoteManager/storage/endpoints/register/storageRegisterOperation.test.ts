@@ -35,12 +35,15 @@ const { T2B1rootPubKeyOptiga, mockParseCertificate } = vi.hoisted(() => ({
     mockParseCertificate: vi.fn(),
 }));
 
-vi.mock('@trezor/device-authenticity', async () => {
-    const actual = await vi.importActual<typeof import('@trezor/device-authenticity')>(
-        '@trezor/device-authenticity',
-    );
-
-    const CONFIG: DeviceAuthenticityConfig = {
+// Don't import actual - just provide the complete mock
+vi.mock('@trezor/device-authenticity', () => ({
+    verifyAuthenticityProof: vi.fn().mockResolvedValue({
+        valid: true,
+        caPubKey: 'test-ca-pubkey',
+        rootPubKey: T2B1rootPubKeyOptiga,
+    }),
+    parseCertificate: mockParseCertificate,
+    deviceAuthenticityConfig: {
         version: 1,
         T2B1: { rootPubKeysOptiga: [T2B1rootPubKeyOptiga] },
         T3B1: { rootPubKeysOptiga: [] },
@@ -49,54 +52,15 @@ vi.mock('@trezor/device-authenticity', async () => {
             rootPubKeysOptiga: [],
             rootPubKeysTropic: ['cd318dc8405ae4f4144e3284dcb7b0cb0f0c2195c2ca14a0f6fccd9104e32a4b'],
         },
-    };
-
-    const BLACKLIST_CONFIG: DeviceAuthenticityBlacklistConfig = {
+    },
+    deviceAuthenticityBlacklistConfig: {
         version: 1,
         blacklistedCaPubKeys: [],
         debug: {
             blacklistedCaPubKeys: [],
         },
-    };
-
-    return {
-        ...actual,
-        deviceAuthenticityConfig: CONFIG,
-        deviceAuthenticityBlacklistConfig: BLACKLIST_CONFIG,
-        verifyAuthenticityProof: vi.fn().mockResolvedValue({
-            valid: true,
-            caPubKey: 'test-ca-pubkey',
-            rootPubKey: T2B1rootPubKeyOptiga,
-        }),
-    };
-});
-
-let shouldSignatureVerifySucceed = true;
-
-vi.mock('crypto', async () => {
-    const actual = await vi.importActual<typeof import('crypto')>('crypto');
-
-    return {
-        ...actual,
-        createVerify: vi.fn().mockImplementation(algorithm => {
-            const verify = actual.createVerify(algorithm);
-
-            verify.update = vi.fn().mockReturnValue(verify);
-            verify.verify = vi.fn().mockImplementation(() => shouldSignatureVerifySucceed);
-
-            return verify;
-        }),
-        webcrypto: {
-            subtle: {
-                importKey: vi.fn().mockResolvedValue({}),
-                exportKey: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
-                verify: vi
-                    .fn()
-                    .mockImplementation(() => Promise.resolve(shouldSignatureVerifySucceed)),
-            },
-        },
-    };
-});
+    },
+}));
 
 const publicKey = getOrThrowTest(
     PublicKey.from('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2'),
@@ -132,7 +96,6 @@ const createMockDeps = (
 describe(storageRegisterOperation.name, () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        shouldSignatureVerifySucceed = true;
         vi.mocked(verifyAuthenticityProof).mockResolvedValue({
             valid: true,
             caPubKey: 'test-ca-pubkey',

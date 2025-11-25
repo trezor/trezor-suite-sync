@@ -19,66 +19,30 @@ import {
 import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 
-vi.mock('@trezor/device-authenticity', async () => {
-    const actual = await vi.importActual<typeof import('@trezor/device-authenticity')>(
-        '@trezor/device-authenticity',
-    );
-
-    return {
-        ...actual,
-        verifyAuthenticityProof: vi.fn().mockResolvedValue({
-            valid: true,
-            caPubKey: 'test-ca-pubkey',
-            rootPubKey: 'test-root-pubkey',
-        }),
-        parseCertificate: vi.fn().mockReturnValue({
-            tbsCertificate: {
-                subjectPublicKeyInfo: {
-                    algorithm: {
-                        algorithmName: 'P-256',
-                    },
-                    bits: {
-                        bytes: Buffer.from(
-                            '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
-                            'hex',
-                        ),
-                    },
+vi.mock('@trezor/device-authenticity', () => ({
+    verifyAuthenticityProof: vi.fn().mockResolvedValue({
+        valid: true,
+        caPubKey: 'test-ca-pubkey',
+        rootPubKey: 'test-root-pubkey',
+    }),
+    parseCertificate: vi.fn().mockReturnValue({
+        tbsCertificate: {
+            subjectPublicKeyInfo: {
+                algorithm: {
+                    algorithmName: 'P-256',
+                },
+                bits: {
+                    bytes: Buffer.from(
+                        '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
+                        'hex',
+                    ),
                 },
             },
-        }),
-    };
-});
-
-vi.mock('crypto', async () => {
-    const actual = await vi.importActual<typeof import('crypto')>('crypto');
-
-    return {
-        ...actual,
-        createVerify: vi.fn().mockImplementation(algorithm => {
-            const verify = actual.createVerify(algorithm);
-            const originalUpdate = verify.update.bind(verify);
-
-            verify.update = vi.fn().mockImplementation(data => {
-                originalUpdate(data);
-
-                return verify;
-            });
-            verify.verify = vi.fn().mockReturnValue(true);
-
-            return verify;
-        }),
-    };
-});
-
-vi.stubGlobal('crypto', {
-    ...globalThis.crypto,
-    subtle: {
-        ...globalThis.crypto?.subtle,
-        importKey: vi.fn().mockResolvedValue({}),
-        exportKey: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
-        verify: vi.fn().mockResolvedValue(true),
-    } as any,
-});
+        },
+    }),
+    deviceAuthenticityConfig: {},
+    deviceAuthenticityBlacklistConfig: {},
+}));
 
 const publicKey = getOrThrowTest(PublicKey.from('test-pubkey-123'));
 const size100 = getOrThrowTest(Size.from(100));
