@@ -3,8 +3,8 @@ import type { LimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import type { ServerType } from '../types.js';
 import { storageAddEndpoint } from './endpoints/add/storageAddEndpoint.js';
 import { storageAskEndpoint } from './endpoints/ask/storageAskEndpoint.js';
+import { storageDeleteEndpoint } from './endpoints/delete/storageDeleteEndpoint.js';
 import { storageRegisterEndpoint } from './endpoints/register/storageRegisterEndpoint.js';
-import { storageTransferEndpoint } from './endpoints/transfer/storageTransferEndpoint.js';
 
 export type RegisterStorageEndpointsDeps = {
     server: ServerType;
@@ -39,8 +39,8 @@ export const registerStorageEndpoints = ({
         }),
     );
     server.post(
-        '/storage/transfer',
-        storageTransferEndpoint.schema,
-        storageTransferEndpoint.createHandler({ limitStorage }),
+        '/storage/delete',
+        storageDeleteEndpoint.schema,
+        storageDeleteEndpoint.createHandler({ limitStorage }),
     );
 };

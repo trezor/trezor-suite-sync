@@ -18,7 +18,7 @@ export type AssignSpaceToOwnerResult = {
     ownerStorageLimit: number | null;
 };
 
-const OWNER_ID_BURN = '0' as OwnerId;
+export const OWNER_ID_BURN = '0' as OwnerId;
 
 type NoSpaceAllowance = ReturnType<typeof noSpaceAllowanceErr>;
 
@@ -55,28 +55,41 @@ export const assignSpaceToOwner = ({
         return subtractResult;
     }
 
-    let ownerStorageLimit: number | null = null;
+    if (ownerId === OWNER_ID_BURN) {
+        const reselectResult = getLimitsForPubkey({ sqlite, publicKey });
 
-    if (ownerId !== OWNER_ID_BURN) {
-        const upsertResult = sqlite.exec<{}>(sql.prepared`
-            INSERT INTO ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} ("ownerId", "storageLimit")
-            VALUES (${ownerId}, ${size})
-            ON CONFLICT("ownerId") DO UPDATE SET
-                "storageLimit" = "storageLimit" + ${size};
-        `);
-
-        if (!upsertResult.ok) {
-            return upsertResult;
+        if (!reselectResult.ok) {
+            return reselectResult;
         }
 
-        const ownerResult = getLimitsForOwner({ sqlite, ownerId });
-
-        if (!ownerResult.ok) {
-            return ownerResult;
+        if (reselectResult.value === null) {
+            return err(consistencyError('Public key limits disappeared after assignment'));
         }
 
-        ownerStorageLimit = ownerResult.value;
+        return ok({
+            publicKeyLimits: reselectResult.value,
+            ownerStorageLimit: null,
+        });
     }
+
+    const upsertResult = sqlite.exec<{}>(sql.prepared`
+        INSERT INTO ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} ("ownerId", "storageLimit")
+        VALUES (${ownerId}, ${size})
+        ON CONFLICT("ownerId") DO UPDATE SET
+            "storageLimit" = "storageLimit" + ${size};
+    `);
+
+    if (!upsertResult.ok) {
+        return upsertResult;
+    }
+
+    const ownerResult = getLimitsForOwner({ sqlite, ownerId });
+
+    if (!ownerResult.ok) {
+        return ownerResult;
+    }
+
+    const ownerStorageLimit = ownerResult.value;
 
     const reselectResult = getLimitsForPubkey({ sqlite, publicKey });
 
