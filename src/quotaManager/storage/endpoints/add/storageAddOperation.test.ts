@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
     StorageAddDeps,
-    type StorageAddInput,
+    type StorageAddInputParsed,
     storageAddOperation,
 } from './storageAddOperation.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
@@ -72,7 +72,7 @@ const certificateChain = {
 };
 const deviceModel = 'T2B1';
 
-const createMockInput = (overrides?: Partial<StorageAddInput>): StorageAddInput => ({
+const createMockInput = (overrides?: Partial<StorageAddInputParsed>): StorageAddInputParsed => ({
     publicKey,
     ownerId,
     size: size20,

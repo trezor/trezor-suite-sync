@@ -69,34 +69,75 @@ const validateDevicePayload = async ({
     }
 };
 
-export const validateProofAndCertificate = async (
+type ValidateProofParams = {
+    proof: Proof;
+    certificateChain: { deviceCert: string; caCert: string };
+    publicKey: PublicKey;
+    challenge: Challenge;
+    size: Size;
+    deviceModel: string;
+    prefix: string;
+    ownerId?: OwnerId;
+};
+
+const validateProofAndCertificateInternal = async ({
+    proof,
+    certificateChain,
+    publicKey,
+    challenge,
+    size,
+    deviceModel,
+    prefix,
+    ownerId,
+}: ValidateProofParams): Promise<
+    Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>
+> => {
+    const prefixBuffer = Buffer.from(prefix);
+    const publicKeyBuffer = hexToBuffer(publicKey.toString());
+    const challengeBuffer = hexToBuffer(challenge.toString());
+    const sizeBuffer = numberToBuffer(Number(size));
+
+    const payloadChunks = [
+        getChunkSize(prefixBuffer.length),
+        prefixBuffer,
+        getChunkSize(publicKeyBuffer.length),
+        publicKeyBuffer,
+    ];
+
+    if (ownerId !== undefined) {
+        const ownerIdBuffer = Buffer.from(ownerId, 'utf8');
+        payloadChunks.push(getChunkSize(ownerIdBuffer.length), ownerIdBuffer);
+    }
+
+    payloadChunks.push(
+        getChunkSize(challengeBuffer.length),
+        challengeBuffer,
+        getChunkSize(sizeBuffer.length),
+        sizeBuffer,
+    );
+
+    return await validateDevicePayload({ proof, certificateChain, deviceModel, payloadChunks });
+};
+
+export const validateProofAndCertificate = (
     proof: Proof,
     certificateChain: { deviceCert: string; caCert: string },
     publicKey: PublicKey,
     challenge: Challenge,
     size: Size,
     deviceModel: string,
-): Promise<Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>> => {
-    const prefix = Buffer.from('EvoluSignRegistrationRequestV1:');
-    const publicKeyBuffer = hexToBuffer(publicKey.toString());
-    const challengeBuffer = hexToBuffer(challenge.toString());
-    const sizeBuffer = numberToBuffer(Number(size));
+): Promise<Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>> =>
+    validateProofAndCertificateInternal({
+        proof,
+        certificateChain,
+        publicKey,
+        challenge,
+        size,
+        deviceModel,
+        prefix: 'EvoluSignRegistrationRequestV1:',
+    });
 
-    const payloadChunks = [
-        getChunkSize(prefix.length),
-        prefix,
-        getChunkSize(publicKeyBuffer.length),
-        publicKeyBuffer,
-        getChunkSize(challengeBuffer.length),
-        challengeBuffer,
-        getChunkSize(sizeBuffer.length),
-        sizeBuffer,
-    ];
-
-    return await validateDevicePayload({ proof, certificateChain, deviceModel, payloadChunks });
-};
-
-export const validateProofAndCertificateForAdd = async (
+export const validateProofAndCertificateForAdd = (
     proof: Proof,
     certificateChain: { deviceCert: string; caCert: string },
     publicKey: PublicKey,
@@ -104,25 +145,14 @@ export const validateProofAndCertificateForAdd = async (
     size: Size,
     ownerId: OwnerId,
     deviceModel: string,
-): Promise<Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>> => {
-    const prefix = Buffer.from('EvoluAddSpaceToOwnerV1:');
-    const publicKeyBuffer = hexToBuffer(publicKey.toString());
-    const ownerIdBuffer = Buffer.from(ownerId, 'utf8');
-    const challengeBuffer = hexToBuffer(challenge.toString());
-    const sizeBuffer = numberToBuffer(Number(size));
-
-    const payloadChunks = [
-        getChunkSize(prefix.length),
-        prefix,
-        getChunkSize(publicKeyBuffer.length),
-        publicKeyBuffer,
-        getChunkSize(ownerIdBuffer.length),
-        ownerIdBuffer,
-        getChunkSize(challengeBuffer.length),
-        challengeBuffer,
-        getChunkSize(sizeBuffer.length),
-        sizeBuffer,
-    ];
-
-    return await validateDevicePayload({ proof, certificateChain, deviceModel, payloadChunks });
-};
+): Promise<Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>> =>
+    validateProofAndCertificateInternal({
+        proof,
+        certificateChain,
+        publicKey,
+        challenge,
+        size,
+        deviceModel,
+        prefix: 'EvoluAddSpaceToOwnerV1:',
+        ownerId,
+    });

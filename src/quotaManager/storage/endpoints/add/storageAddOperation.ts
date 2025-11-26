@@ -1,11 +1,29 @@
 import { OwnerId, err, ok } from '@evolu/common';
+import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
 import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
 import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
 import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import { OWNER_ID_BURN } from '../../../../storage/limitStorage/methods/assignSpaceToOwner.js';
 import { Result } from '../../../types.js';
 import { validateProofAndCertificateForAdd } from '../../utils/validateProofAndCertificate.js';
+
+type OwnerIdParseResult = { ok: true; value: OwnerId } | { ok: false; error: unknown };
+
+export const parseOwnerId = (value: string): OwnerIdParseResult => {
+    if (value === OWNER_ID_BURN) {
+        return { ok: true, value: OWNER_ID_BURN };
+    }
+
+    const result = OwnerId.from(value);
+
+    if (!result.ok) {
+        return { ok: false, error: result.error };
+    }
+
+    return { ok: true, value: result.value };
+};
 
 type StorageAddError =
     | 'ChallengeValidationFailed'
@@ -22,7 +40,7 @@ export type StorageAddDeps = {
 
 export type StorageAddInput = {
     publicKey: PublicKey;
-    ownerId: OwnerId;
+    ownerId: string;
     size: Size;
     challenge: Challenge;
     sessionId: SessionId;
@@ -31,7 +49,11 @@ export type StorageAddInput = {
         deviceCert: string;
         caCert: string;
     };
-    deviceModel: string;
+    deviceModel: keyof typeof PROTO.DeviceModelInternal;
+};
+
+export type StorageAddInputParsed = Omit<StorageAddInput, 'ownerId'> & {
+    ownerId: OwnerId;
 };
 
 export type StorageAddOutput = {
@@ -41,7 +63,7 @@ export type StorageAddOutput = {
 
 export const storageAddOperation = async (
     deps: StorageAddDeps,
-    input: StorageAddInput,
+    input: StorageAddInputParsed,
 ): Promise<Result<StorageAddOutput, StorageAddError>> => {
     const { challengeStorage, limitStorage } = deps;
     const { publicKey, ownerId, size, challenge, sessionId, proof, certificateChain, deviceModel } =

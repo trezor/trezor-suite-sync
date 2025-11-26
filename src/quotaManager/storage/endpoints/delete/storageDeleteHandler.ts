@@ -1,19 +1,19 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { transferEvoluSchema } from './storageTransferSchema.js';
+import { deleteEvoluSchema } from './storageDeleteSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
 import { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 
-export type TransferHandlerDeps = {
+export type DeleteHandlerDeps = {
     limitStorage: LimitStorage;
 };
 
-type TransferRequest = FastifyRequest<{
-    Body: typeof transferEvoluSchema.Type;
+type DeleteRequest = FastifyRequest<{
+    Body: typeof deleteEvoluSchema.Type;
 }>;
 
-export const storageTransferHandler =
-    (deps: TransferHandlerDeps) => (request: TransferRequest, reply: FastifyReply) => {
+export const storageDeleteHandler =
+    (deps: DeleteHandlerDeps) => (request: DeleteRequest, reply: FastifyReply) => {
         const { publicKey, ownerId, size } = request.body;
 
         const result = deps.limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
