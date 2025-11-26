@@ -1,9 +1,7 @@
-name: "[Build/Deploy] test evolu-relay image"
+name: "[Build/Deploy] test suite-sync image"
 
 on:
   push:
-    tags:
-      - "v*.*.*"
     branches:
       - main
   pull_request:
@@ -20,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-evolu-relay-image:
+  build-suite-sync-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -44,11 +42,10 @@ jobs:
         uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893
         with:
           images: |
-            ghcr.io/trezor/evolu-relay
+            ghcr.io/trezor/suite-sync
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=ref,event=tag
 
       - name: Build and push base image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
@@ -56,7 +53,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -65,11 +62,11 @@ jobs:
           build-args: |
             BUILDKIT_INLINE_CACHE=1
 
-  deploy-evolu-relay-image:
+  deploy-suite-sync-image:
     if: github.ref == 'refs/heads/main'
-    runs-on: evolu-deploy
-    needs: build-evolu-relay-image
+    runs-on: dev-suite-sync-deploy
+    needs: build-suite-sync-image
     steps:
       - name: Restart service to pull new image
         run: |
-          sudo /run/current-system/sw/bin/systemctl restart docker-evolu-relay.service
+          sudo /run/current-system/sw/bin/systemctl restart docker-suite-sync.service
