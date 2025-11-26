@@ -1,25 +1,13 @@
-import { OwnerId } from '@evolu/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import { type StorageAddDeps, storageAddOperation } from './storageAddOperation.js';
+import {
+    type StorageAddDeps,
+    type StorageAddInputParsed,
+    parseOwnerId,
+    storageAddOperation,
+} from './storageAddOperation.js';
 import { storageAddEvoluSchema } from './storageAddSchema.js';
 import { exhaustive } from '../../../../exhaustive.js';
-
-type OwnerIdParseResult = { ok: true; value: OwnerId } | { ok: false; error: unknown };
-
-const parseOwnerId = (value: string): OwnerIdParseResult => {
-    if (value === '0') {
-        return { ok: true, value: value as OwnerId };
-    }
-
-    const result = OwnerId.from(value);
-
-    if (!result.ok) {
-        return { ok: false, error: result.error };
-    }
-
-    return { ok: true, value: result.value };
-};
 
 type StorageAddRequest = FastifyRequest<{
     Body: typeof storageAddEvoluSchema.Type;
@@ -37,7 +25,7 @@ export const storageAddHandler =
         const result = await storageAddOperation(deps, {
             ...rest,
             ownerId: ownerIdResult.value,
-        });
+        } as StorageAddInputParsed);
 
         if (!result.ok) {
             const { error } = result;
