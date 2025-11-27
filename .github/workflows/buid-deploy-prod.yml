@@ -67,14 +67,3 @@ jobs:
       - name: Restart service to pull new image
         run: |
           sudo /run/current-system/sw/bin/systemctl restart docker-suite-sync.service
-
-  deploy-evolu-relay-image-specific-tag:
-    if: github.ref == 'refs/heads/main'
-    runs-on: dev-suite-sync-deploy
-    needs: build-suite-sync-image
-    steps:
-      - name: Update container with new image
-        run: |
-          # Use commit SHA as the image tag to ensure we get the latest build
-          COMMIT_SHA="${{ github.sha }}"
-          sudo /usr/local/bin/update-suite-sync-image.sh "${COMMIT_SHA}"
