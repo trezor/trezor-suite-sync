@@ -29,11 +29,14 @@ describe('challengeStorage', () => {
         challengeStorage = challengeStorageResult.value;
     });
 
-    it('stores challenge successfully', () => {
-        const result = challengeStorage.storeChallenge(session123, challengeABC);
+    it('stores challenge successfully', async () => {
+        const result = await challengeStorage.storeChallenge(session123, challengeABC);
         expect(result.ok).toBe(true);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
+        const isValid = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeABC,
+        );
         assert(isValid.ok);
         expect(isValid.value).toBe(true);
     });

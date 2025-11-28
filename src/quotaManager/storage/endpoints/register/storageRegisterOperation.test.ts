@@ -308,7 +308,7 @@ describe(storageRegisterOperation.name, () => {
     it('returns SqliteError when challengeStorage.validateAndConsumeChallenge fails', async () => {
         const challengeStorage: ChallengeStorage = {
             validateAndConsumeChallenge: () =>
-                err({ type: 'SqliteError', error: new Error('Test SQLite error') } as any),
+                err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
             storeChallenge: () => ok(undefined),
             cleanupExpiredChallenges: () => ok(undefined),
         };
@@ -328,7 +328,7 @@ describe(storageRegisterOperation.name, () => {
 
         expect(result.ok).toBe(false);
         if (!result.ok) {
-            expect(result.error).toBe('SqliteError');
+            expect(result.error).toBe('DatabaseError');
         }
     });
 
@@ -341,7 +341,7 @@ describe(storageRegisterOperation.name, () => {
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
             getLimitForPubkey: () =>
-                err({ type: 'SqliteError', error: new Error('Test SQLite error') } as any),
+                err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
             addLimitToPubkey: () =>
                 ok({
                     totalStorageSize: size100,
@@ -355,7 +355,7 @@ describe(storageRegisterOperation.name, () => {
 
         expect(result.ok).toBe(false);
         if (!result.ok) {
-            expect(result.error).toBe('SqliteError');
+            expect(result.error).toBe('DatabaseError');
         }
     });
 

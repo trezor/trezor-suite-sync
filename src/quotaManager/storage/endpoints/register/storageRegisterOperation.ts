@@ -8,7 +8,7 @@ import { Result } from '../../../types.js';
 import { validateProofAndCertificate } from '../../utils/validateProofAndCertificate.js';
 
 type RegisterStorageError =
-    | 'SqliteError'
+    | 'DatabaseError'
     | 'ConsistencyError'
     | 'ChallengeValidationFailed'
     | 'StorageLimitExceeded'
@@ -45,13 +45,13 @@ export const storageRegisterOperation = async (
 ): Promise<Result<RegisterOperationOutput, RegisterStorageError>> => {
     const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } = input;
 
-    const challengeValidation = deps.challengeStorage.validateAndConsumeChallenge(
+    const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge(
         sessionId,
         challenge,
     );
 
     if (!challengeValidation.ok) {
-        return err('SqliteError');
+        return err('DatabaseError');
     }
 
     if (!challengeValidation.value) {
@@ -71,10 +71,10 @@ export const storageRegisterOperation = async (
         return err(proofValidation.error);
     }
 
-    const currentLimits = deps.limitStorage.getLimitForPubkey({ publicKey });
+    const currentLimits = await deps.limitStorage.getLimitForPubkey({ publicKey });
 
     if (!currentLimits.ok) {
-        return err('SqliteError');
+        return err('DatabaseError');
     }
 
     const currentTotal = currentLimits.value?.totalStorageSize ?? (0 as Size);
@@ -84,7 +84,7 @@ export const storageRegisterOperation = async (
         return err('StorageLimitExceeded');
     }
 
-    const result = deps.limitStorage.addLimitToPubkey({ publicKey, size });
+    const result = await deps.limitStorage.addLimitToPubkey({ publicKey, size });
 
     if (!result.ok) {
         return err(result.error.type);

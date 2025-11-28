@@ -7,7 +7,7 @@ import {
 } from '../../../../storage/challengeStorage/challengeStorage.js';
 import { Result } from '../../../types.js';
 
-type ChallengeCreateError = { type: 'SqliteError' } | { type: 'InvalidChallenge' };
+type ChallengeCreateError = { type: 'DatabaseError' } | { type: 'InvalidChallenge' };
 
 export type ChallengeCreateOperationDeps = {
     challengeStorage: Pick<ChallengeStorage, 'storeChallenge' | 'cleanupExpiredChallenges'>;
@@ -22,10 +22,10 @@ export type ChallengeCreateOperationOutput = {
     challenge: Challenge;
 };
 
-export const challengeCreateOperation = (
+export const challengeCreateOperation = async (
     deps: ChallengeCreateOperationDeps,
     input: ChallengeCreateOperationInput,
-): Result<ChallengeCreateOperationOutput, ChallengeCreateError> => {
+): Promise<Result<ChallengeCreateOperationOutput, ChallengeCreateError>> => {
     const { sessionId } = input;
 
     const challengeResult = Challenge.from(deps.createRandomBytes(32));
@@ -36,14 +36,14 @@ export const challengeCreateOperation = (
 
     const challenge = challengeResult.value;
 
-    const storeResult = deps.challengeStorage.storeChallenge(sessionId, challenge);
+    const storeResult = await deps.challengeStorage.storeChallenge(sessionId, challenge);
 
     if (!storeResult.ok) {
         return err({ type: storeResult.error.type });
     }
 
     // Cleanup expired challenges (the best effort, don't fail if it errors)
-    deps.challengeStorage.cleanupExpiredChallenges();
+    await deps.challengeStorage.cleanupExpiredChallenges();
 
     return ok({ challenge });
 };

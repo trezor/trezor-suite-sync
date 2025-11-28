@@ -1,13 +1,15 @@
-import { OwnerId, type Result, type Sqlite, type SqliteError, err, ok, sql } from '@evolu/common';
+import { OwnerId, type Result, err, ok } from '@evolu/common';
 
 import { type ConsistencyError, consistencyError, noSpaceAllowanceErr } from '../../../errors.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME, PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
 import { type GetLimitsForPubkeyResponse, getLimitsForPubkey } from './getLimitsForPubkey.js';
+import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
+import { LimitStorageDatabase } from '../preparePostgreSql.js';
 
 export type AssignSpaceToOwnerParams = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
     publicKey: PublicKey;
     ownerId: OwnerId;
     size: Size;
@@ -22,19 +24,18 @@ export const OWNER_ID_BURN = '0' as OwnerId;
 
 type NoSpaceAllowance = ReturnType<typeof noSpaceAllowanceErr>;
 
-export const assignSpaceToOwner = ({
-    sqlite,
+export const assignSpaceToOwner = async ({
+    db,
     publicKey,
     ownerId,
     size,
-}: AssignSpaceToOwnerParams): Result<
-    AssignSpaceToOwnerResult,
-    SqliteError | NoSpaceAllowance | ConsistencyError
+}: AssignSpaceToOwnerParams): Promise<
+    Result<AssignSpaceToOwnerResult, DatabaseError | NoSpaceAllowance | ConsistencyError>
 > => {
-    const limitsResult = getLimitsForPubkey({ sqlite, publicKey });
+    const limitsResult = await getLimitsForPubkey({ db, publicKey });
 
     if (!limitsResult.ok) {
-        return limitsResult;
+        return err({ type: 'DatabaseError', error: 'limitResult error' });
     }
 
     if (limitsResult.value === null) {
@@ -45,18 +46,22 @@ export const assignSpaceToOwner = ({
         return err(noSpaceAllowanceErr('Insufficient unspent space for the given publicKey'));
     }
 
-    const subtractResult = sqlite.exec<{}>(sql.prepared`
-        UPDATE ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)}
-        SET "unspendStorageSize" = "unspendStorageSize" - ${size}
-        WHERE "publicKey" = ${publicKey};
-    `);
+    const subtractResult = await dbQuery(() =>
+        db
+            .updateTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
+            .set({
+                unspendStorageSize: eb => eb('unspendStorageSize', '-', size),
+            })
+            .where('publicKey', '=', publicKey)
+            .executeTakeFirst(),
+    );
 
     if (!subtractResult.ok) {
         return subtractResult;
     }
 
     if (ownerId === OWNER_ID_BURN) {
-        const reselectResult = getLimitsForPubkey({ sqlite, publicKey });
+        const reselectResult = await getLimitsForPubkey({ db, publicKey });
 
         if (!reselectResult.ok) {
             return reselectResult;
@@ -72,18 +77,26 @@ export const assignSpaceToOwner = ({
         });
     }
 
-    const upsertResult = sqlite.exec<{}>(sql.prepared`
-        INSERT INTO ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} ("ownerId", "storageLimit")
-        VALUES (${ownerId}, ${size})
-        ON CONFLICT("ownerId") DO UPDATE SET
-            "storageLimit" = "storageLimit" + ${size};
-    `);
+    const upsertResult = await dbQuery(() =>
+        db
+            .insertInto(OWNER_STORAGE_LIMITS_TABLE_NAME)
+            .values({
+                ownerId,
+                storageLimit: size,
+            })
+            .onConflict(oc =>
+                oc.column('ownerId').doUpdateSet({
+                    storageLimit: eb => eb('storageLimit', '+', size),
+                }),
+            )
+            .executeTakeFirst(),
+    );
 
     if (!upsertResult.ok) {
         return upsertResult;
     }
 
-    const ownerResult = getLimitsForOwner({ sqlite, ownerId });
+    const ownerResult = await getLimitsForOwner({ db, ownerId });
 
     if (!ownerResult.ok) {
         return ownerResult;
@@ -91,7 +104,7 @@ export const assignSpaceToOwner = ({
 
     const ownerStorageLimit = ownerResult.value;
 
-    const reselectResult = getLimitsForPubkey({ sqlite, publicKey });
+    const reselectResult = await getLimitsForPubkey({ db, publicKey });
 
     if (!reselectResult.ok) {
         return reselectResult;

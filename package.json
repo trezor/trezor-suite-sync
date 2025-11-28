@@ -22,12 +22,17 @@
         "dotenv": "^17.2.3",
         "eslint-plugin-import": "^2.32.0",
         "fastify": "^5.5.0",
+        "kysely": "^0.28.8",
+        "pg": "^8.16.3",
         "tslib": "^2.8.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.38.0",
         "@jest/globals": "^30.2.0",
+        "@types/better-sqlite3": "^7.6.13",
         "@types/node": "^24.9.1",
+        "@types/pg": "^8",
+        "better-sqlite3": "^12.4.6",
         "eslint": "^9.38.0",
         "globals": "^16.4.0",
         "prettier": "^3.6.2",
