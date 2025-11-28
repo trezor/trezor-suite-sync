@@ -6,6 +6,15 @@
 
 ### Run
 
+Run database (1st terminal):
+
+```bash
+cp .env.sample .env 
+docker compose up
+```
+
+Run node stuff (2nd terminal):
+
 ```bash
 nvm i
 yarn
@@ -25,3 +34,8 @@ QUOTA_MANAGER_PORT=1111 RELAY_PORT=2222 yarn start
 nvm i
 yarn dev
 ```
+
+### API
+
+- Good API tool to play with API: https://www.usebruno.com/downloads
+- We have collection for this
