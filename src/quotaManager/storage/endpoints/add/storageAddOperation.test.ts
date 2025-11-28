@@ -106,20 +106,22 @@ describe(storageAddOperation.name, () => {
 
     it('assigns space when proof and challenge are valid', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
-                    },
-                    ownerStorageLimit: 20 as Size,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: 30 as Size,
+                        },
+                        ownerStorageLimit: 20 as Size,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -135,20 +137,22 @@ describe(storageAddOperation.name, () => {
 
     it('allows burning space when ownerId equals zero', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
-                    },
-                    ownerStorageLimit: null,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: 30 as Size,
+                        },
+                        ownerStorageLimit: null,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -164,20 +168,22 @@ describe(storageAddOperation.name, () => {
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(false),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(false)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: size50,
-                    },
-                    ownerStorageLimit: 20 as Size,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: size50 as Size,
+                        },
+                        ownerStorageLimit: 20 as Size,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -199,25 +205,27 @@ describe(storageAddOperation.name, () => {
                     if (!state.hasBeenConsumed) {
                         state.hasBeenConsumed = true;
 
-                        return ok(true);
+                        return Promise.resolve(ok(true));
                     }
 
-                    return ok(false);
+                    return Promise.resolve(ok(false));
                 },
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
         })();
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
-                    },
-                    ownerStorageLimit: 20 as Size,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: 30 as Size,
+                        },
+                        ownerStorageLimit: 20 as Size,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -241,20 +249,22 @@ describe(storageAddOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: size50,
-                    },
-                    ownerStorageLimit: 20 as Size,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: size50,
+                        },
+                        ownerStorageLimit: 20 as Size,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -269,13 +279,14 @@ describe(storageAddOperation.name, () => {
 
     it('returns NoStorageAllowance when there is insufficient unspent space', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
-            assignSpaceToOwner: () => err(noSpaceAllowanceErr('Insufficient unspent space')),
+            assignSpaceToOwner: () =>
+                Promise.resolve(err(noSpaceAllowanceErr('Insufficient unspent space'))),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -290,13 +301,14 @@ describe(storageAddOperation.name, () => {
 
     it('returns ConsistencyError when limit storage returns consistency error', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
-            assignSpaceToOwner: () => err(consistencyError('Public key limits disappeared')),
+            assignSpaceToOwner: () =>
+                Promise.resolve(err(consistencyError('Public key limits disappeared'))),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -312,20 +324,24 @@ describe(storageAddOperation.name, () => {
     it('returns SqliteError when challenge storage returns error', async () => {
         const challengeStorage: ChallengeStorage = {
             validateAndConsumeChallenge: () =>
-                err({ type: 'SqliteError', error: new Error('Test SQLite error') } as any),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+                Promise.resolve(
+                    err({ type: 'SqliteError', error: new Error('Test SQLite error') } as any),
+                ),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'assignSpaceToOwner'> = {
             assignSpaceToOwner: () =>
-                ok({
-                    publicKeyLimits: {
-                        totalStorageSize: size50,
-                        unspendStorageSize: size50,
-                    },
-                    ownerStorageLimit: 20 as Size,
-                }),
+                Promise.resolve(
+                    ok({
+                        publicKeyLimits: {
+                            totalStorageSize: size50,
+                            unspendStorageSize: size50,
+                        },
+                        ownerStorageLimit: 20 as Size,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
