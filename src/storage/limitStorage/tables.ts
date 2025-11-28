@@ -33,6 +33,6 @@ export const createChallengesTableIfNotExists = async (db: LimitStorageDatabase)
             .ifNotExists()
             .addColumn('sessionId', 'text', col => col.notNull().primaryKey())
             .addColumn('challenge', 'text', col => col.notNull())
-            .addColumn('createdAt', 'integer', col => col.notNull())
+            .addColumn('createdAt', 'bigint', col => col.notNull())
             .execute(),
     );

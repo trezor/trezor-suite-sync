@@ -13,6 +13,8 @@ cp .env.sample .env
 docker compose up
 ```
 
+> If you need to purge database for test purposed: `docker rm postgres`
+
 Run node stuff (2nd terminal):
 
 ```bash
