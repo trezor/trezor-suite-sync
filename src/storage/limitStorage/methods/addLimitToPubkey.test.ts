@@ -2,8 +2,8 @@ import { assert, describe, expect, it } from 'vitest';
 
 import { addLimitToPubkey } from './addLimitToPubkey.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { prepareSqlite } from '../../prepareSqlite.js';
 import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
+import { prepareTestDatabase } from '../prepareTestDatabase.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
 const PublicKeyBBB = getOrThrowTest(PublicKey.from('pubkey_BBBB'));
@@ -16,20 +16,19 @@ const size100 = getOrThrowTest(Size.from(100));
 const size200 = getOrThrowTest(Size.from(200));
 
 const prepareSql = async () => {
-    const sqlite = await prepareSqlite({ inMemory: true });
-    assert(sqlite.ok);
+    const db = prepareTestDatabase();
 
     // Todo: do not create whole LimitStorage just to create table, refactor
-    createLimitStorage({ sqlite: sqlite.value });
+    await createLimitStorage({ db });
 
-    return sqlite.value;
+    return db;
 };
 
 describe(addLimitToPubkey.name, () => {
     it('adds limit to the pubkey', async () => {
-        const sqlite = await prepareSql();
+        const db = await prepareSql();
 
-        const result = addLimitToPubkey({ sqlite, publicKey: PublicKeyABCDEFGH, size: size50 });
+        const result = await addLimitToPubkey({ db, publicKey: PublicKeyABCDEFGH, size: size50 });
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(50);
@@ -37,11 +36,11 @@ describe(addLimitToPubkey.name, () => {
     });
 
     it('adds to existing limit for same pubkey', async () => {
-        const sqlite = await prepareSql();
+        const db = await prepareSql();
 
-        addLimitToPubkey({ sqlite, publicKey: PublicKeyABCDEFGH, size: size50 });
+        await addLimitToPubkey({ db, publicKey: PublicKeyABCDEFGH, size: size50 });
 
-        const result = addLimitToPubkey({ sqlite, publicKey: PublicKeyABCDEFGH, size: size30 });
+        const result = await addLimitToPubkey({ db, publicKey: PublicKeyABCDEFGH, size: size30 });
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(80);
@@ -49,9 +48,9 @@ describe(addLimitToPubkey.name, () => {
     });
 
     it('handles zero size addition', async () => {
-        const sqlite = await prepareSql();
+        const db = await prepareSql();
 
-        const result = addLimitToPubkey({ sqlite, publicKey: PublicKeyABCDEFGH, size: size0 });
+        const result = await addLimitToPubkey({ db, publicKey: PublicKeyABCDEFGH, size: size0 });
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(0);
@@ -59,10 +58,10 @@ describe(addLimitToPubkey.name, () => {
     });
 
     it('handles different pubkeys independently', async () => {
-        const sqlite = await prepareSql();
-        addLimitToPubkey({ sqlite, publicKey: PublicKeyAAA, size: size100 });
+        const db = await prepareSql();
+        await addLimitToPubkey({ db, publicKey: PublicKeyAAA, size: size100 });
 
-        const result = addLimitToPubkey({ sqlite, publicKey: PublicKeyBBB, size: size200 });
+        const result = await addLimitToPubkey({ db, publicKey: PublicKeyBBB, size: size200 });
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(200);
