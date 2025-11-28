@@ -7,7 +7,7 @@ import {
     SessionId,
     createChallengeStorage,
 } from '../../../../storage/challengeStorage/challengeStorage.js';
-import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
+import { prepareTestDatabase } from '../../../../storage/limitStorage/prepareTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { registerChallengeEndpoints } from '../../registerChallengeEndpoints.js';
 
@@ -21,10 +21,9 @@ type CreateAppParams = {
 };
 
 const createApp = async (params?: CreateAppParams) => {
-    const sqlite = await prepareSqlite({ inMemory: true });
-    assert(sqlite.ok);
+    const db = prepareTestDatabase();
 
-    const challengeStorage = createChallengeStorage({ sqlite: sqlite.value });
+    const challengeStorage = await createChallengeStorage({ db });
     assert(challengeStorage.ok);
 
     const server = Fastify();
@@ -113,7 +112,10 @@ describe(challengeCreateHandler.name, () => {
         });
 
         const body = JSON.parse(response.body);
-        const isValid = challengeStorage.validateAndConsumeChallenge(session1, body.challenge);
+        const isValid = await challengeStorage.validateAndConsumeChallenge(
+            session1,
+            body.challenge,
+        );
 
         assert(isValid.ok);
         expect(isValid.value).toBe(true);

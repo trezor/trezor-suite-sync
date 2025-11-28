@@ -114,18 +114,20 @@ describe(storageRegisterOperation.name, () => {
 
     it('successfully registers storage for new publicKey', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -183,18 +185,20 @@ describe(storageRegisterOperation.name, () => {
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(false),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(false)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -216,23 +220,25 @@ describe(storageRegisterOperation.name, () => {
                     if (!state.hasBeenConsumed) {
                         state.hasBeenConsumed = true;
 
-                        return ok(true);
+                        return Promise.resolve(ok(true));
                     }
 
-                    return ok(false);
+                    return Promise.resolve(ok(false));
                 },
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
         })();
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size50,
-                    unspendStorageSize: size50,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size50,
+                        unspendStorageSize: size50,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -251,18 +257,20 @@ describe(storageRegisterOperation.name, () => {
 
     it('returns StorageLimitExceeded when limit is exceeded', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size101,
-                    unspendStorageSize: size101,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size101,
+                        unspendStorageSize: size101,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage, { maxStoragePerDevice: 100 });
@@ -277,22 +285,26 @@ describe(storageRegisterOperation.name, () => {
 
     it('returns StorageLimitExceeded when adding to existing storage exceeds limit', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
             getLimitForPubkey: () =>
-                ok({
-                    totalStorageSize: size50,
-                    unspendStorageSize: size50,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size50,
+                        unspendStorageSize: size50,
+                    }),
+                ),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage, { maxStoragePerDevice: 100 });
@@ -308,18 +320,22 @@ describe(storageRegisterOperation.name, () => {
     it('returns SqliteError when challengeStorage.validateAndConsumeChallenge fails', async () => {
         const challengeStorage: ChallengeStorage = {
             validateAndConsumeChallenge: () =>
-                err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+                Promise.resolve(
+                    err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
+                ),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -334,19 +350,23 @@ describe(storageRegisterOperation.name, () => {
 
     it('returns SqliteError when limitStorage.getLimitForPubkey fails', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
             getLimitForPubkey: () =>
-                err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
+                Promise.resolve(
+                    err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
+                ),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -361,15 +381,17 @@ describe(storageRegisterOperation.name, () => {
 
     it('returns ConsistencyError when limitStorage.addLimitToPubkey returns ConsistencyError', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                err({ type: 'ConsistencyError', message: 'Test consistency error' }),
+                Promise.resolve(
+                    err({ type: 'ConsistencyError', message: 'Test consistency error' }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -384,18 +406,20 @@ describe(storageRegisterOperation.name, () => {
 
     it('successfully validates real Trezor Optiga certificate and signature', async () => {
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -416,18 +440,20 @@ describe(storageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -455,18 +481,20 @@ describe(storageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -493,18 +521,20 @@ describe(storageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -532,18 +562,20 @@ describe(storageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
+            validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+            storeChallenge: () => Promise.resolve(ok(undefined)),
+            cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
         };
 
         const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-            getLimitForPubkey: () => ok(null),
+            getLimitForPubkey: () => Promise.resolve(ok(null)),
             addLimitToPubkey: () =>
-                ok({
-                    totalStorageSize: size100,
-                    unspendStorageSize: size100,
-                }),
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspendStorageSize: size100,
+                    }),
+                ),
         };
 
         const deps = createMockDeps(challengeStorage, limitStorage);
@@ -565,18 +597,20 @@ describe(storageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                validateAndConsumeChallenge: () => ok(true),
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
 
             const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-                getLimitForPubkey: () => ok(null),
+                getLimitForPubkey: () => Promise.resolve(ok(null)),
                 addLimitToPubkey: () =>
-                    ok({
-                        totalStorageSize: size100,
-                        unspendStorageSize: size100,
-                    }),
+                    Promise.resolve(
+                        ok({
+                            totalStorageSize: size100,
+                            unspendStorageSize: size100,
+                        }),
+                    ),
             };
 
             const deps = createMockDeps(challengeStorage, limitStorage);
@@ -598,18 +632,20 @@ describe(storageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                validateAndConsumeChallenge: () => ok(true),
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
 
             const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-                getLimitForPubkey: () => ok(null),
+                getLimitForPubkey: () => Promise.resolve(ok(null)),
                 addLimitToPubkey: () =>
-                    ok({
-                        totalStorageSize: size100,
-                        unspendStorageSize: size100,
-                    }),
+                    Promise.resolve(
+                        ok({
+                            totalStorageSize: size100,
+                            unspendStorageSize: size100,
+                        }),
+                    ),
             };
 
             const deps = createMockDeps(challengeStorage, limitStorage);
@@ -631,18 +667,20 @@ describe(storageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                validateAndConsumeChallenge: () => ok(true),
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
 
             const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-                getLimitForPubkey: () => ok(null),
+                getLimitForPubkey: () => Promise.resolve(ok(null)),
                 addLimitToPubkey: () =>
-                    ok({
-                        totalStorageSize: size100,
-                        unspendStorageSize: size100,
-                    }),
+                    Promise.resolve(
+                        ok({
+                            totalStorageSize: size100,
+                            unspendStorageSize: size100,
+                        }),
+                    ),
             };
 
             const deps = createMockDeps(challengeStorage, limitStorage);
@@ -664,18 +702,20 @@ describe(storageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                validateAndConsumeChallenge: () => ok(true),
-                storeChallenge: () => ok(undefined),
-                cleanupExpiredChallenges: () => ok(undefined),
+                validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
+                storeChallenge: () => Promise.resolve(ok(undefined)),
+                cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
             };
 
             const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'> = {
-                getLimitForPubkey: () => ok(null),
+                getLimitForPubkey: () => Promise.resolve(ok(null)),
                 addLimitToPubkey: () =>
-                    ok({
-                        totalStorageSize: size100,
-                        unspendStorageSize: size100,
-                    }),
+                    Promise.resolve(
+                        ok({
+                            totalStorageSize: size100,
+                            unspendStorageSize: size100,
+                        }),
+                    ),
             };
 
             const deps = createMockDeps(challengeStorage, limitStorage);

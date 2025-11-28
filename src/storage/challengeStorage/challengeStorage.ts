@@ -75,6 +75,7 @@ export const createChallengeStorage = async ({
         ): Promise<Result<void, DatabaseError>> => {
             const now = createTime();
 
+            // TODO fix CONSTRAINT err
             const result = await dbQuery(() =>
                 db
                     .insertInto('challenges')
@@ -83,6 +84,12 @@ export const createChallengeStorage = async ({
                         challenge,
                         createdAt: now,
                     })
+                    .onConflict(oc =>
+                        oc.column('sessionId').doUpdateSet({
+                            challenge,
+                            createdAt: now,
+                        }),
+                    )
                     .execute(),
             );
 
