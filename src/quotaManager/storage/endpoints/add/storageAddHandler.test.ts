@@ -17,7 +17,7 @@ import {
     createLimitStorage,
 } from '../../../../storage/limitStorage/limitStorage.js';
 import { addLimitToPubkey } from '../../../../storage/limitStorage/methods/addLimitToPubkey.js';
-import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
+import { prepareTestDatabase } from '../../../../storage/limitStorage/prepareTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { verifyAuthenticityProof } from '../../utils/deviceAuthenticationWrapper.js';
 
@@ -67,16 +67,15 @@ const certificateChain = {
 const deviceModel = 'T2B1';
 
 const createApp = async () => {
-    const sqlite = await prepareSqlite({ inMemory: true });
-    assert(sqlite.ok);
+    const db = prepareTestDatabase();
 
-    const challengeStorageResult = createChallengeStorage({ sqlite: sqlite.value });
+    const challengeStorageResult = await createChallengeStorage({ db });
     assert(challengeStorageResult.ok);
 
-    const limitStorageResult = createLimitStorage({ sqlite: sqlite.value });
+    const limitStorageResult = await createLimitStorage({ db });
     assert(limitStorageResult.ok);
 
-    addLimitToPubkey({ sqlite: sqlite.value, publicKey, size: size50 });
+    addLimitToPubkey({ db, publicKey, size: size50 });
 
     const app = Fastify();
 
@@ -114,7 +113,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
         );
-        const storeResult = challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -147,7 +146,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('39d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'),
         );
-        const storeResult = challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -225,7 +224,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('59d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7953'),
         );
-        const storeResult = challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -255,7 +254,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
         const challenge1 = getOrThrowTest(
             Challenge.from('69d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7964'),
         );
-        const storeResult1 = challengeStorage.storeChallenge(sessionId1, challenge1);
+        const storeResult1 = await challengeStorage.storeChallenge(sessionId1, challenge1);
         assert(storeResult1.ok);
 
         const firstResponse = await app.inject({
@@ -279,7 +278,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
         const challenge2 = getOrThrowTest(
             Challenge.from('79d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7975'),
         );
-        const storeResult2 = challengeStorage.storeChallenge(sessionId2, challenge2);
+        const storeResult2 = await challengeStorage.storeChallenge(sessionId2, challenge2);
         assert(storeResult2.ok);
 
         const response = await app.inject({
