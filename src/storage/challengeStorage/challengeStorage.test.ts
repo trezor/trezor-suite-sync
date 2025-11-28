@@ -7,7 +7,7 @@ import {
     createChallengeStorage,
 } from './challengeStorage.js';
 import { getOrThrowTest } from '../../getOrThrowTest.js';
-import { prepareSqlite } from '../prepareSqlite.js';
+import { prepareTestDatabase } from '../limitStorage/prepareTestDatabase.js';
 
 const session123 = getOrThrowTest(SessionId.from('session-123'));
 const sessionNonExistent = getOrThrowTest(SessionId.from('session-non-existent'));
@@ -21,10 +21,9 @@ describe('challengeStorage', () => {
     let challengeStorage: ChallengeStorage;
 
     beforeEach(async () => {
-        const sqlite = await prepareSqlite({ inMemory: true });
-        assert(sqlite.ok);
+        const db = prepareTestDatabase();
 
-        const challengeStorageResult = createChallengeStorage({ sqlite: sqlite.value });
+        const challengeStorageResult = await createChallengeStorage({ db });
         assert(challengeStorageResult.ok);
         challengeStorage = challengeStorageResult.value;
     });
@@ -41,29 +40,38 @@ describe('challengeStorage', () => {
         expect(isValid.value).toBe(true);
     });
 
-    it('replaces existing challenge for same sessionId', () => {
-        challengeStorage.storeChallenge(session123, challengeOld);
-        challengeStorage.storeChallenge(session123, challengeNew);
+    it('replaces existing challenge for same sessionId', async () => {
+        await challengeStorage.storeChallenge(session123, challengeOld);
+        await challengeStorage.storeChallenge(session123, challengeNew);
 
-        const isOldValid = challengeStorage.validateAndConsumeChallenge(session123, challengeOld);
+        const isOldValid = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeOld,
+        );
         assert(isOldValid.ok);
         expect(isOldValid.value).toBe(false);
 
-        const isNewValid = challengeStorage.validateAndConsumeChallenge(session123, challengeNew);
+        const isNewValid = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeNew,
+        );
         assert(isNewValid.ok);
         expect(isNewValid.value).toBe(true);
     });
 
-    it('validates correct challenge', () => {
-        challengeStorage.storeChallenge(session123, challengeABC);
+    it('validates correct challenge', async () => {
+        await challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
+        const isValid = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeABC,
+        );
         assert(isValid.ok);
         expect(isValid.value).toBe(true);
     });
 
-    it('returns false for non-existent sessionId', () => {
-        const isValid = challengeStorage.validateAndConsumeChallenge(
+    it('returns false for non-existent sessionId', async () => {
+        const isValid = await challengeStorage.validateAndConsumeChallenge(
             sessionNonExistent,
             challengeABC,
         );
@@ -71,33 +79,41 @@ describe('challengeStorage', () => {
         expect(isValid.value).toBe(false);
     });
 
-    it('returns false for wrong challenge', () => {
-        challengeStorage.storeChallenge(session123, challengeABC);
+    it('returns false for wrong challenge', async () => {
+        await challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid = challengeStorage.validateAndConsumeChallenge(session123, challengeWrong);
+        const isValid = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeWrong,
+        );
         assert(isValid.ok);
         expect(isValid.value).toBe(false);
     });
 
-    it('consumes challenge after validation', () => {
-        challengeStorage.storeChallenge(session123, challengeABC);
+    it('consumes challenge after validation', async () => {
+        await challengeStorage.storeChallenge(session123, challengeABC);
 
-        const isValid1 = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
+        const isValid1 = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeABC,
+        );
         assert(isValid1.ok);
         expect(isValid1.value).toBe(true);
 
-        const isValid2 = challengeStorage.validateAndConsumeChallenge(session123, challengeABC);
+        const isValid2 = await challengeStorage.validateAndConsumeChallenge(
+            session123,
+            challengeABC,
+        );
         assert(isValid2.ok);
         expect(isValid2.value).toBe(false);
     });
 
     it('returns false for expired challenge', async () => {
         let currentTime = 1000;
-        const sqlite = await prepareSqlite({ inMemory: true });
-        assert(sqlite.ok);
+        const db = prepareTestDatabase();
 
-        const storageWithTimeResult = createChallengeStorage({
-            sqlite: sqlite.value,
+        const storageWithTimeResult = await createChallengeStorage({
+            db,
             createTime: () => currentTime,
         });
         assert(storageWithTimeResult.ok);
@@ -107,7 +123,7 @@ describe('challengeStorage', () => {
 
         currentTime = 1000 + 31 * 1000;
 
-        const isValid = storageWithTime.validateAndConsumeChallenge(session123, challengeABC);
+        const isValid = await storageWithTime.validateAndConsumeChallenge(session123, challengeABC);
         assert(isValid.ok);
         expect(isValid.value).toBe(false);
     });

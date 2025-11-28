@@ -16,7 +16,7 @@ import {
     Size,
     createLimitStorage,
 } from '../../../../storage/limitStorage/limitStorage.js';
-import { prepareSqlite } from '../../../../storage/prepareSqlite.js';
+import { prepareTestDatabase } from '../../../../storage/limitStorage/prepareTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 
 const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
@@ -57,13 +57,12 @@ type CreateAppParams = {
 };
 
 const createApp = async (params?: CreateAppParams) => {
-    const sqlite = await prepareSqlite({ inMemory: true });
-    assert(sqlite.ok);
+    const db = prepareTestDatabase();
 
-    const challengeStorageResult = createChallengeStorage({ sqlite: sqlite.value });
+    const challengeStorageResult = await createChallengeStorage({ db });
     assert(challengeStorageResult.ok);
 
-    const limitStorageResult = createLimitStorage({ sqlite: sqlite.value });
+    const limitStorageResult = await createLimitStorage({ db });
     assert(limitStorageResult.ok);
 
     const app = Fastify();
@@ -93,7 +92,7 @@ describe(storageRegisterHandler.name, () => {
 
         const sessionId = getOrThrowTest(SessionId.from('session-123'));
         const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
-        const storeResult = challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
         const response = await app.inject({
