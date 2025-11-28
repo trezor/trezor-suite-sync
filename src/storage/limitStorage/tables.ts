@@ -1,23 +1,38 @@
-import { sql } from '@evolu/common';
+import { LimitStorageDatabase } from './preparePostgreSql.js';
+import { dbQuery } from '../utils/dbQuery.js';
 
 export const PUBKEY_STORAGE_LIMITS_TABLE_NAME = 'pubkey_storage_limits';
 export const OWNER_STORAGE_LIMITS_TABLE_NAME = 'owner_storage_limits';
 
-export const createPubkeyLimitTableQueryIfNotExists = sql`
-    create table if not exists ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)} (
-      "publicKey" text not null,
-      "totalStorageSize" int not null,
-      "unspendStorageSize" INT not null,
-      primary key ("publicKey")
-    )
-    strict;
-`;
+export const createPubkeyLimitTableIfNotExists = async (db: LimitStorageDatabase) =>
+    await dbQuery(async () => {
+        await db.schema
+            .createTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
+            .ifNotExists()
+            .addColumn('publicKey', 'text', col => col.notNull().primaryKey())
+            .addColumn('totalStorageSize', 'integer', col => col.notNull())
+            .addColumn('unspendStorageSize', 'integer', col => col.notNull())
+            .execute();
+    });
 
-export const createOwnerLimitTableQueryIfNotExists = sql`
-    create table if not exists ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} (
-      "ownerId" text not null,
-      "storageLimit" int not null,
-      primary key ("ownerId")
-    )
-    strict;
-`;
+export const createOwnerLimitTableIfNotExists = async (db: LimitStorageDatabase) => {
+    await dbQuery(() =>
+        db.schema
+            .createTable(OWNER_STORAGE_LIMITS_TABLE_NAME)
+            .ifNotExists()
+            .addColumn('ownerId', 'text', col => col.notNull().primaryKey())
+            .addColumn('storageLimit', 'integer', col => col.notNull())
+            .execute(),
+    );
+};
+
+export const createChallengesTableIfNotExists = async (db: LimitStorageDatabase) =>
+    await dbQuery(() =>
+        db.schema
+            .createTable('challenges')
+            .ifNotExists()
+            .addColumn('sessionId', 'text', col => col.notNull().primaryKey())
+            .addColumn('challenge', 'text', col => col.notNull())
+            .addColumn('createdAt', 'integer', col => col.notNull())
+            .execute(),
+    );

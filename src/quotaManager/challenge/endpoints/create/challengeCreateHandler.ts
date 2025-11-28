@@ -16,14 +16,14 @@ type ChallengeCreateRequest = FastifyRequest<{
 
 export const challengeCreateHandler =
     (deps: ChallengeCreateHandlerDeps) =>
-    (request: ChallengeCreateRequest, reply: FastifyReply) => {
-        const result = challengeCreateOperation(deps, request.body);
+    async (request: ChallengeCreateRequest, reply: FastifyReply) => {
+        const result = await challengeCreateOperation(deps, request.body);
 
         if (!result.ok) {
             const { type } = result.error;
 
             switch (type) {
-                case 'SqliteError':
+                case 'DatabaseError':
                 case 'InvalidChallenge':
                     console.error(result.error);
 

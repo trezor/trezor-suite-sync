@@ -13,16 +13,20 @@ type DeleteRequest = FastifyRequest<{
 }>;
 
 export const storageDeleteHandler =
-    (deps: DeleteHandlerDeps) => (request: DeleteRequest, reply: FastifyReply) => {
+    (deps: DeleteHandlerDeps) => async (request: DeleteRequest, reply: FastifyReply) => {
         const { publicKey, ownerId, size } = request.body;
 
-        const result = deps.limitStorage.transferSpaceLimitToOwner({ publicKey, ownerId, size });
+        const result = await deps.limitStorage.transferSpaceLimitToOwner({
+            publicKey,
+            ownerId,
+            size,
+        });
 
         if (!result.ok) {
             const { type } = result.error;
 
             switch (type) {
-                case 'SqliteError':
+                case 'DatabaseError':
                     console.error(result.error);
 
                     return reply.code(500).send({ error: 'Internal server error' });

@@ -1,35 +1,46 @@
-import { type Result, type Sqlite, type SqliteError, err, ok, sql } from '@evolu/common';
+import { type Result, err, ok } from '@evolu/common';
 
-import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { type GetLimitsForPubkeyResponse, getLimitsForPubkey } from './getLimitsForPubkey.js';
 import { type ConsistencyError, consistencyError } from '../../../errors.js';
+import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { type PublicKey, type Size } from '../limitStorage.js';
+import { LimitStorageDatabase } from '../preparePostgreSql.js';
 
 export type AddLimitToPubkeyParams = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
     publicKey: PublicKey;
     size: Size; // size to add to the limit
 };
 
-export const addLimitToPubkey = ({
-    sqlite,
+export const addLimitToPubkey = async ({
+    db,
     publicKey,
     size,
-}: AddLimitToPubkeyParams): Result<GetLimitsForPubkeyResponse, ConsistencyError | SqliteError> => {
-    const resultUpsert = sqlite.exec<{}>(sql.prepared`
-        INSERT INTO ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)} ("publicKey", "totalStorageSize", "unspendStorageSize")
-        VALUES (${publicKey}, ${size}, ${size}) ON CONFLICT("publicKey")
-        DO
-        UPDATE SET
-            "totalStorageSize" = "totalStorageSize" + ${size},
-            "unspendStorageSize" = "unspendStorageSize" + ${size};
-    `);
+}: AddLimitToPubkeyParams): Promise<
+    Result<GetLimitsForPubkeyResponse, ConsistencyError | DatabaseError>
+> => {
+    const resultUpsert = await dbQuery(() =>
+        db
+            .insertInto('pubkey_storage_limits')
+            .values({
+                publicKey,
+                totalStorageSize: size,
+                unspendStorageSize: size,
+            })
+            .onConflict(oc =>
+                oc.column('publicKey').doUpdateSet({
+                    totalStorageSize: eb => eb('totalStorageSize', '+', size),
+                    unspendStorageSize: eb => eb('unspendStorageSize', '+', size),
+                }),
+            )
+            .execute(),
+    );
 
     if (!resultUpsert.ok) {
         return resultUpsert;
     }
 
-    const resultSelect = getLimitsForPubkey({ sqlite, publicKey });
+    const resultSelect = await getLimitsForPubkey({ db, publicKey });
 
     if (!resultSelect.ok) {
         return resultSelect;

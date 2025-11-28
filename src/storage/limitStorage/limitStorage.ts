@@ -1,4 +1,4 @@
-import { Number, type Sqlite, String, brand, ok } from '@evolu/common';
+import { InferOk, Number, String, brand, ok } from '@evolu/common';
 
 import { type AddLimitToPubkeyParams, addLimitToPubkey } from './methods/addLimitToPubkey.js';
 import { type AssignSpaceToOwnerParams, assignSpaceToOwner } from './methods/assignSpaceToOwner.js';
@@ -8,11 +8,8 @@ import {
     type TransferSpaceLimitToOwnerParams,
     transferSpaceLimitToOwner,
 } from './methods/transferSpaceLimitToOwner.js';
-import {
-    createOwnerLimitTableQueryIfNotExists,
-    createPubkeyLimitTableQueryIfNotExists,
-} from './tables.js';
-import { UnwrapOk } from '../../types.js';
+import { LimitStorageDatabase } from './preparePostgreSql.js';
+import { createOwnerLimitTableIfNotExists, createPubkeyLimitTableIfNotExists } from './tables.js';
 
 /**
  * Uniquely identifying a Trezor device
@@ -46,42 +43,33 @@ export const Proof = brand('Proof', String);
 export type Proof = typeof Proof.Type;
 
 type CreateLimitStorageDependencies = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
 };
 
-export const createLimitStorage = ({ sqlite }: CreateLimitStorageDependencies) => {
-    const result1 = sqlite.exec(createPubkeyLimitTableQueryIfNotExists);
-
-    if (!result1.ok) {
-        return result1;
-    }
-
-    const result2 = sqlite.exec(createOwnerLimitTableQueryIfNotExists);
-
-    if (!result2.ok) {
-        return result2;
-    }
+export const createLimitStorage = async ({ db }: CreateLimitStorageDependencies) => {
+    await createPubkeyLimitTableIfNotExists(db);
+    await createOwnerLimitTableIfNotExists(db);
 
     return ok({
-        addLimitToPubkey: ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'sqlite'>) =>
-            addLimitToPubkey({ sqlite, publicKey, size }),
-        getLimitForPubkey: ({ publicKey }: Omit<GetLimitsForPubkey, 'sqlite'>) =>
-            getLimitsForPubkey({ sqlite, publicKey }),
-        getLimitForOwner: ({ ownerId }: Omit<GetLimitsForOwnerParams, 'sqlite'>) =>
-            getLimitsForOwner({ sqlite, ownerId }),
-        transferSpaceLimitToOwner: ({
+        addLimitToPubkey: async ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'db'>) =>
+            await addLimitToPubkey({ db, publicKey, size }),
+        getLimitForPubkey: async ({ publicKey }: Omit<GetLimitsForPubkey, 'db'>) =>
+            await getLimitsForPubkey({ db, publicKey }),
+        getLimitForOwner: async ({ ownerId }: Omit<GetLimitsForOwnerParams, 'db'>) =>
+            await getLimitsForOwner({ db, ownerId }),
+        transferSpaceLimitToOwner: async ({
             ownerId,
             publicKey,
             size,
-        }: Omit<TransferSpaceLimitToOwnerParams, 'sqlite'>) =>
-            transferSpaceLimitToOwner({ sqlite, ownerId, publicKey, size }),
-        assignSpaceToOwner: ({
+        }: Omit<TransferSpaceLimitToOwnerParams, 'db'>) =>
+            await transferSpaceLimitToOwner({ db, ownerId, publicKey, size }),
+        assignSpaceToOwner: async ({
             ownerId,
             publicKey,
             size,
-        }: Omit<AssignSpaceToOwnerParams, 'sqlite'>) =>
-            assignSpaceToOwner({ sqlite, ownerId, publicKey, size }),
+        }: Omit<AssignSpaceToOwnerParams, 'db'>) =>
+            await assignSpaceToOwner({ db, ownerId, publicKey, size }),
     });
 };
 
-export type LimitStorage = UnwrapOk<ReturnType<typeof createLimitStorage>>;
+export type LimitStorage = InferOk<Awaited<ReturnType<typeof createLimitStorage>>>;

@@ -13,17 +13,17 @@ type AskRequest = FastifyRequest<{
 }>;
 
 export const storageAskHandler =
-    (deps: AskHandlerDeps) => (request: AskRequest, reply: FastifyReply) => {
+    (deps: AskHandlerDeps) => async (request: AskRequest, reply: FastifyReply) => {
         const { ownerId, publicKey } = request.query;
 
         if (ownerId !== undefined) {
-            const result = deps.limitStorage.getLimitForOwner({ ownerId });
+            const result = await deps.limitStorage.getLimitForOwner({ ownerId });
 
             if (!result.ok) {
                 const { type } = result.error;
 
                 switch (type) {
-                    case 'SqliteError':
+                    case 'DatabaseError':
                         console.error(result.error);
 
                         return reply.code(500).send({ error: 'Internal server error' });
@@ -41,13 +41,13 @@ export const storageAskHandler =
         }
 
         if (publicKey !== undefined) {
-            const result = deps.limitStorage.getLimitForPubkey({ publicKey });
+            const result = await deps.limitStorage.getLimitForPubkey({ publicKey });
 
             if (!result.ok) {
                 const { type } = result.error;
 
                 switch (type) {
-                    case 'SqliteError':
+                    case 'DatabaseError':
                         console.error(result.error);
 
                         return reply.code(500).send({ error: 'Internal server error' });
