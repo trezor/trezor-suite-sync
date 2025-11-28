@@ -27,7 +27,7 @@ export const storageRegisterHandler =
             const { error } = result;
 
             switch (error) {
-                case 'SqliteError':
+                case 'DatabaseError':
                 case 'ConsistencyError':
                     console.error(error);
 

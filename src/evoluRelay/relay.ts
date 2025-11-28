@@ -27,8 +27,8 @@ export const startEvoluRelay = async ({
         /**
          * Owner is allowed to access the relay if they have any registered storage limit.
          */
-        isOwnerAllowed(ownerId) {
-            const result = limitStorage.getLimitForOwner({ ownerId });
+        async isOwnerAllowed(ownerId) {
+            const result = await limitStorage.getLimitForOwner({ ownerId });
 
             // TEMP: until we implement in Trezor Suite
             if (forceAuthFreeAccess) {
@@ -41,8 +41,8 @@ export const startEvoluRelay = async ({
          * Owner is allowed to write if his usedBytes + requiredBytes <= storage limit.
          * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.
          */
-        isOwnerWithinQuota(ownerId, requiredBytes) {
-            const result = limitStorage.getLimitForOwner({ ownerId });
+        async isOwnerWithinQuota(ownerId, requiredBytes) {
+            const result = await limitStorage.getLimitForOwner({ ownerId });
 
             // TEMP: until we implement in Trezor Suite
             if (forceAuthFreeAccess) {

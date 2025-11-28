@@ -1,24 +1,29 @@
-import { OwnerId, type Sqlite, ok, sql } from '@evolu/common';
+import { OwnerId, ok } from '@evolu/common';
 
+import { dbQuery } from '../../utils/dbQuery.js';
+import { LimitStorageDatabase } from '../preparePostgreSql.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 export type GetLimitsForOwnerParams = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
     ownerId: OwnerId;
 };
 
-export const getLimitsForOwner = ({ sqlite, ownerId }: GetLimitsForOwnerParams) => {
-    const result = sqlite.exec<{ storageLimit: number }>(sql`
-        SELECT storageLimit
-        FROM ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)}
-        WHERE ownerId = ${ownerId} LIMIT 1;
-    `);
+export const getLimitsForOwner = async ({ db, ownerId }: GetLimitsForOwnerParams) => {
+    const result = await dbQuery(() =>
+        db
+            .selectFrom(OWNER_STORAGE_LIMITS_TABLE_NAME)
+            .where('ownerId', '=', ownerId)
+            .select(['storageLimit'])
+            .limit(1)
+            .executeTakeFirst(),
+    );
 
     if (!result.ok) {
         return result;
     }
 
-    const [row] = result.value.rows;
+    const row = result.value;
 
     return ok(row?.storageLimit ?? null);
 };

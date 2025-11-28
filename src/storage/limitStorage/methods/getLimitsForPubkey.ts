@@ -1,10 +1,11 @@
-import { type Result, type Sqlite, type SqliteError, ok, sql } from '@evolu/common';
+import { type Result, ok } from '@evolu/common';
 
+import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
-import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
+import { LimitStorageDatabase } from '../preparePostgreSql.js';
 
 export type GetLimitsForPubkey = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
     publicKey: PublicKey;
 };
 
@@ -13,22 +14,24 @@ export type GetLimitsForPubkeyResponse = {
     unspendStorageSize: Size;
 };
 
-export const getLimitsForPubkey = ({
-    sqlite,
+export const getLimitsForPubkey = async ({
+    db,
     publicKey,
-}: GetLimitsForPubkey): Result<GetLimitsForPubkeyResponse | null, SqliteError> => {
-    const result = sqlite.exec<GetLimitsForPubkeyResponse>(sql`
-        SELECT totalStorageSize, unspendStorageSize
-        FROM ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)}
-        WHERE publicKey=${publicKey} 
-        LIMIT 1;
-    `);
+}: GetLimitsForPubkey): Promise<Result<GetLimitsForPubkeyResponse | null, DatabaseError>> => {
+    const result = await dbQuery(
+        async () =>
+            await db
+                .selectFrom('pubkey_storage_limits')
+                .where('publicKey', '=', publicKey)
+                .select(['totalStorageSize', 'unspendStorageSize'])
+                .executeTakeFirst(),
+    );
 
     if (!result.ok) {
         return result;
     }
 
-    const [row] = result.value.rows;
+    const row = result.value;
 
     return ok(row ?? null);
 };

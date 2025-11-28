@@ -1,20 +1,22 @@
-import { OwnerId, type Sqlite, err, ok, sql } from '@evolu/common';
+import { OwnerId, err, ok } from '@evolu/common';
 
 import { getLimitsForPubkey } from './getLimitsForPubkey.js';
 import { noSpaceAllowanceErr } from '../../../errors.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME, PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
+import { dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
+import { LimitStorageDatabase } from '../preparePostgreSql.js';
 
 export type TransferSpaceLimitToOwnerParams = {
-    sqlite: Sqlite;
+    db: LimitStorageDatabase;
     publicKey: PublicKey;
     ownerId: OwnerId;
     size: Size; // To be transferred from `publicKey` to the `ownerId`;
 };
 
-export const transferSpaceLimitToOwner = ({
-    sqlite,
+export const transferSpaceLimitToOwner = async ({
+    db,
     publicKey,
     ownerId,
     size,
@@ -23,7 +25,7 @@ export const transferSpaceLimitToOwner = ({
 
     // Checks that publicKey as enough space
 
-    const limitsResult = getLimitsForPubkey({ sqlite, publicKey });
+    const limitsResult = await getLimitsForPubkey({ db, publicKey });
 
     if (!limitsResult.ok) {
         return limitsResult;
@@ -40,24 +42,30 @@ export const transferSpaceLimitToOwner = ({
     // Subtract size from the `publicKey`
     // Todo: ....
 
-    const subtractSizeResult = sqlite.exec<{}>(sql.prepared`
-        UPDATE ${sql.identifier(PUBKEY_STORAGE_LIMITS_TABLE_NAME)}
-        WHERE "publicKey" = ${publicKey} SET "unspendStorageSize" = "unspendStorageSize" - ${size};
-    `);
+    const subtractSizeResult = await dbQuery(() =>
+        db
+            .updateTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
+            .where('publicKey', '=', publicKey)
+            .set(r => ({ unspendStorageSize: r('unspendStorageSize', '-', size) }))
+            .executeTakeFirst(),
+    );
 
     if (!subtractSizeResult.ok) {
         return subtractSizeResult;
     }
 
     // Add size to `ownerId`
-
-    const resultUpsert = sqlite.exec<{}>(sql.prepared`
-        INSERT INTO ${sql.identifier(OWNER_STORAGE_LIMITS_TABLE_NAME)} ("ownerId", "storageLimit")
-        VALUES (${ownerId}, ${size}) ON CONFLICT("ownerId")
-        DO
-        UPDATE SET
-            "storageLimit" = "storageLimit" + ${size};;
-    `);
+    const resultUpsert = await dbQuery(() =>
+        db
+            .insertInto(OWNER_STORAGE_LIMITS_TABLE_NAME)
+            .values({ ownerId, storageLimit: size })
+            .onConflict(oc =>
+                oc
+                    .column('ownerId')
+                    .doUpdateSet({ storageLimit: r => r('storageLimit', '+', size) }),
+            )
+            .executeTakeFirst(),
+    );
 
     if (!resultUpsert.ok) {
         return resultUpsert;
@@ -65,7 +73,7 @@ export const transferSpaceLimitToOwner = ({
 
     // Reselect final result
 
-    const reselectResult = getLimitsForOwner({ ownerId, sqlite });
+    const reselectResult = await getLimitsForOwner({ ownerId, db });
 
     if (!reselectResult.ok) {
         return reselectResult;
