@@ -35,7 +35,7 @@ export const transferSpaceLimitToOwner = async ({
         return err(noSpaceAllowanceErr('No space for the given publicKey'));
     }
 
-    if (limitsResult.value.unspendStorageSize >= size) {
+    if (limitsResult.value.unspendStorageSize <= size) {
         return err(noSpaceAllowanceErr('Unsufficient space for the given publicKey'));
     }
 

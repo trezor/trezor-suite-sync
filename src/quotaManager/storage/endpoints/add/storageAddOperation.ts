@@ -69,7 +69,10 @@ export const storageAddOperation = async (
     const { publicKey, ownerId, size, challenge, sessionId, proof, certificateChain, deviceModel } =
         input;
 
-    const challengeValidation = challengeStorage.validateAndConsumeChallenge(sessionId, challenge);
+    const challengeValidation = await challengeStorage.validateAndConsumeChallenge(
+        sessionId,
+        challenge,
+    );
 
     if (!challengeValidation.ok) {
         return err('SqliteError');
@@ -93,7 +96,7 @@ export const storageAddOperation = async (
         return err(proofValidation.error);
     }
 
-    const assignResult = limitStorage.assignSpaceToOwner({ publicKey, ownerId, size });
+    const assignResult = await limitStorage.assignSpaceToOwner({ publicKey, ownerId, size });
 
     if (!assignResult.ok) {
         if (assignResult.error.type === 'NoStorageAllowance') {
