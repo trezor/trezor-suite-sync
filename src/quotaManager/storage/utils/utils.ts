@@ -1,9 +1,8 @@
 export const getChunkSize = (length: number): Buffer => {
-    const buffer = Buffer.allocUnsafe(2);
+    const buf = Buffer.allocUnsafe(1);
+    buf.writeUInt8(length);
 
-    buffer.writeUInt16BE(length, 0);
-
-    return buffer;
+    return buf;
 };
 
 export const hexToBuffer = (hex: string): Buffer => Buffer.from(hex, 'hex');
