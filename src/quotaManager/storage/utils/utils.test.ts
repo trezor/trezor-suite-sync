@@ -3,25 +3,25 @@ import { describe, expect, it } from 'vitest';
 import { getChunkSize, hexToBuffer, numberToBuffer } from './utils.js';
 
 describe('getChunkSize', () => {
-    it('converts 0 to 2-byte big-endian buffer', () => {
+    it('converts 0 to 1-byte buffer', () => {
         const result = getChunkSize(0);
         expect(result).toBeInstanceOf(Buffer);
-        expect(result.length).toBe(2);
-        expect(result.readUInt16BE(0)).toBe(0);
+        expect(result.length).toBe(1);
+        expect(result.readUInt8(0)).toBe(0);
     });
 
-    it('converts small number to 2-byte big-endian buffer', () => {
+    it('converts small number to 1-byte buffer', () => {
         const result = getChunkSize(42);
         expect(result).toBeInstanceOf(Buffer);
-        expect(result.length).toBe(2);
-        expect(result.readUInt16BE(0)).toBe(42);
+        expect(result.length).toBe(1);
+        expect(result.readUInt8(0)).toBe(42);
     });
 
-    it('converts maximum uint16 value to 2-byte big-endian buffer', () => {
-        const result = getChunkSize(65535);
+    it('converts maximum uint8 value to 1-byte buffer', () => {
+        const result = getChunkSize(255);
         expect(result).toBeInstanceOf(Buffer);
-        expect(result.length).toBe(2);
-        expect(result.readUInt16BE(0)).toBe(65535);
+        expect(result.length).toBe(1);
+        expect(result.readUInt8(0)).toBe(255);
     });
 });
 
