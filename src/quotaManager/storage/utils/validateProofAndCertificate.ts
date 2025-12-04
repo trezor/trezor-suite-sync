@@ -11,6 +11,8 @@ import { Challenge } from '../../../storage/challengeStorage/challengeStorage.js
 import { Proof, PublicKey, Size } from '../../../storage/limitStorage/limitStorage.js';
 import { Result } from '../../types.js';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 type ValidatePayloadParams = {
     proof: Proof;
     certificateChain: { deviceCert: string; caCert: string };
@@ -39,6 +41,7 @@ const validateDevicePayload = async ({
             deviceModel: deviceModel as keyof typeof PROTO.DeviceModelInternal,
             certificates: [certificateChain.deviceCert, certificateChain.caCert],
             signature: proof,
+            allowDebugKeys: isDev,
             config,
             blacklistConfig,
         });
