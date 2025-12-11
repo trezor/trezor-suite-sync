@@ -1,4 +1,9 @@
 import { OwnerId, err, ok } from '@evolu/common';
+import {
+    deviceAuthenticityBlacklistConfig,
+    deviceAuthenticityConfig,
+    verifyAuthenticityProof,
+} from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
 import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
@@ -7,9 +12,10 @@ import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { OWNER_ID_BURN } from '../../../../storage/limitStorage/methods/assignSpaceToOwner.js';
 import { Result } from '../../../types.js';
-import { validateProofAndCertificateForAdd } from '../../utils/validateProofAndCertificate.js';
 
 type OwnerIdParseResult = { ok: true; value: OwnerId } | { ok: false; error: unknown };
+
+const ADD_OPERATION_PROOF_HEADER = 'EvoluAddSpaceToOwnerV1:';
 
 export const parseOwnerId = (value: string): OwnerIdParseResult => {
     if (value === OWNER_ID_BURN) {
@@ -82,18 +88,39 @@ export const storageAddOperation = async (
         return err('ChallengeValidationFailed');
     }
 
-    const proofValidation = await validateProofAndCertificateForAdd(
-        proof,
-        certificateChain,
-        publicKey,
-        challenge,
-        size,
-        ownerId,
-        deviceModel,
-    );
+    const sizeBuffer = Buffer.alloc(4);
+    sizeBuffer.writeUInt32BE(size, 0);
 
-    if (!proofValidation.ok) {
-        return err(proofValidation.error);
+    const bufferChunks = [
+        Buffer.from(publicKey, 'hex'),
+        Buffer.from(ownerId, 'hex'),
+        Buffer.from(challenge, 'hex'),
+        sizeBuffer,
+    ];
+
+    const proofValidation = await verifyAuthenticityProof({
+        certificates: [certificateChain.deviceCert, certificateChain.caCert],
+        challengePrefix: ADD_OPERATION_PROOF_HEADER,
+        challenge: Buffer.from(challenge, 'hex'),
+        signature: proof,
+        deviceModel: deviceModel as PROTO.DeviceModelInternal,
+        bufferChunks,
+        config: deviceAuthenticityConfig,
+        blacklistConfig: deviceAuthenticityBlacklistConfig,
+        allowDebugKeys: true, // let currently enabled for testing purposes
+    });
+
+    if (!proofValidation.valid) {
+        if (
+            proofValidation.error === 'INVALID_DEVICE_CERTIFICATE' ||
+            proofValidation.error === 'ROOT_PUBKEY_NOT_FOUND' ||
+            proofValidation.error === 'CA_PUBKEY_BLACKLISTED' ||
+            proofValidation.error === 'INVALID_DEVICE_MODEL'
+        ) {
+            return err('CertificateValidationFailed');
+        }
+
+        return err('ProofValidationFailed');
     }
 
     const assignResult = await limitStorage.assignSpaceToOwner({ publicKey, ownerId, size });
