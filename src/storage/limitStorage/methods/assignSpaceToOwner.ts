@@ -50,7 +50,7 @@ export const assignSpaceToOwner = async ({
         db
             .updateTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
             .set({
-                unspendStorageSize: eb => eb('unspendStorageSize', '-', size),
+                unspendStorageSize: eb => eb('pubkey_storage_limits.unspendStorageSize', '-', size),
             })
             .where('publicKey', '=', publicKey)
             .executeTakeFirst(),
@@ -86,7 +86,7 @@ export const assignSpaceToOwner = async ({
             })
             .onConflict(oc =>
                 oc.column('ownerId').doUpdateSet({
-                    storageLimit: eb => eb('storageLimit', '+', size),
+                    storageLimit: eb => eb('owner_storage_limits.storageLimit', '+', size),
                 }),
             )
             .executeTakeFirst(),
