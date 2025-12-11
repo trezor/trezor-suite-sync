@@ -1,11 +1,11 @@
 import { OwnerId, err, ok } from '@evolu/common';
+import {
+    deviceAuthenticityBlacklistConfig,
+    deviceAuthenticityConfig,
+    verifyAuthenticityProof,
+} from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
-import {
-    getDeviceAuthenticityBlacklistConfig,
-    getDeviceAuthenticityConfig,
-    verifyAuthenticityProof,
-} from './deviceAuthenticationWrapper.js';
 import { getChunkSize, hexToBuffer, numberToBuffer } from './utils.js';
 import { Challenge } from '../../../storage/challengeStorage/challengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../storage/limitStorage/limitStorage.js';
@@ -29,11 +29,6 @@ const validateDevicePayload = async ({
     Result<boolean, 'ProofValidationFailed' | 'CertificateValidationFailed'>
 > => {
     try {
-        const [config, blacklistConfig] = await Promise.all([
-            getDeviceAuthenticityConfig(),
-            getDeviceAuthenticityBlacklistConfig(),
-        ]);
-
         const payload = Buffer.concat(payloadChunks);
 
         const authResult = await verifyAuthenticityProof({
@@ -42,8 +37,8 @@ const validateDevicePayload = async ({
             certificates: [certificateChain.deviceCert, certificateChain.caCert],
             signature: proof,
             allowDebugKeys: isDev,
-            config,
-            blacklistConfig,
+            config: deviceAuthenticityConfig,
+            blacklistConfig: deviceAuthenticityBlacklistConfig,
         });
 
         if (!authResult.valid) {

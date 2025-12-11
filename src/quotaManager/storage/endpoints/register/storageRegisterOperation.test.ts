@@ -1,4 +1,5 @@
 import { err, ok } from '@evolu/common';
+import { verifyAuthenticityProof } from '@trezor/device-authenticity';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -19,7 +20,6 @@ import {
     PublicKey,
     Size,
 } from '../../../../storage/limitStorage/limitStorage.js';
-import { verifyAuthenticityProof } from '../../utils/deviceAuthenticationWrapper.js';
 
 const SIGNATURE_OPTIGA =
     '3045022100c01793ffbe4f16d4efc84a4533d9bbfbbf1baa5349346678e07fdb6d848cca7902200df11b9d2850173d9c93993fca983c6d2a3f31ea69a0e19b69e18cc3b78424fe';
@@ -31,20 +31,20 @@ const { T2B1rootPubKeyOptiga, mockParseCertificate } = vi.hoisted(() => ({
     mockParseCertificate: vi.fn(),
 }));
 
-vi.mock('../../utils/deviceAuthenticationWrapper.ts', () => ({
+vi.mock('@trezor/device-authenticity', () => ({
     verifyAuthenticityProof: vi.fn().mockResolvedValue({
         valid: true,
         caPubKey: 'test-ca-pubkey',
         rootPubKey: T2B1rootPubKeyOptiga,
     }),
-    getDeviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
+    deviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
         version: 1,
         blacklistedCaPubKeys: [],
         debug: {
             blacklistedCaPubKeys: [],
         },
     }),
-    getDeviceAuthenticityConfig: vi.fn().mockResolvedValue({
+    deviceAuthenticityConfig: vi.fn().mockResolvedValue({
         version: 1,
         T2B1: { rootPubKeysOptiga: [T2B1rootPubKeyOptiga] },
         T3B1: { rootPubKeysOptiga: [] },
