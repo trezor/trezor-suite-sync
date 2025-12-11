@@ -1374,25 +1374,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/crypto-utils@npm:1.1.5":
-  version: 1.1.5
-  resolution: "@trezor/crypto-utils@npm:1.1.5"
+"@trezor/crypto-utils@npm:1.1.6-beta.1":
+  version: 1.1.6-beta.1
+  resolution: "@trezor/crypto-utils@npm:1.1.6-beta.1"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/8e85103973dd6bbf711915236e1d7e2f8d2f847b5ebcea6fadb5f86c6b95a5d5e539b40062aa1747bdcc75f9d1576c50a846a0f8ae68608f81f81c61ed94950d
+  checksum: 10c0/17d6e365f52f7ec35c13270726a295f7555612e7fd2a06cdc0549f1b2ed100989a647a43937ec6feb6be9cd44130eba428569328e77a2786f5d1b68151b72f7a
   languageName: node
   linkType: hard
 
-"@trezor/device-authenticity@npm:^1.1.0-beta.1":
-  version: 1.1.0-beta.1
-  resolution: "@trezor/device-authenticity@npm:1.1.0-beta.1"
+"@trezor/device-authenticity@npm:^1.1.0-beta.2":
+  version: 1.1.0-beta.2
+  resolution: "@trezor/device-authenticity@npm:1.1.0-beta.2"
   dependencies:
     "@noble/curves": "npm:^2.0.1"
-    "@trezor/crypto-utils": "npm:1.1.5"
-    "@trezor/protobuf": "npm:1.5.0-beta.1"
-    "@trezor/schema-utils": "npm:1.3.4"
-    "@trezor/utils": "npm:9.4.5-beta.1"
-  checksum: 10c0/e84e1019173bcd65840f02050c33630b052a6a262f51d4bcb25cdf6c26f6b6a441cd0ec24f023bcf29d7a9739bd699d113e30607ad6241ffdccda532869ba943
+    "@trezor/crypto-utils": "npm:1.1.6-beta.1"
+    "@trezor/protobuf": "npm:1.5.0-beta.2"
+    "@trezor/schema-utils": "npm:1.3.5-beta.1"
+    "@trezor/utils": "npm:9.4.5-beta.2"
+  checksum: 10c0/b7084e8ef6c278d278d26adbb827b94a7c7377ca2a6f09ef1b2aa96d9b6e435589a669a0a356b9d77cab840d6e6df7f5d9610c9d48d6cc780b2a9890fe0fdd0d
   languageName: node
   linkType: hard
 
@@ -1404,7 +1404,7 @@ __metadata:
     "@evolu/common": "npm:7.2.3"
     "@evolu/nodejs": "npm:2.2.1"
     "@jest/globals": "npm:^30.2.0"
-    "@trezor/device-authenticity": "npm:^1.1.0-beta.1"
+    "@trezor/device-authenticity": "npm:^1.1.0-beta.2"
     "@trezor/protobuf": "npm:^1.4.5-beta.1"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/node": "npm:^24.9.1"
@@ -1426,16 +1426,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trezor/protobuf@npm:1.5.0-beta.1":
-  version: 1.5.0-beta.1
-  resolution: "@trezor/protobuf@npm:1.5.0-beta.1"
+"@trezor/protobuf@npm:1.5.0-beta.2":
+  version: 1.5.0-beta.2
+  resolution: "@trezor/protobuf@npm:1.5.0-beta.2"
   dependencies:
-    "@trezor/schema-utils": "npm:1.3.4"
+    "@trezor/schema-utils": "npm:1.3.5-beta.1"
     long: "npm:5.2.5"
     protobufjs: "npm:7.4.0"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/16390b44dcab108ff81589e39e573541240575d1b6cbe09cc57a79d2a5d134c0581f35d877f0ab9f6ff1d6965495ab0172dac68f6e8b2bf5bc78ff4294a30241
+  checksum: 10c0/70cb619b5ac12cd18dd77b9b29303f55529a37bb1392bdf5a51c9897d1ea19a5f5fcca2a325ebed290273d6f555bedcd488efa3f902986543f907d9b5b9164af
   languageName: node
   linkType: hard
 
@@ -1464,14 +1464,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/utils@npm:9.4.5-beta.1":
-  version: 9.4.5-beta.1
-  resolution: "@trezor/utils@npm:9.4.5-beta.1"
+"@trezor/schema-utils@npm:1.3.5-beta.1":
+  version: 1.3.5-beta.1
+  resolution: "@trezor/schema-utils@npm:1.3.5-beta.1"
+  dependencies:
+    "@sinclair/typebox": "npm:^0.33.7"
+    ts-mixer: "npm:^6.0.3"
+  peerDependencies:
+    tslib: ^2.6.2
+  checksum: 10c0/56ca23db9bd00d2d1e81a0f5e98aec8ea533c74e2e75715545d0e8f00d597432768074477a94bac97b588f3f65b7270dc4697357081c31f86ec697709e56150d
+  languageName: node
+  linkType: hard
+
+"@trezor/utils@npm:9.4.5-beta.2":
+  version: 9.4.5-beta.2
+  resolution: "@trezor/utils@npm:9.4.5-beta.2"
   dependencies:
     bignumber.js: "npm:^9.3.1"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/56cd3c143976f26aacb5ba8b295f9e0e467ff4515c8f92c9cb6ecdcc9ef78aab45ea335d6c85764b18288657addbd07783c33411d8adc3f958048ec14e1644b4
+  checksum: 10c0/03813a7cc5d41ead6fd481cc0a53456a4d11e9db9094bb3179dd08d28c2d338925633f0ed0f28c2051806b33c1aeefe34fa78f83a8b224e6bf960ff1f9b0772b
   languageName: node
   linkType: hard
 
