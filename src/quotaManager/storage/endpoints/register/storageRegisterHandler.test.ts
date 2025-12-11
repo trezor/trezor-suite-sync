@@ -25,20 +25,20 @@ const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
     mockParseCertificate: vi.fn(),
 }));
 
-vi.mock('../../utils/deviceAuthenticationWrapper.ts', () => ({
+vi.mock('@trezor/device-authenticity', () => ({
     verifyAuthenticityProof: vi.fn().mockResolvedValue({
         valid: true,
         caPubKey: 'test-ca-pubkey',
         rootPubKey: T2B1rootPubKeyOptiga,
     }),
-    getDeviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
+    deviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
         version: 1,
         blacklistedCaPubKeys: [],
         debug: {
             blacklistedCaPubKeys: [],
         },
     }),
-    getDeviceAuthenticityConfig: vi.fn().mockResolvedValue({
+    deviceAuthenticityConfig: vi.fn().mockResolvedValue({
         version: 1,
         T2B1: { rootPubKeysOptiga: [T2B1rootPubKeyOptiga] },
         T3B1: { rootPubKeysOptiga: [] },
