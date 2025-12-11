@@ -29,8 +29,9 @@ export const addLimitToPubkey = async ({
             })
             .onConflict(oc =>
                 oc.column('publicKey').doUpdateSet({
-                    totalStorageSize: eb => eb('totalStorageSize', '+', size),
-                    unspendStorageSize: eb => eb('unspendStorageSize', '+', size),
+                    totalStorageSize: eb => eb('pubkey_storage_limits.totalStorageSize', '+', size),
+                    unspendStorageSize: eb =>
+                        eb('pubkey_storage_limits.unspendStorageSize', '+', size),
                 }),
             )
             .execute(),
