@@ -1,11 +1,16 @@
 import { err, ok } from '@evolu/common';
+import {
+    deviceAuthenticityBlacklistConfig,
+    deviceAuthenticityConfig,
+    verifyAuthenticityProof,
+} from '@trezor/device-authenticity';
+import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
 import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
 import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
 import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { Result } from '../../../types.js';
-import { validateProofAndCertificate } from '../../utils/validateProofAndCertificate.js';
 
 type RegisterStorageError =
     | 'DatabaseError'
@@ -14,6 +19,8 @@ type RegisterStorageError =
     | 'StorageLimitExceeded'
     | 'ProofValidationFailed'
     | 'CertificateValidationFailed';
+
+const REGISTER_OPERATION_PROOF_HEADER = 'EvoluSignRegistrationRequestV1:';
 
 export type RegisterOperationDeps = {
     limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitForPubkey'>;
@@ -58,17 +65,34 @@ export const storageRegisterOperation = async (
         return err('ChallengeValidationFailed');
     }
 
-    const proofValidation = await validateProofAndCertificate(
-        proof,
-        certificateChain,
-        publicKey,
-        challenge,
-        size,
-        deviceModel,
-    );
+    const sizeBuffer = Buffer.alloc(4);
+    sizeBuffer.writeUInt32BE(size, 0);
 
-    if (!proofValidation.ok) {
-        return err(proofValidation.error);
+    const bufferChunks = [Buffer.from(publicKey, 'hex'), Buffer.from(challenge, 'hex'), sizeBuffer];
+
+    const proofValidation = await verifyAuthenticityProof({
+        certificates: [certificateChain.deviceCert, certificateChain.caCert],
+        challengePrefix: REGISTER_OPERATION_PROOF_HEADER,
+        challenge: Buffer.from(challenge, 'hex'),
+        signature: proof,
+        deviceModel: deviceModel as PROTO.DeviceModelInternal,
+        bufferChunks,
+        config: deviceAuthenticityConfig,
+        blacklistConfig: deviceAuthenticityBlacklistConfig,
+        allowDebugKeys: true, // let currently enabled for testing purposes
+    });
+
+    if (!proofValidation.valid) {
+        if (
+            proofValidation.error === 'INVALID_DEVICE_CERTIFICATE' ||
+            proofValidation.error === 'ROOT_PUBKEY_NOT_FOUND' ||
+            proofValidation.error === 'CA_PUBKEY_BLACKLISTED' ||
+            proofValidation.error === 'INVALID_DEVICE_MODEL'
+        ) {
+            return err('CertificateValidationFailed');
+        }
+
+        return err('ProofValidationFailed');
     }
 
     const currentLimits = await deps.limitStorage.getLimitForPubkey({ publicKey });
