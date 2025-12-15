@@ -1,5 +1,4 @@
 import { OwnerId, err, ok } from '@evolu/common';
-import { verifyAuthenticityProof } from '@trezor/device-authenticity';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -7,7 +6,6 @@ import {
     type StorageAddInputParsed,
     storageAddOperation,
 } from './storageAddOperation.js';
-import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { consistencyError, noSpaceAllowanceErr } from '../../../../errors.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import {
@@ -21,36 +19,7 @@ import {
     PublicKey,
     Size,
 } from '../../../../storage/limitStorage/limitStorage.js';
-
-const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
-    T2B1rootPubKeyOptiga:
-        '04626d58aca84f0fcb52ea63f0eb08de1067b8d406574a715d5e7928f4b67f113a00fb5c5918e74d2327311946c446b242c20fe7347482999bdc1e229b94e27d96',
-}));
-
-vi.mock('@trezor/device-authenticity', () => ({
-    verifyAuthenticityProof: vi.fn().mockResolvedValue({
-        valid: true,
-        caPubKey: 'test-ca-pubkey',
-        rootPubKey: T2B1rootPubKeyOptiga,
-    }),
-    deviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
-        version: 1,
-        blacklistedCaPubKeys: [],
-        debug: {
-            blacklistedCaPubKeys: [],
-        },
-    }),
-    deviceAuthenticityConfig: vi.fn().mockResolvedValue({
-        version: 1,
-        T2B1: { rootPubKeysOptiga: [T2B1rootPubKeyOptiga] },
-        T3B1: { rootPubKeysOptiga: [] },
-        T3T1: { rootPubKeysOptiga: [] },
-        T3W1: {
-            rootPubKeysOptiga: [],
-            rootPubKeysTropic: ['cd318dc8405ae4f4144e3284dcb7b0cb0f0c2195c2ca14a0f6fccd9104e32a4b'],
-        },
-    }),
-}));
+import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
 const publicKey = getOrThrowTest(
     PublicKey.from(
@@ -66,10 +35,11 @@ const challengeValue = getOrThrowTest(
 );
 const sessionId = getOrThrowTest(SessionId.from('session-1'));
 const proof = getOrThrowTest(Proof.from('deadbeef'));
-const certificateChain = {
-    deviceCert: DEVICE_CERT_OPTIGA,
-    caCert: CA_CERT_OPTIGA,
-};
+
+vi.mock('../../utils/verifySignatureP256.js', () => ({
+    verifySignatureP256: vi.fn(),
+}));
+
 const deviceModel = 'T2B1';
 
 const createMockInput = (overrides?: Partial<StorageAddInputParsed>): StorageAddInputParsed => ({
@@ -79,7 +49,6 @@ const createMockInput = (overrides?: Partial<StorageAddInputParsed>): StorageAdd
     challenge: challengeValue,
     sessionId,
     proof,
-    certificateChain,
     deviceModel,
     ...overrides,
 });
@@ -97,11 +66,7 @@ const createMockDeps = (
 describe(storageAddOperation.name, () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(verifyAuthenticityProof).mockResolvedValue({
-            valid: true,
-            caPubKey: 'test-ca-pubkey',
-            rootPubKey: T2B1rootPubKeyOptiga,
-        });
+        vi.mocked(verifySignatureP256).mockResolvedValue(true);
     });
 
     it('assigns space when proof and challenge are valid', async () => {
@@ -243,10 +208,7 @@ describe(storageAddOperation.name, () => {
     });
 
     it('returns ProofValidationFailed when proof verification fails', async () => {
-        vi.mocked(verifyAuthenticityProof).mockResolvedValue({
-            valid: false,
-            error: 'INVALID_DEVICE_SIGNATURE',
-        });
+        vi.mocked(verifySignatureP256).mockResolvedValue(false);
 
         const challengeStorage: ChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),

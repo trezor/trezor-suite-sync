@@ -1,10 +1,8 @@
 import { OwnerId } from '@evolu/common';
-import { verifyAuthenticityProof } from '@trezor/device-authenticity';
 import Fastify from 'fastify';
 import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { storageAddEndpoint } from './storageAddEndpoint.js';
-import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import {
     Challenge,
@@ -20,35 +18,10 @@ import {
 import { addLimitToPubkey } from '../../../../storage/limitStorage/methods/addLimitToPubkey.js';
 import { prepareTestDatabase } from '../../../../storage/limitStorage/prepareTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
+import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
-const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
-    T2B1rootPubKeyOptiga:
-        '04626d58aca84f0fcb52ea63f0eb08de1067b8d406574a715d5e7928f4b67f113a00fb5c5918e74d2327311946c446b242c20fe7347482999bdc1e229b94e27d96',
-}));
-
-vi.mock('@trezor/device-authenticity', () => ({
-    verifyAuthenticityProof: vi.fn().mockResolvedValue({
-        valid: true,
-        caPubKey: 'test-ca-pubkey',
-        rootPubKey: T2B1rootPubKeyOptiga,
-    }),
-    deviceAuthenticityBlacklistConfig: vi.fn().mockResolvedValue({
-        version: 1,
-        blacklistedCaPubKeys: [],
-        debug: {
-            blacklistedCaPubKeys: [],
-        },
-    }),
-    deviceAuthenticityConfig: vi.fn().mockResolvedValue({
-        version: 1,
-        T2B1: { rootPubKeysOptiga: [T2B1rootPubKeyOptiga] },
-        T3B1: { rootPubKeysOptiga: [] },
-        T3T1: { rootPubKeysOptiga: [] },
-        T3W1: {
-            rootPubKeysOptiga: [],
-            rootPubKeysTropic: ['cd318dc8405ae4f4144e3284dcb7b0cb0f0c2195c2ca14a0f6fccd9104e32a4b'],
-        },
-    }),
+vi.mock('../../utils/verifySignatureP256.js', () => ({
+    verifySignatureP256: vi.fn(),
 }));
 
 const publicKey = getOrThrowTest(
@@ -60,11 +33,6 @@ const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
 const size50 = getOrThrowTest(Size.from(50));
 const size20 = getOrThrowTest(Size.from(20));
-const certificateChain = {
-    deviceCert: DEVICE_CERT_OPTIGA,
-    caCert: CA_CERT_OPTIGA,
-};
-const deviceModel = 'T2B1';
 
 const createApp = async () => {
     const db = prepareTestDatabase();
@@ -99,11 +67,7 @@ const createApp = async () => {
 describe(storageAddEndpoint.createHandler.name, () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(verifyAuthenticityProof).mockResolvedValue({
-            valid: true,
-            caPubKey: 'test-ca-pubkey',
-            rootPubKey: T2B1rootPubKeyOptiga,
-        });
+        vi.mocked(verifySignatureP256).mockResolvedValue(true);
     });
 
     it('successfully assigns space and returns 200 with correct response format', async () => {
@@ -126,8 +90,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 
@@ -159,8 +121,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 
@@ -202,8 +162,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 
@@ -213,10 +171,7 @@ describe(storageAddEndpoint.createHandler.name, () => {
     });
 
     it('returns 400 when proof verification fails', async () => {
-        vi.mocked(verifyAuthenticityProof).mockResolvedValue({
-            valid: false,
-            error: 'INVALID_DEVICE_SIGNATURE',
-        });
+        vi.mocked(verifySignatureP256).mockResolvedValue(false);
 
         const { app, challengeStorage } = await createApp();
 
@@ -237,8 +192,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 
@@ -267,8 +220,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge1.toString(),
                 sessionId: sessionId1.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 
@@ -291,8 +242,6 @@ describe(storageAddEndpoint.createHandler.name, () => {
                 challenge: challenge2.toString(),
                 sessionId: sessionId2.toString(),
                 proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
-                certificateChain,
-                deviceModel,
             },
         });
 

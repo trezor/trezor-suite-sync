@@ -34,15 +34,11 @@ export const verifySignatureP256: VerifySignature = async (rawKey, data, signatu
             'base64',
         )}\n-----END PUBLIC KEY-----`;
 
-        console.error('Verifying P-256 signature');
-
         // verify using PEM key
         return signer.verify({ key }, Buffer.from(signature));
     } catch {
         // invalid inputs shall be considered unsuccessful verification, rather than runtime error
         // (e.g. calling this with a P-256 signature and an Ed25519 key)
-        console.error('Signature verification failed due to invalid input');
-
         return false;
     }
 };
