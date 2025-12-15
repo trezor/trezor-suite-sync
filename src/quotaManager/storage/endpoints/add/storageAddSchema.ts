@@ -10,11 +10,6 @@ export const storageAddEvoluSchema = object({
     challenge: Challenge,
     sessionId: SessionId,
     proof: Proof,
-    certificateChain: object({
-        deviceCert: String,
-        caCert: String,
-    }),
-    deviceModel: String,
 });
 
 export const storageAddRequestSchema = {

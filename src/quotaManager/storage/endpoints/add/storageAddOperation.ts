@@ -1,9 +1,4 @@
 import { OwnerId, err, ok } from '@evolu/common';
-import {
-    deviceAuthenticityBlacklistConfig,
-    deviceAuthenticityConfig,
-    verifyAuthenticityProof,
-} from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
 import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
@@ -12,10 +7,13 @@ import type { LimitStorage } from '../../../../storage/limitStorage/limitStorage
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { OWNER_ID_BURN } from '../../../../storage/limitStorage/methods/assignSpaceToOwner.js';
 import { Result } from '../../../types.js';
+import { rawToDer } from '../../utils/rawToDer.js';
+import { getChunkSize } from '../../utils/utils.js';
+import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
 type OwnerIdParseResult = { ok: true; value: OwnerId } | { ok: false; error: unknown };
 
-const ADD_OPERATION_PROOF_HEADER = 'EvoluAddSpaceToOwnerV1:';
+const ADD_OPERATION_PROOF_HEADER = 'EvoluAddSpaceToOwnerV1';
 
 export const parseOwnerId = (value: string): OwnerIdParseResult => {
     if (value === OWNER_ID_BURN) {
@@ -51,10 +49,6 @@ export type StorageAddInput = {
     challenge: Challenge;
     sessionId: SessionId;
     proof: Proof;
-    certificateChain: {
-        deviceCert: string;
-        caCert: string;
-    };
     deviceModel: keyof typeof PROTO.DeviceModelInternal;
 };
 
@@ -72,8 +66,7 @@ export const storageAddOperation = async (
     input: StorageAddInputParsed,
 ): Promise<Result<StorageAddOutput, StorageAddError>> => {
     const { challengeStorage, limitStorage } = deps;
-    const { publicKey, ownerId, size, challenge, sessionId, proof, certificateChain, deviceModel } =
-        input;
+    const { publicKey, ownerId, size, challenge, sessionId, proof } = input;
 
     const challengeValidation = await challengeStorage.validateAndConsumeChallenge(
         sessionId,
@@ -88,38 +81,29 @@ export const storageAddOperation = async (
         return err('ChallengeValidationFailed');
     }
 
-    const sizeBuffer = Buffer.alloc(4);
+    const sizeBuffer = Buffer.alloc(4, 0, 'binary');
     sizeBuffer.writeUInt32BE(size, 0);
 
-    const bufferChunks = [
+    const bufferChunks = Buffer.concat([
+        getChunkSize(Buffer.from(ADD_OPERATION_PROOF_HEADER, 'utf8').length),
+        Buffer.from(ADD_OPERATION_PROOF_HEADER, 'utf8'),
+        getChunkSize(Buffer.from(publicKey, 'hex').byteLength),
         Buffer.from(publicKey, 'hex'),
-        Buffer.from(ownerId, 'hex'),
+        getChunkSize(Buffer.from(ownerId, 'utf8').byteLength),
+        Buffer.from(ownerId, 'utf8'),
+        getChunkSize(Buffer.from(challenge, 'hex').byteLength),
         Buffer.from(challenge, 'hex'),
+        getChunkSize(sizeBuffer.length),
         sizeBuffer,
-    ];
+    ]);
 
-    const proofValidation = await verifyAuthenticityProof({
-        certificates: [certificateChain.deviceCert, certificateChain.caCert],
-        challengePrefix: ADD_OPERATION_PROOF_HEADER,
-        challenge: Buffer.from(challenge, 'hex'),
-        signature: proof,
-        deviceModel: deviceModel as PROTO.DeviceModelInternal,
+    const isSignatureValid = await verifySignatureP256(
+        Buffer.from(publicKey, 'hex'),
         bufferChunks,
-        config: deviceAuthenticityConfig,
-        blacklistConfig: deviceAuthenticityBlacklistConfig,
-        allowDebugKeys: true, // let currently enabled for testing purposes
-    });
+        rawToDer(Buffer.from(proof, 'hex')),
+    );
 
-    if (!proofValidation.valid) {
-        if (
-            proofValidation.error === 'INVALID_DEVICE_CERTIFICATE' ||
-            proofValidation.error === 'ROOT_PUBKEY_NOT_FOUND' ||
-            proofValidation.error === 'CA_PUBKEY_BLACKLISTED' ||
-            proofValidation.error === 'INVALID_DEVICE_MODEL'
-        ) {
-            return err('CertificateValidationFailed');
-        }
-
+    if (!isSignatureValid) {
         return err('ProofValidationFailed');
     }
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { getChunkSize, hexToBuffer, numberToBuffer } from './utils.js';
 
-describe('getChunkSize', () => {
+describe(getChunkSize.name, () => {
     it('converts 0 to 1-byte buffer', () => {
         const result = getChunkSize(0);
         expect(result).toBeInstanceOf(Buffer);
