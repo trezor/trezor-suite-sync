@@ -1,4 +1,5 @@
 import { OwnerId, err, ok } from '@evolu/common';
+import { verifySignatureP256 } from '@trezor/device-authenticity';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -19,7 +20,6 @@ import {
     PublicKey,
     Size,
 } from '../../../../storage/limitStorage/limitStorage.js';
-import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
 const publicKey = getOrThrowTest(
     PublicKey.from(
@@ -36,7 +36,7 @@ const challengeValue = getOrThrowTest(
 const sessionId = getOrThrowTest(SessionId.from('session-1'));
 const proof = getOrThrowTest(Proof.from('deadbeef'));
 
-vi.mock('../../utils/verifySignatureP256.js', () => ({
+vi.mock('@trezor/device-authenticity', () => ({
     verifySignatureP256: vi.fn(),
 }));
 

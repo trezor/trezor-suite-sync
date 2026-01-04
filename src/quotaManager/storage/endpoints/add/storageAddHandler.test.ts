@@ -1,4 +1,5 @@
 import { OwnerId } from '@evolu/common';
+import { verifySignatureP256 } from '@trezor/device-authenticity';
 import Fastify from 'fastify';
 import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,9 +19,8 @@ import {
 import { addLimitToPubkey } from '../../../../storage/limitStorage/methods/addLimitToPubkey.js';
 import { prepareTestDatabase } from '../../../../storage/limitStorage/prepareTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
-import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
-vi.mock('../../utils/verifySignatureP256.js', () => ({
+vi.mock('@trezor/device-authenticity', () => ({
     verifySignatureP256: vi.fn(),
 }));
 
