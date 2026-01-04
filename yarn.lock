@@ -1374,25 +1374,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/crypto-utils@npm:1.1.6-beta.1":
-  version: 1.1.6-beta.1
-  resolution: "@trezor/crypto-utils@npm:1.1.6-beta.1"
+"@trezor/crypto-utils@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@trezor/crypto-utils@npm:1.2.0"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/17d6e365f52f7ec35c13270726a295f7555612e7fd2a06cdc0549f1b2ed100989a647a43937ec6feb6be9cd44130eba428569328e77a2786f5d1b68151b72f7a
+  checksum: 10c0/35b7ac47d4dba8198e2c85786046c2d9ab2d80d857420aa523947f70488ee8a800ddaccb1a7059bbc2d0ea0055f4e60e2e19e1b2f1ba34a1b2fba0111613f39d
   languageName: node
   linkType: hard
 
-"@trezor/device-authenticity@npm:^1.1.0-beta.2":
-  version: 1.1.0-beta.2
-  resolution: "@trezor/device-authenticity@npm:1.1.0-beta.2"
+"@trezor/device-authenticity@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@trezor/device-authenticity@npm:1.1.0"
   dependencies:
     "@noble/curves": "npm:^2.0.1"
-    "@trezor/crypto-utils": "npm:1.1.6-beta.1"
-    "@trezor/protobuf": "npm:1.5.0-beta.2"
-    "@trezor/schema-utils": "npm:1.3.5-beta.1"
-    "@trezor/utils": "npm:9.4.5-beta.2"
-  checksum: 10c0/b7084e8ef6c278d278d26adbb827b94a7c7377ca2a6f09ef1b2aa96d9b6e435589a669a0a356b9d77cab840d6e6df7f5d9610c9d48d6cc780b2a9890fe0fdd0d
+    "@trezor/crypto-utils": "npm:1.2.0"
+    "@trezor/protobuf": "npm:1.5.0"
+    "@trezor/schema-utils": "npm:1.4.0"
+    "@trezor/utils": "npm:9.5.0"
+  checksum: 10c0/a3869f83cf0cef018230b09185b572cb69859415621306e5c2c3c71bd897047979a57a34127df269b7b69517a0b582463dbfea9e387c80efaa2aad425c955d92
   languageName: node
   linkType: hard
 
@@ -1404,7 +1404,7 @@ __metadata:
     "@evolu/common": "npm:7.2.3"
     "@evolu/nodejs": "npm:2.2.1"
     "@jest/globals": "npm:^30.2.0"
-    "@trezor/device-authenticity": "npm:^1.1.0-beta.2"
+    "@trezor/device-authenticity": "npm:^1.1.0"
     "@trezor/protobuf": "npm:^1.4.5-beta.1"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/node": "npm:^24.9.1"
@@ -1426,16 +1426,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trezor/protobuf@npm:1.5.0-beta.2":
-  version: 1.5.0-beta.2
-  resolution: "@trezor/protobuf@npm:1.5.0-beta.2"
+"@trezor/protobuf@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@trezor/protobuf@npm:1.5.0"
   dependencies:
-    "@trezor/schema-utils": "npm:1.3.5-beta.1"
+    "@trezor/schema-utils": "npm:1.4.0"
     long: "npm:5.2.5"
     protobufjs: "npm:7.4.0"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/70cb619b5ac12cd18dd77b9b29303f55529a37bb1392bdf5a51c9897d1ea19a5f5fcca2a325ebed290273d6f555bedcd488efa3f902986543f907d9b5b9164af
+  checksum: 10c0/16ff2c3ad6240555ffc961842b19a525591fd9871c29f0325b98c362d80e5623d7d15ebdef8c901b44a6409e9cbaa15c8df20ea1522a25d3a268af3bf77cc2aa
   languageName: node
   linkType: hard
 
@@ -1464,26 +1464,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/schema-utils@npm:1.3.5-beta.1":
-  version: 1.3.5-beta.1
-  resolution: "@trezor/schema-utils@npm:1.3.5-beta.1"
+"@trezor/schema-utils@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@trezor/schema-utils@npm:1.4.0"
   dependencies:
     "@sinclair/typebox": "npm:^0.33.7"
     ts-mixer: "npm:^6.0.3"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/56ca23db9bd00d2d1e81a0f5e98aec8ea533c74e2e75715545d0e8f00d597432768074477a94bac97b588f3f65b7270dc4697357081c31f86ec697709e56150d
+  checksum: 10c0/9d398c436a967dbec582e1d1862a282a4e58c36ad78859a9b22890d9b80933da9c8adf865fa9d8af6c4409077e0680b88a98ba77913526085144f60dc5d39580
   languageName: node
   linkType: hard
 
-"@trezor/utils@npm:9.4.5-beta.2":
-  version: 9.4.5-beta.2
-  resolution: "@trezor/utils@npm:9.4.5-beta.2"
+"@trezor/utils@npm:9.5.0":
+  version: 9.5.0
+  resolution: "@trezor/utils@npm:9.5.0"
   dependencies:
     bignumber.js: "npm:^9.3.1"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/03813a7cc5d41ead6fd481cc0a53456a4d11e9db9094bb3179dd08d28c2d338925633f0ed0f28c2051806b33c1aeefe34fa78f83a8b224e6bf960ff1f9b0772b
+  checksum: 10c0/10083b7eb9d7d950bb27e510d4b023ce00695560fe1c379d164a311420f74fe0ec60e0a72641f7c748031c84c9cdfe756c416052a3f622814f3e968d2c60351e
   languageName: node
   linkType: hard
 

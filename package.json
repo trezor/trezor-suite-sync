@@ -17,7 +17,7 @@
     "dependencies": {
         "@evolu/common": "7.2.3",
         "@evolu/nodejs": "2.2.1",
-        "@trezor/device-authenticity": "^1.1.0-beta.2",
+        "@trezor/device-authenticity": "^1.1.0",
         "@trezor/protobuf": "^1.4.5-beta.1",
         "dotenv": "^17.2.3",
         "eslint-plugin-import": "^2.32.0",

@@ -1,4 +1,5 @@
 import { OwnerId, err, ok } from '@evolu/common';
+import { verifySignatureP256 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
 import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
@@ -9,7 +10,6 @@ import { OWNER_ID_BURN } from '../../../../storage/limitStorage/methods/assignSp
 import { Result } from '../../../types.js';
 import { rawToDer } from '../../utils/rawToDer.js';
 import { getChunkSize } from '../../utils/utils.js';
-import { verifySignatureP256 } from '../../utils/verifySignatureP256.js';
 
 type OwnerIdParseResult = { ok: true; value: OwnerId } | { ok: false; error: unknown };
 
