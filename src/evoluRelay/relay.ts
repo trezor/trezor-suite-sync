@@ -10,7 +10,7 @@ type StartEvoluRelayDependencies = {
     onHealthChange: UpdateHealth;
 };
 
-const forceAuthFreeAccess = true;
+const shouldAuthenticate = process.env.SERVER_ENV !== 'dev';
 
 export const startEvoluRelay = async ({
     port,
@@ -30,8 +30,7 @@ export const startEvoluRelay = async ({
         async isOwnerAllowed(ownerId) {
             const result = await limitStorage.getLimitForOwner({ ownerId });
 
-            // TEMP: until we implement in Trezor Suite
-            if (forceAuthFreeAccess) {
+            if (!shouldAuthenticate) {
                 return Promise.resolve(true);
             }
 
@@ -44,8 +43,7 @@ export const startEvoluRelay = async ({
         async isOwnerWithinQuota(ownerId, requiredBytes) {
             const result = await limitStorage.getLimitForOwner({ ownerId });
 
-            // TEMP: until we implement in Trezor Suite
-            if (forceAuthFreeAccess) {
+            if (!shouldAuthenticate) {
                 return Promise.resolve(true);
             }
 
