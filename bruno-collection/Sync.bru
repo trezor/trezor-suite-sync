@@ -4,14 +4,20 @@ meta {
   seq: 1
 }
 
-get {
+post {
   url: http://127.0.0.1:4001/sync?ownerId=WU-mqNfFbteyKyzAbW-QeA
-  body: none
+  body: json
   auth: inherit
 }
 
 params:query {
   ownerId: WU-mqNfFbteyKyzAbW-QeA
+}
+
+body:json {
+  {
+    "ownerId": "WU-mqNfFbteyKyzAbW-QeA"
+  }
 }
 
 settings {

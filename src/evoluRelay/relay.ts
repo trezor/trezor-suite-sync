@@ -1,6 +1,7 @@
 import { createConsole } from '@evolu/common';
 import { createNodeJsRelay } from '@evolu/nodejs';
 
+import { IS_DEV_SERVER } from '../env.js';
 import { UpdateHealth } from '../health/startHealthServer.js';
 import type { LimitStorage } from '../storage/limitStorage/limitStorage.js';
 
@@ -10,7 +11,7 @@ type StartEvoluRelayDependencies = {
     onHealthChange: UpdateHealth;
 };
 
-const shouldAuthenticate = process.env.SERVER_ENV !== 'dev';
+const shouldAuthenticate = !IS_DEV_SERVER;
 
 export const startEvoluRelay = async ({
     port,
