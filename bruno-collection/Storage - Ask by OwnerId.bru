@@ -4,14 +4,16 @@ meta {
   seq: 5
 }
 
-get {
-  url: http://127.0.0.1:4001/storage/ask?ownerId=WU-mqNfFbteyKyzAbW-QeA
-  body: none
+post {
+  url: http://127.0.0.1:4001/storage/ask
+  body: json
   auth: inherit
 }
 
-params:query {
-  ownerId: WU-mqNfFbteyKyzAbW-QeA
+body:json {
+  {
+    "ownerId": "WU-mqNfFbteyKyzAbW-QeA"
+  }
 }
 
 settings {
