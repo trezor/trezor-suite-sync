@@ -4,14 +4,16 @@ meta {
   seq: 6
 }
 
-get {
-  url: http://127.0.0.1:4001/storage/ask?publicKey=example_public_key_string
-  body: none
+post {
+  url: http://127.0.0.1:4001/storage/ask
+  body: json
   auth: inherit
 }
 
-params:query {
-  publicKey: example_public_key_string
+body:json {
+  {
+    "publicKey": "example_public_key_string"
+  }
 }
 
 settings {

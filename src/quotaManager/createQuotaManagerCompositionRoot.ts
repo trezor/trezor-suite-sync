@@ -59,7 +59,7 @@ export const createQuotaManagerCompositionRoot = (deps: createQuotaManagerCompos
         getLimitsForPubkey,
         getLimitsForOwner,
     });
-    fastifyServer.get('/storage/ask', storageAskRequestSchema, storageAskHandler);
+    fastifyServer.post('/storage/ask', storageAskRequestSchema, storageAskHandler);
 
     const storageRegisterOperation = createStorageRegisterOperation({
         challengeStorage,
