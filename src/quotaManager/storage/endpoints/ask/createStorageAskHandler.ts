@@ -7,13 +7,13 @@ import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/
 export type AskHandlerDeps = GetLimitsForOwnerDep & GetLimitsForPubkeyDep;
 
 export type StorageAskHandler = EndpointHandler<{
-    Querystring: typeof askEvoluSchema.Type;
+    Body: typeof askEvoluSchema.Type;
 }>;
 
 export const createStorageAskHandler =
     (deps: AskHandlerDeps): StorageAskHandler =>
     async (request, reply) => {
-        const { ownerId, publicKey } = request.query;
+        const { ownerId, publicKey } = request.body;
 
         if (ownerId !== undefined) {
             const result = await deps.getLimitsForOwner({ ownerId });

@@ -9,7 +9,7 @@ export const askEvoluSchema = object({
 
 export const storageAskRequestSchema = {
     schema: {
-        querystring: {
+        body: {
             evoluSchema: askEvoluSchema,
         },
     },
