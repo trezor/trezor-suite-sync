@@ -23,7 +23,7 @@ const isNoSpaceAllowance = (error: unknown): error is NoSpaceAllowance =>
     'type' in error &&
     error.type === 'NoStorageAllowance';
 
-export const transferSpaceLimitToOwner = async ({
+export const transferSpaceFromDeviceToOwner = async ({
     db,
     publicKey,
     ownerId,
