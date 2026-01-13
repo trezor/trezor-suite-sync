@@ -12,6 +12,7 @@ type StartHealthServerDependencies = {
 };
 
 export type UpdateHealth = (updates: Partial<HealthState>) => void;
+export type UpdateHealthDep = { updateHealth: UpdateHealth };
 
 /**
  * Starts a health server that provides health status of different components.

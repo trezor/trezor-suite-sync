@@ -29,7 +29,7 @@ export const startEvoluRelay = async ({
          * Owner is allowed to access the relay if they have any registered storage limit.
          */
         async isOwnerAllowed(ownerId) {
-            const result = await limitStorage.getLimitForOwner({ ownerId });
+            const result = await limitStorage.getLimitsForOwner({ ownerId });
 
             if (!shouldAuthenticate) {
                 return Promise.resolve(true);
@@ -42,7 +42,7 @@ export const startEvoluRelay = async ({
          * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.
          */
         async isOwnerWithinQuota(ownerId, requiredBytes) {
-            const result = await limitStorage.getLimitForOwner({ ownerId });
+            const result = await limitStorage.getLimitsForOwner({ ownerId });
 
             if (!shouldAuthenticate) {
                 return Promise.resolve(true);

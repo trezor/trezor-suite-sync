@@ -4,8 +4,7 @@ import { join } from 'path';
 
 import { startEvoluRelay } from './evoluRelay/relay.js';
 import { startHealthServer } from './health/startHealthServer.js';
-import { startQuotaManagerServer } from './quotaManager/server.js';
-import { createAppStorage } from './storage.js';
+import { createQuotaManagerCompositionRoot } from './quotaManager/createQuotaManagerCompositionRoot.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
 const QUOTA_MANAGER_PORT = process.env.QUOTA_MANAGER_PORT
@@ -23,28 +22,26 @@ const updateHealth = startHealthServer({
     port: HEALTH_SERVER_PORT,
 });
 
-const storage = await createAppStorage();
+const run = async () => {
+    const { challengeStorage, limitStorage, quotaManagerServer } =
+        createQuotaManagerCompositionRoot({ updateHealth });
 
-if (storage.ok) {
-    const { limitStorage, challengeStorage } = storage.value;
+    await limitStorage.ensureTables();
+    await challengeStorage.ensureTables();
 
     const evoluStarted = await startEvoluRelay({
         port: RELAY_PORT,
         limitStorage,
         onHealthChange: updateHealth,
     });
-    const quotaManagerStarted = await startQuotaManagerServer({
-        port: QUOTA_MANAGER_PORT,
-        limitStorage,
-        challengeStorage,
-        onHealthChange: updateHealth,
-    });
+
+    const quotaManagerStarted = await quotaManagerServer({ port: QUOTA_MANAGER_PORT });
 
     if (!evoluStarted && !quotaManagerStarted) {
         // eslint-disable-next-line no-console
         console.log('Evolu Relay and Quota Manager started failed, exiting...');
         process.exit(1);
     }
-} else {
-    console.error('Cannot start server, error: ', storage.error);
-}
+};
+
+run();

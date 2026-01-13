@@ -1,0 +1,132 @@
+import { err, ok } from '@evolu/common';
+import {
+    deviceAuthenticityBlacklistConfig,
+    deviceAuthenticityConfig,
+    verifyAuthenticityProof,
+} from '@trezor/device-authenticity';
+import { MessagesSchema as PROTO } from '@trezor/protobuf';
+
+import type { ChallengeStorageDep } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import { AddLimitToPubkeyDep } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
+import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { Result } from '../../../types.js';
+
+type RegisterStorageError =
+    | 'DatabaseError'
+    | 'ConsistencyError'
+    | 'ChallengeValidationFailed'
+    | 'StorageLimitExceeded'
+    | 'ProofValidationFailed'
+    | 'CertificateValidationFailed';
+
+const REGISTER_OPERATION_PROOF_HEADER = 'EvoluSignRegistrationRequestV1:';
+
+export type RegisterOperationInput = {
+    publicKey: PublicKey;
+    size: Size;
+    challenge: Challenge;
+    sessionId: SessionId;
+    proof: Proof;
+    certificateChain: {
+        deviceCert: string;
+        caCert: string;
+    };
+    deviceModel: string;
+};
+
+export type RegisterOperationOutput = {
+    totalStorageSize: number;
+    unspendStorageSize: number;
+};
+
+export type RegisterOperationDeps = AddLimitToPubkeyDep &
+    GetLimitsForPubkeyDep &
+    ChallengeStorageDep;
+
+export type StorageRegisterOperation = (
+    input: RegisterOperationInput,
+) => Promise<Result<RegisterOperationOutput, RegisterStorageError>>;
+
+export type StorageRegisterOperationDep = { storageRegisterOperation: StorageRegisterOperation };
+
+export const createStorageRegisterOperation =
+    (deps: RegisterOperationDeps): StorageRegisterOperation =>
+    async input => {
+        const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
+            input;
+
+        const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge(
+            sessionId,
+            challenge,
+        );
+
+        if (!challengeValidation.ok) {
+            return err('DatabaseError');
+        }
+
+        if (!challengeValidation.value) {
+            return err('ChallengeValidationFailed');
+        }
+
+        const sizeBuffer = Buffer.alloc(4);
+        sizeBuffer.writeUInt32BE(size, 0);
+
+        const bufferChunks = [
+            Buffer.from(publicKey, 'hex'),
+            Buffer.from(challenge, 'hex'),
+            sizeBuffer,
+        ];
+
+        const proofValidation = await verifyAuthenticityProof({
+            certificates: [certificateChain.deviceCert, certificateChain.caCert],
+            challengePrefix: REGISTER_OPERATION_PROOF_HEADER,
+            challenge: Buffer.from(challenge, 'hex'),
+            signature: proof,
+            deviceModel: deviceModel as PROTO.DeviceModelInternal,
+            bufferChunks,
+            config: deviceAuthenticityConfig,
+            blacklistConfig: deviceAuthenticityBlacklistConfig,
+            allowDebugKeys: true, // let currently enabled for testing purposes
+        });
+
+        if (!proofValidation.valid) {
+            if (
+                proofValidation.error === 'INVALID_DEVICE_CERTIFICATE' ||
+                proofValidation.error === 'ROOT_PUBKEY_NOT_FOUND' ||
+                proofValidation.error === 'CA_PUBKEY_BLACKLISTED' ||
+                proofValidation.error === 'INVALID_DEVICE_MODEL'
+            ) {
+                return err('CertificateValidationFailed');
+            }
+
+            return err('ProofValidationFailed');
+        }
+
+        const currentLimits = await deps.getLimitsForPubkey({ publicKey });
+
+        if (!currentLimits.ok) {
+            return err('DatabaseError');
+        }
+
+        const currentTotal = currentLimits.value?.totalStorageSize ?? (0 as Size);
+        const newTotal = Number(currentTotal) + Number(size);
+
+        const maxStoragePerDevice = 1024 * 1024;
+
+        if (maxStoragePerDevice !== undefined && newTotal > maxStoragePerDevice) {
+            return err('StorageLimitExceeded');
+        }
+
+        const result = await deps.addLimitToPubkey({ publicKey, size });
+
+        if (!result.ok) {
+            return err(result.error.type);
+        }
+
+        return ok({
+            totalStorageSize: result.value.totalStorageSize,
+            unspendStorageSize: result.value.unspendStorageSize,
+        });
+    };
