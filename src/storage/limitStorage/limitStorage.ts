@@ -1,15 +1,25 @@
-import { InferOk, Number, String, brand, ok } from '@evolu/common';
+import { Number, type Result, String, brand } from '@evolu/common';
 
-import { type AddLimitToPubkeyParams, addLimitToPubkey } from './methods/addLimitToPubkey.js';
-import { type AssignSpaceToOwnerParams, assignSpaceToOwner } from './methods/assignSpaceToOwner.js';
-import { type GetLimitsForOwnerParams, getLimitsForOwner } from './methods/getLimitsForOwner.js';
-import { type GetLimitsForPubkey, getLimitsForPubkey } from './methods/getLimitsForPubkey.js';
+import { AppDatabaseDep } from './createPostgreSql.js';
+import { AddLimitToPubkeyDep, createAddLimitToPubkey } from './methods/createAddLimitToPubkey.js';
 import {
-    type TransferSpaceLimitToOwnerParams,
-    transferSpaceFromDeviceToOwner,
-} from './methods/transferSpaceFromDeviceToOwner.js';
-import { LimitStorageDatabase } from './preparePostgreSql.js';
+    AssignSpaceToOwnerDep,
+    createAssignSpaceToOwner,
+} from './methods/createAssignSpaceToOwner.js';
+import {
+    GetLimitsForOwnerDep,
+    createGetLimitsForOwner,
+} from './methods/createGetLimitsForOwner.js';
+import {
+    GetLimitsForPubkeyDep,
+    createGetLimitsForPubkey,
+} from './methods/createGetLimitsForPubkey.js';
+import {
+    TransferSpaceFromDeviceToOwnerDep,
+    createTransferSpaceFromDeviceToOwner,
+} from './methods/createTransferSpaceFromDeviceToOwner.js';
 import { createOwnerLimitTableIfNotExists, createPubkeyLimitTableIfNotExists } from './tables.js';
+import { DatabaseError } from '../utils/dbQuery.js';
 
 /**
  * Uniquely identifying a Trezor device
@@ -42,34 +52,46 @@ export type Timestamp = typeof Timestamp.Type;
 export const Proof = brand('Proof', String);
 export type Proof = typeof Proof.Type;
 
-type CreateLimitStorageDependencies = {
-    db: LimitStorageDatabase;
-};
+type CreateLimitStorageDeps = AppDatabaseDep;
 
-export const createLimitStorage = async ({ db }: CreateLimitStorageDependencies) => {
-    await createPubkeyLimitTableIfNotExists(db);
-    await createOwnerLimitTableIfNotExists(db);
+export type LimitStorage = AddLimitToPubkeyDep &
+    GetLimitsForPubkeyDep &
+    GetLimitsForOwnerDep &
+    TransferSpaceFromDeviceToOwnerDep &
+    AssignSpaceToOwnerDep & {
+        ensureTables: () => Promise<Result<void, DatabaseError>>;
+    };
 
-    return ok({
-        addLimitToPubkey: async ({ publicKey, size }: Omit<AddLimitToPubkeyParams, 'db'>) =>
-            await addLimitToPubkey({ db, publicKey, size }),
-        getLimitForPubkey: async ({ publicKey }: Omit<GetLimitsForPubkey, 'db'>) =>
-            await getLimitsForPubkey({ db, publicKey }),
-        getLimitForOwner: async ({ ownerId }: Omit<GetLimitsForOwnerParams, 'db'>) =>
-            await getLimitsForOwner({ db, ownerId }),
-        transferSpaceLimitToOwner: async ({
-            ownerId,
-            publicKey,
-            size,
-        }: Omit<TransferSpaceLimitToOwnerParams, 'db'>) =>
-            await transferSpaceFromDeviceToOwner({ db, ownerId, publicKey, size }),
-        assignSpaceToOwner: async ({
-            ownerId,
-            publicKey,
-            size,
-        }: Omit<AssignSpaceToOwnerParams, 'db'>) =>
-            await assignSpaceToOwner({ db, ownerId, publicKey, size }),
+export type LimitStorageDep = { limitStorage: LimitStorage };
+
+export const createLimitStorage = ({ db }: CreateLimitStorageDeps): LimitStorage => {
+    const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+    const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
+    const getLimitsForOwner = createGetLimitsForOwner({ db });
+    const transferSpaceFromDeviceToOwner = createTransferSpaceFromDeviceToOwner({
+        db,
+        getLimitsForPubkey,
+        getLimitsForOwner,
     });
-};
+    const assignSpaceToOwner = createAssignSpaceToOwner({
+        db,
+        getLimitsForPubkey,
+        getLimitsForOwner,
+    });
 
-export type LimitStorage = InferOk<Awaited<ReturnType<typeof createLimitStorage>>>;
+    return {
+        addLimitToPubkey,
+        getLimitsForPubkey,
+        getLimitsForOwner,
+        transferSpaceFromDeviceToOwner,
+        assignSpaceToOwner,
+        ensureTables: async () => {
+            const result = await createPubkeyLimitTableIfNotExists(db);
+            if (!result.ok) {
+                return result;
+            }
+
+            return await createOwnerLimitTableIfNotExists(db);
+        },
+    };
+};

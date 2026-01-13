@@ -1,6 +1,6 @@
 import { type Result, String, brand, ok } from '@evolu/common';
 
-import { LimitStorageDatabase } from '../limitStorage/preparePostgreSql.js';
+import { AppDatabase, AppDatabaseDep } from '../limitStorage/createPostgreSql.js';
 import { createChallengesTableIfNotExists } from '../limitStorage/tables.js';
 import { DatabaseError, dbQuery } from '../utils/dbQuery.js';
 
@@ -31,23 +31,26 @@ export type ChallengeStorage = {
         expiresInSeconds?: number,
     ) => Promise<Result<void, DatabaseError>>;
     cleanupExpiredChallenges: () => Promise<Result<void, DatabaseError>>;
+    ensureTables: () => Promise<Result<void, DatabaseError>>;
 };
 
 const CHALLENGES_TABLE_NAME = 'challenges';
 const DEFAULT_EXPIRATION_SECONDS = 30;
 
-export type ChallengeStorageDependencies = {
-    db: LimitStorageDatabase;
-    createTime?: () => number;
+export type ChallengeStorageDeps = AppDatabaseDep & {
+    createTime: () => number;
 };
 
+export type ChallengeStorageDep = { challengeStorage: ChallengeStorage };
+
+// Todo: AI
 // Todo: split to functions, similar to LimitStorage
 
 const deleteChallenge = async ({
     db,
     sessionId,
 }: {
-    db: LimitStorageDatabase;
+    db: AppDatabase;
     sessionId: SessionId;
 }): Promise<Result<void, DatabaseError>> => {
     const deleteResult = await dbQuery(() =>
@@ -57,96 +60,86 @@ const deleteChallenge = async ({
     return deleteResult.ok ? ok(undefined) : deleteResult;
 };
 
-export const createChallengeStorage = async ({
-    db,
-    createTime = () => Date.now(),
-}: ChallengeStorageDependencies): Promise<Result<ChallengeStorage, DatabaseError>> => {
-    const createTableResult = await createChallengesTableIfNotExists(db);
+export const createChallengeStorage = (deps: ChallengeStorageDeps): ChallengeStorage => ({
+    ensureTables: async () => await createChallengesTableIfNotExists(deps.db),
+    storeChallenge: async (
+        sessionId: SessionId,
+        challenge: Challenge,
+        expiresInSeconds: number = DEFAULT_EXPIRATION_SECONDS,
+    ): Promise<Result<void, DatabaseError>> => {
+        const now = deps.createTime();
 
-    if (!createTableResult.ok) {
-        return createTableResult;
-    }
-
-    return ok({
-        storeChallenge: async (
-            sessionId: SessionId,
-            challenge: Challenge,
-            expiresInSeconds: number = DEFAULT_EXPIRATION_SECONDS,
-        ): Promise<Result<void, DatabaseError>> => {
-            const now = createTime();
-
-            // TODO fix CONSTRAINT err
-            const result = await dbQuery(() =>
-                db
-                    .insertInto('challenges')
-                    .values({
-                        sessionId,
+        // TODO fix CONSTRAINT err
+        const result = await dbQuery(() =>
+            deps.db
+                .insertInto('challenges')
+                .values({
+                    sessionId,
+                    challenge,
+                    createdAt: now,
+                })
+                .onConflict(oc =>
+                    oc.column('sessionId').doUpdateSet({
                         challenge,
                         createdAt: now,
-                    })
-                    .onConflict(oc =>
-                        oc.column('sessionId').doUpdateSet({
-                            challenge,
-                            createdAt: now,
-                        }),
-                    )
-                    .execute(),
-            );
+                    }),
+                )
+                .execute(),
+        );
 
-            return result.ok ? ok(undefined) : result;
-        },
+        return result.ok ? ok(undefined) : result;
+    },
 
-        validateAndConsumeChallenge: async (
-            sessionId: SessionId,
-            challenge: Challenge,
-        ): Promise<Result<boolean, DatabaseError>> => {
-            const now = createTime();
-            const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
+    validateAndConsumeChallenge: async (
+        sessionId: SessionId,
+        challenge: Challenge,
+    ): Promise<Result<boolean, DatabaseError>> => {
+        const now = deps.createTime();
+        const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
 
-            const selectResult = await dbQuery(() =>
-                db
-                    .selectFrom(CHALLENGES_TABLE_NAME)
-                    .where('sessionId', '=', sessionId)
-                    .where('createdAt', '>', expirationThreshold)
-                    .select(['challenge'])
-                    .execute(),
-            );
+        const selectResult = await dbQuery(() =>
+            deps.db
+                .selectFrom(CHALLENGES_TABLE_NAME)
+                .where('sessionId', '=', sessionId)
+                .where('createdAt', '>', expirationThreshold)
+                .select(['challenge'])
+                .execute(),
+        );
 
-            if (!selectResult.ok) {
-                return selectResult;
-            }
+        if (!selectResult.ok) {
+            return selectResult;
+        }
 
-            if (selectResult.value.length === 0) {
-                return ok(false);
-            }
+        if (selectResult.value.length === 0) {
+            return ok(false);
+        }
 
-            const [row] = selectResult.value;
+        const [row] = selectResult.value;
 
-            if (!row || row.challenge !== challenge) {
-                return ok(false);
-            }
+        if (!row || row.challenge !== challenge) {
+            return ok(false);
+        }
 
-            const deleteResult = await deleteChallenge({ db, sessionId });
+        const deleteResult = await deleteChallenge({ db: deps.db, sessionId });
 
-            if (!deleteResult.ok) {
-                return deleteResult;
-            }
+        if (!deleteResult.ok) {
+            return deleteResult;
+        }
 
-            return ok(true);
-        },
+        return ok(true);
+    },
 
-        cleanupExpiredChallenges: async (): Promise<Result<void, DatabaseError>> => {
-            const now = createTime();
-            const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
+    cleanupExpiredChallenges: async (): Promise<Result<void, DatabaseError>> => {
+        const now = deps.createTime();
+        const expirationThreshold = now - DEFAULT_EXPIRATION_SECONDS * 1000;
 
-            const result = await dbQuery(() =>
-                db
-                    .deleteFrom(CHALLENGES_TABLE_NAME)
-                    .where('createdAt', '<=', expirationThreshold)
-                    .execute(),
-            );
+        const result = await dbQuery(() =>
+            deps.db
+                .deleteFrom(CHALLENGES_TABLE_NAME)
+                .where('createdAt', '<=', expirationThreshold)
+                .execute(),
+        );
 
-            return result.ok ? ok(undefined) : result;
-        },
-    });
-};
+        return result.ok ? ok(undefined) : result;
+    },
+});
