@@ -4,15 +4,15 @@ import { assert, describe, expect, it } from 'vitest';
 import { addLimitToPubkey } from './addLimitToPubkey.js';
 import { getLimitsForOwner } from './getLimitsForOwner.js';
 import { getLimitsForPubkey } from './getLimitsForPubkey.js';
-import { transferSpaceLimitToOwner } from './transferSpaceLimitToOwner.js';
+import { transferSpaceFromDeviceToOwner } from './transferSpaceFromDeviceToOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
 import { prepareTestDatabase } from '../prepareTestDatabase.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
 
-const ownerId123 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const ownerId456 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
+const ownerIdAlice = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const ownerIdBob = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
 
 const size30 = getOrThrowTest(Size.from(30));
 const size50 = getOrThrowTest(Size.from(50));
@@ -27,16 +27,16 @@ const prepareSql = async () => {
     return db;
 };
 
-describe(transferSpaceLimitToOwner.name, () => {
+describe(transferSpaceFromDeviceToOwner.name, () => {
     it('transfers space from pubkey to owner', async () => {
         const db = await prepareSql();
 
         await addLimitToPubkey({ db, publicKey: PublicKeyAAA, size: size100 });
 
-        const result = await transferSpaceLimitToOwner({
+        const result = await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size50,
         });
 
@@ -51,10 +51,10 @@ describe(transferSpaceLimitToOwner.name, () => {
     it('returns error when pubkey has no space', async () => {
         const db = await prepareSql();
 
-        const result = await transferSpaceLimitToOwner({
+        const result = await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size50,
         });
 
@@ -67,10 +67,10 @@ describe(transferSpaceLimitToOwner.name, () => {
 
         await addLimitToPubkey({ db, publicKey: PublicKeyAAA, size: size50 });
 
-        const result = await transferSpaceLimitToOwner({
+        const result = await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size100,
         });
 
@@ -83,23 +83,23 @@ describe(transferSpaceLimitToOwner.name, () => {
 
         await addLimitToPubkey({ db, publicKey: PublicKeyAAA, size: size200 });
 
-        await transferSpaceLimitToOwner({
+        await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size50,
         });
 
-        await transferSpaceLimitToOwner({
+        await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size30,
         });
 
-        const ownerLimit = await getLimitsForOwner({ db, ownerId: ownerId123 });
-        assert(ownerLimit.ok);
-        expect(ownerLimit.value).toBe(80);
+        const ownerAliceLimit = await getLimitsForOwner({ db, ownerId: ownerIdAlice });
+        assert(ownerAliceLimit.ok);
+        expect(ownerAliceLimit.value).toBe(80);
     });
 
     it('handles transfers to different owners independently', async () => {
@@ -107,26 +107,26 @@ describe(transferSpaceLimitToOwner.name, () => {
 
         await addLimitToPubkey({ db, publicKey: PublicKeyAAA, size: size200 });
 
-        await transferSpaceLimitToOwner({
+        await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId123,
+            ownerId: ownerIdAlice,
             size: size50,
         });
 
-        await transferSpaceLimitToOwner({
+        await transferSpaceFromDeviceToOwner({
             db,
             publicKey: PublicKeyAAA,
-            ownerId: ownerId456,
+            ownerId: ownerIdBob,
             size: size30,
         });
 
-        const owner123Limit = await getLimitsForOwner({ db, ownerId: ownerId123 });
-        assert(owner123Limit.ok);
-        expect(owner123Limit.value).toBe(50);
+        const ownerAliceLimit = await getLimitsForOwner({ db, ownerId: ownerIdAlice });
+        assert(ownerAliceLimit.ok);
+        expect(ownerAliceLimit.value).toBe(50);
 
-        const owner456Limit = await getLimitsForOwner({ db, ownerId: ownerId456 });
-        assert(owner456Limit.ok);
-        expect(owner456Limit.value).toBe(30);
+        const ownerBobLimit = await getLimitsForOwner({ db, ownerId: ownerIdBob });
+        assert(ownerBobLimit.ok);
+        expect(ownerBobLimit.value).toBe(30);
     });
 });

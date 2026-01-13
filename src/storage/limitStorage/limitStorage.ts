@@ -6,8 +6,8 @@ import { type GetLimitsForOwnerParams, getLimitsForOwner } from './methods/getLi
 import { type GetLimitsForPubkey, getLimitsForPubkey } from './methods/getLimitsForPubkey.js';
 import {
     type TransferSpaceLimitToOwnerParams,
-    transferSpaceLimitToOwner,
-} from './methods/transferSpaceLimitToOwner.js';
+    transferSpaceFromDeviceToOwner,
+} from './methods/transferSpaceFromDeviceToOwner.js';
 import { LimitStorageDatabase } from './preparePostgreSql.js';
 import { createOwnerLimitTableIfNotExists, createPubkeyLimitTableIfNotExists } from './tables.js';
 
@@ -62,7 +62,7 @@ export const createLimitStorage = async ({ db }: CreateLimitStorageDependencies)
             publicKey,
             size,
         }: Omit<TransferSpaceLimitToOwnerParams, 'db'>) =>
-            await transferSpaceLimitToOwner({ db, ownerId, publicKey, size }),
+            await transferSpaceFromDeviceToOwner({ db, ownerId, publicKey, size }),
         assignSpaceToOwner: async ({
             ownerId,
             publicKey,
