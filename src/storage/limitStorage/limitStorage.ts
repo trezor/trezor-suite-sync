@@ -1,4 +1,4 @@
-import { Number, type Result, String, brand } from '@evolu/common';
+import { Number, String, brand } from '@evolu/common';
 
 import { AppDatabaseDep } from './createPostgreSql.js';
 import { AddLimitToPubkeyDep, createAddLimitToPubkey } from './methods/createAddLimitToPubkey.js';
@@ -18,8 +18,6 @@ import {
     TransferSpaceFromDeviceToOwnerDep,
     createTransferSpaceFromDeviceToOwner,
 } from './methods/createTransferSpaceFromDeviceToOwner.js';
-import { createOwnerLimitTableIfNotExists, createPubkeyLimitTableIfNotExists } from './tables.js';
-import { DatabaseError } from '../utils/dbQuery.js';
 
 /**
  * Uniquely identifying a Trezor device
@@ -58,9 +56,7 @@ export type LimitStorage = AddLimitToPubkeyDep &
     GetLimitsForPubkeyDep &
     GetLimitsForOwnerDep &
     TransferSpaceFromDeviceToOwnerDep &
-    AssignSpaceToOwnerDep & {
-        ensureTables: () => Promise<Result<void, DatabaseError>>;
-    };
+    AssignSpaceToOwnerDep;
 
 export type LimitStorageDep = { limitStorage: LimitStorage };
 
@@ -85,13 +81,5 @@ export const createLimitStorage = ({ db }: CreateLimitStorageDeps): LimitStorage
         getLimitsForOwner,
         transferSpaceFromDeviceToOwner,
         assignSpaceToOwner,
-        ensureTables: async () => {
-            const result = await createPubkeyLimitTableIfNotExists(db);
-            if (!result.ok) {
-                return result;
-            }
-
-            return await createOwnerLimitTableIfNotExists(db);
-        },
     };
 };

@@ -7,7 +7,7 @@ import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 import { createTransferSpaceFromDeviceToOwner } from './createTransferSpaceFromDeviceToOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../createTestDatabase.js';
-import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
+import { PublicKey, Size } from '../limitStorage.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
 
@@ -19,18 +19,9 @@ const size50 = getOrThrowTest(Size.from(50));
 const size100 = getOrThrowTest(Size.from(100));
 const size200 = getOrThrowTest(Size.from(200));
 
-const prepareSql = async () => {
-    const db = createTestDatabase();
-
-    const limitStorage = createLimitStorage({ db });
-    await limitStorage.ensureTables();
-
-    return db;
-};
-
 describe(createTransferSpaceFromDeviceToOwner.name, () => {
     it('transfers space from pubkey to owner', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });
@@ -58,7 +49,7 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
     });
 
     it('returns error when pubkey has no space', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });
@@ -79,7 +70,7 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
     });
 
     it('returns error when insufficient unspent space', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });
@@ -103,7 +94,7 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
     });
 
     it('accumulates space for the same owner', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });
@@ -134,7 +125,7 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
     });
 
     it('handles transfers to different owners independently', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });
