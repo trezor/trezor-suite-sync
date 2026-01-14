@@ -20,14 +20,13 @@ const challengeWrong = getOrThrowTest(Challenge.from('challenge-wrong'));
 const prepareChallengeStorage = async (
     deps: Pick<Partial<ChallengeStorageDeps>, 'createTime'> = {},
 ) => {
-    const db = createTestDatabase();
+    const db = await createTestDatabase();
 
     const challengeStorage = createChallengeStorage({
         createTime: () => Date.now(),
         db,
         ...deps,
     });
-    await challengeStorage.ensureTables();
 
     return challengeStorage;
 };

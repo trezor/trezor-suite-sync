@@ -4,7 +4,7 @@ import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../createTestDatabase.js';
-import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
+import { PublicKey, Size } from '../limitStorage.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
 const PublicKeyBBB = getOrThrowTest(PublicKey.from('pubkey_BBBB'));
@@ -16,19 +16,9 @@ const size50 = getOrThrowTest(Size.from(50));
 const size100 = getOrThrowTest(Size.from(100));
 const size200 = getOrThrowTest(Size.from(200));
 
-const prepareSql = async () => {
-    const db = createTestDatabase();
-
-    // Todo: do not create whole LimitStorage just to create table, refactor
-    const limitStorage = createLimitStorage({ db });
-    await limitStorage.ensureTables();
-
-    return db;
-};
-
 describe(createAddLimitToPubkey.name, () => {
     it('adds limit to the pubkey', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
@@ -43,7 +33,7 @@ describe(createAddLimitToPubkey.name, () => {
     });
 
     it('adds to existing limit for same pubkey', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
@@ -60,7 +50,7 @@ describe(createAddLimitToPubkey.name, () => {
     });
 
     it('handles zero size addition', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
@@ -75,7 +65,7 @@ describe(createAddLimitToPubkey.name, () => {
     });
 
     it('handles different pubkeys independently', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
         await addLimitToPubkey({ publicKey: PublicKeyAAA, size: size100 });

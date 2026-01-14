@@ -4,7 +4,7 @@ import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../createTestDatabase.js';
-import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
+import { PublicKey, Size } from '../limitStorage.js';
 
 const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.from('pubkey_ABCDEFGH'));
 const PublicKeyNonExistent = getOrThrowTest(PublicKey.from('PublicKeyNonExistent'));
@@ -13,19 +13,9 @@ const size30 = getOrThrowTest(Size.from(30));
 const size50 = getOrThrowTest(Size.from(50));
 const size100 = getOrThrowTest(Size.from(100));
 
-const prepareSql = async () => {
-    const db = createTestDatabase();
-
-    // Todo: do not create whole LimitStorage just to create table, refactor
-    const limitStorage = createLimitStorage({ db });
-    await limitStorage.ensureTables();
-
-    return db;
-};
-
 describe(createGetLimitsForPubkey.name, () => {
     it('returns null when publicKey does not exist', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const result = await getLimitsForPubkey({ publicKey: PublicKeyNonExistent });
         assert(result.ok);
@@ -33,7 +23,7 @@ describe(createGetLimitsForPubkey.name, () => {
     });
 
     it('returns limits for existing publicKey', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
         await addLimitToPubkey({ publicKey: PublicKeyABCDEFGH, size: size100 });
@@ -47,7 +37,7 @@ describe(createGetLimitsForPubkey.name, () => {
     });
 
     it('returns updated limits after multiple adds', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
         await addLimitToPubkey({ publicKey: PublicKeyABCDEFGH, size: size50 });
