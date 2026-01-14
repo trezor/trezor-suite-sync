@@ -23,11 +23,11 @@ const updateHealth = startHealthServer({
 });
 
 const run = async () => {
-    const { challengeStorage, limitStorage, quotaManagerServer } =
-        createQuotaManagerCompositionRoot({ updateHealth });
+    const { limitStorage, quotaManagerServer, migrateToLatest } = createQuotaManagerCompositionRoot(
+        { updateHealth },
+    );
 
-    await limitStorage.ensureTables();
-    await challengeStorage.ensureTables();
+    await migrateToLatest();
 
     const evoluStarted = await startEvoluRelay({
         port: RELAY_PORT,

@@ -56,7 +56,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('assigns space when proof and challenge are valid', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -88,7 +87,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('allows burning space when ownerId equals zero', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -120,7 +118,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(false)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -165,7 +162,6 @@ describe(createStorageAddOperation.name, () => {
                 },
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
-                ensureTables: () => Promise.resolve(ok()),
             };
         })();
 
@@ -200,7 +196,6 @@ describe(createStorageAddOperation.name, () => {
         vi.mocked(verifySignatureP256).mockResolvedValue(false);
 
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -231,7 +226,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('returns NoStorageAllowance when there is insufficient unspent space', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -254,7 +248,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('returns ConsistencyError when limit storage returns consistency error', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -277,7 +270,6 @@ describe(createStorageAddOperation.name, () => {
 
     it('returns SqliteError when challenge storage returns error', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () =>
                 Promise.resolve(
                     err({ type: 'SqliteError', error: new Error('Test SQLite error') } as any),

@@ -5,24 +5,15 @@ import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { dbQuery } from '../../utils/dbQuery.js';
 import { createTestDatabase } from '../createTestDatabase.js';
-import { Size, createLimitStorage } from '../limitStorage.js';
+import { Size } from '../limitStorage.js';
 import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 const ownerId123 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
 const ownerId456 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
 
-const prepareSql = async () => {
-    const db = createTestDatabase();
-
-    const limitStorage = createLimitStorage({ db });
-    await limitStorage.ensureTables();
-
-    return db;
-};
-
 describe(createGetLimitsForOwner.name, () => {
     it('returns null when no owner limit exists', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         const getLimitsForOwner = createGetLimitsForOwner({ db });
         const result = await getLimitsForOwner({ ownerId: ownerId123 });
@@ -32,7 +23,7 @@ describe(createGetLimitsForOwner.name, () => {
     });
 
     it('returns storage limit for the right owner', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         await dbQuery(() =>
             db
@@ -67,7 +58,7 @@ describe(createGetLimitsForOwner.name, () => {
     });
 
     it('returns zero storage limit', async () => {
-        const db = await prepareSql();
+        const db = await createTestDatabase();
 
         await dbQuery(() =>
             db

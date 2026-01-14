@@ -1,7 +1,6 @@
 import { type Result, String, brand, ok } from '@evolu/common';
 
 import { AppDatabase, AppDatabaseDep } from '../limitStorage/createPostgreSql.js';
-import { createChallengesTableIfNotExists } from '../limitStorage/tables.js';
 import { DatabaseError, dbQuery } from '../utils/dbQuery.js';
 
 /**
@@ -31,7 +30,6 @@ export type ChallengeStorage = {
         expiresInSeconds?: number,
     ) => Promise<Result<void, DatabaseError>>;
     cleanupExpiredChallenges: () => Promise<Result<void, DatabaseError>>;
-    ensureTables: () => Promise<Result<void, DatabaseError>>;
 };
 
 const CHALLENGES_TABLE_NAME = 'challenges';
@@ -61,7 +59,6 @@ const deleteChallenge = async ({
 };
 
 export const createChallengeStorage = (deps: ChallengeStorageDeps): ChallengeStorage => ({
-    ensureTables: async () => await createChallengesTableIfNotExists(deps.db),
     storeChallenge: async (
         sessionId: SessionId,
         challenge: Challenge,

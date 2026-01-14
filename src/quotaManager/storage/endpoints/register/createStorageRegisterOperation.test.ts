@@ -104,7 +104,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('successfully registers storage for new publicKey', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -135,7 +134,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(false)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -179,7 +177,6 @@ describe(createStorageRegisterOperation.name, () => {
                 },
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
-                ensureTables: () => Promise.resolve(ok()),
             };
         })();
 
@@ -211,7 +208,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns StorageLimitExceeded when limit is exceeded', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -241,7 +237,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns StorageLimitExceeded when adding to existing storage exceeds limit', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -277,7 +272,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns SqliteError when challengeStorage.validateAndConsumeChallenge fails', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () =>
                 Promise.resolve(
                     err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
@@ -310,7 +304,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns SqliteError when limitStorage.getLimitsForPubkey fails', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -343,7 +336,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('returns ConsistencyError when limitStorage.addLimitToPubkey returns ConsistencyError', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -368,7 +360,6 @@ describe(createStorageRegisterOperation.name, () => {
 
     it('successfully validates real Trezor Optiga certificate and signature', async () => {
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -404,7 +395,6 @@ describe(createStorageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -446,7 +436,6 @@ describe(createStorageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -487,7 +476,6 @@ describe(createStorageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -529,7 +517,6 @@ describe(createStorageRegisterOperation.name, () => {
         });
 
         const challengeStorage: ChallengeStorage = {
-            ensureTables: () => Promise.resolve(ok()),
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -566,7 +553,6 @@ describe(createStorageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                ensureTables: () => Promise.resolve(ok()),
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -603,7 +589,6 @@ describe(createStorageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                ensureTables: () => Promise.resolve(ok()),
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -640,7 +625,6 @@ describe(createStorageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                ensureTables: () => Promise.resolve(ok()),
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -677,7 +661,6 @@ describe(createStorageRegisterOperation.name, () => {
             });
 
             const challengeStorage: ChallengeStorage = {
-                ensureTables: () => Promise.resolve(ok()),
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),

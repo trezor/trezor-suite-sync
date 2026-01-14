@@ -3,7 +3,7 @@ import { assert, describe, expect, it } from 'vitest';
 
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../createTestDatabase.js';
-import { PublicKey, Size, createLimitStorage } from '../limitStorage.js';
+import { PublicKey, Size } from '../limitStorage.js';
 import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createAssignSpaceToOwner } from './createAssignSpaceToOwner.js';
 import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
@@ -18,10 +18,7 @@ const size30 = getOrThrowTest(Size.from(30));
 const size20 = getOrThrowTest(Size.from(20));
 
 const prepareDatabase = async () => {
-    const db = createTestDatabase();
-
-    const limitStorage = createLimitStorage({ db });
-    await limitStorage.ensureTables();
+    const db = await createTestDatabase();
 
     const getLimitsForPubkey = createGetLimitsForPubkey({ db });
     const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });

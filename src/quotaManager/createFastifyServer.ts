@@ -1,5 +1,5 @@
-import fastify from 'fastify';
 import fastifyMiddie from '@fastify/middie';
+import fastify from 'fastify';
 
 import { banMiddleware } from './banMiddleware.js';
 import { createCustomErrorHandler } from './createCustomErrorHandler.js';

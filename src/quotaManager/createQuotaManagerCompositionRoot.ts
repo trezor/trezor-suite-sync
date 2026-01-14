@@ -5,6 +5,7 @@ import { createFastifyServer } from './createFastifyServer.js';
 import { createQuotaManagerServer } from './createQuotaManagerServer.js';
 import { UpdateHealthDep } from '../health/startHealthServer.js';
 import { createChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
+import { createMigrateToLatest } from '../storage/createMigrateToLatest.js';
 import { createPostgreSql } from '../storage/limitStorage/createPostgreSql.js';
 import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
 import { challengeCreateRequestSchema } from './challenge/endpoints/create/challengeCreateSchema.js';
@@ -26,6 +27,8 @@ type createQuotaManagerCompositionRootDeps = UpdateHealthDep;
 
 export const createQuotaManagerCompositionRoot = (deps: createQuotaManagerCompositionRootDeps) => {
     const db = createPostgreSql();
+
+    const migrateToLatest = createMigrateToLatest({ db });
 
     const createTime = () => Date.now();
 
@@ -89,8 +92,8 @@ export const createQuotaManagerCompositionRoot = (deps: createQuotaManagerCompos
     fastifyServer.post('/challenge', challengeCreateRequestSchema, challengeCreateHandler);
 
     return {
-        limitStorage,
-        challengeStorage,
+        limitStorage, // Todo: remove
         quotaManagerServer,
+        migrateToLatest,
     };
 };
