@@ -11,6 +11,7 @@ import { Challenge, SessionId } from '../../../../storage/challengeStorage/chall
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkeyDep } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { MAX_DEVICE_SIZE_QUOTA } from '../../../constants.js';
 import { Result } from '../../../types.js';
 
 type RegisterStorageError =
@@ -113,9 +114,7 @@ export const createStorageRegisterOperation =
         const currentTotal = currentLimits.value?.totalStorageSize ?? (0 as Size);
         const newTotal = Number(currentTotal) + Number(size);
 
-        const maxStoragePerDevice = 1024 * 1024;
-
-        if (maxStoragePerDevice !== undefined && newTotal > maxStoragePerDevice) {
+        if (MAX_DEVICE_SIZE_QUOTA !== undefined && newTotal > MAX_DEVICE_SIZE_QUOTA) {
             return err('StorageLimitExceeded');
         }
 

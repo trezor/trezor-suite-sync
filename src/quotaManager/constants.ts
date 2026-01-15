@@ -1,0 +1,1 @@
+export const MAX_DEVICE_SIZE_QUOTA = 1024 * 1024;

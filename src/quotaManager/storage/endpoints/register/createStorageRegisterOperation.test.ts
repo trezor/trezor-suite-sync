@@ -16,6 +16,7 @@ import {
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { MAX_DEVICE_SIZE_QUOTA } from '../../../constants.js';
 
 const SIGNATURE_OPTIGA =
     '3045022100c01793ffbe4f16d4efc84a4533d9bbfbbf1baa5349346678e07fdb6d848cca7902200df11b9d2850173d9c93993fca983c6d2a3f31ea69a0e19b69e18cc3b78424fe';
@@ -58,6 +59,9 @@ const publicKey = getOrThrowTest(
 const size50 = getOrThrowTest(Size.from(50));
 const size100 = getOrThrowTest(Size.from(100));
 const size101 = getOrThrowTest(Size.from(101));
+
+const maxSize = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA));
+const maxSizeDouble = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA * 2));
 
 const createMockInput = (overrides?: Partial<RegisterOperationInput>): RegisterOperationInput => ({
     publicKey,
@@ -128,48 +132,6 @@ describe(createStorageRegisterOperation.name, () => {
             expect(result.value.unspendStorageSize).toBe(100);
         }
     });
-
-    /* it('adds to existing storage for same publicKey', async () => {
-        const challengeStorage: ChallengeStorage = {
-            validateAndConsumeChallenge: () => ok(true),
-            storeChallenge: () => ok(undefined),
-            cleanupExpiredChallenges: () => ok(undefined),
-        };
-
-        const limitStorage: Pick<LimitStorage, 'addLimitToPubkey' | 'getLimitsForPubkey'> = (() => {
-            const state = { hasReturnedExisting: false };
-
-            return {
-                getLimitsForPubkey: () => {
-                    if (!state.hasReturnedExisting) {
-                        state.hasReturnedExisting = true;
-
-                        return ok({
-                            totalStorageSize: size50,
-                            unspendStorageSize: size50,
-                        });
-                    }
-
-                    return ok(null);
-                },
-                addLimitToPubkey: () =>
-                    ok({
-                        totalStorageSize: size100,
-                        unspendStorageSize: size100,
-                    }),
-            };
-        })();
-
-        const deps = createMockDeps(challengeStorage, limitStorage);
-
-        const result = await storageRegisterOperation(deps, createMockInput({ size: size50 }));
-
-        expect(result.ok).toBe(true);
-        if (result.ok) {
-            expect(result.value.totalStorageSize).toBe(100);
-            expect(result.value.unspendStorageSize).toBe(100);
-        }
-    }); */
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const challengeStorage: ChallengeStorage = {
@@ -259,8 +221,8 @@ describe(createStorageRegisterOperation.name, () => {
         const addLimitToPubkey: AddLimitToPubkey = () =>
             Promise.resolve(
                 ok({
-                    totalStorageSize: size101,
-                    unspendStorageSize: size101,
+                    totalStorageSize: maxSize,
+                    unspendStorageSize: maxSize,
                 }),
             );
 
@@ -269,7 +231,7 @@ describe(createStorageRegisterOperation.name, () => {
             addLimitToPubkey,
             getLimitsForPubkey,
         });
-        const result = await storageRegisterOperation(createMockInput({ size: size101 }));
+        const result = await storageRegisterOperation(createMockInput({ size: maxSizeDouble }));
 
         expect(result.ok).toBe(false);
         if (!result.ok) {
@@ -288,8 +250,8 @@ describe(createStorageRegisterOperation.name, () => {
         const getLimitsForPubkey = () =>
             Promise.resolve(
                 ok({
-                    totalStorageSize: size50,
-                    unspendStorageSize: size50,
+                    totalStorageSize: maxSize,
+                    unspendStorageSize: size100,
                 }),
             );
         const addLimitToPubkey = () =>
