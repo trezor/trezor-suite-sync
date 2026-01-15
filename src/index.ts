@@ -2,9 +2,9 @@ import 'dotenv/config';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
-import { startEvoluRelay } from './evoluRelay/relay.js';
+import { createCompositionRoot } from './createCompositionRoot.js';
+import { startEvoluRelay } from './evoluRelay/startEvoluRelay.js';
 import { startHealthServer } from './health/startHealthServer.js';
-import { createQuotaManagerCompositionRoot } from './quotaManager/createQuotaManagerCompositionRoot.js';
 
 const RELAY_PORT = process.env.RELAY_PORT ? parseInt(process.env.RELAY_PORT, 10) : 4000;
 const QUOTA_MANAGER_PORT = process.env.QUOTA_MANAGER_PORT
@@ -23,21 +23,21 @@ const updateHealth = startHealthServer({
 });
 
 const run = async () => {
-    const { limitStorage, quotaManagerServer, migrateToLatest } = createQuotaManagerCompositionRoot(
-        { updateHealth },
-    );
+    const { quotaManagerServer, migrateToLatest, evoluRelay } = createCompositionRoot({
+        updateHealth,
+    });
 
     await migrateToLatest();
 
-    const evoluStarted = await startEvoluRelay({
+    const relayStarted = await startEvoluRelay({
+        evoluRelay,
         port: RELAY_PORT,
-        limitStorage,
         onHealthChange: updateHealth,
     });
 
     const quotaManagerStarted = await quotaManagerServer({ port: QUOTA_MANAGER_PORT });
 
-    if (!evoluStarted && !quotaManagerStarted) {
+    if (!relayStarted && !quotaManagerStarted) {
         // eslint-disable-next-line no-console
         console.log('Evolu Relay and Quota Manager started failed, exiting...');
         process.exit(1);
