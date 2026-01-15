@@ -1,4 +1,3 @@
-import fastifyMiddie from '@fastify/middie';
 import fastify from 'fastify';
 
 import { banMiddleware } from './banMiddleware.js';
@@ -14,8 +13,7 @@ export type FastifyServerDep = { fastifyServer: ServerType };
 export const createFastifyServer = (deps: FastifyServerDeps): ServerType => {
     const fastifyServer = fastify();
 
-    fastifyServer.register(fastifyMiddie);
-    fastifyServer.use(banMiddleware);
+    fastifyServer.addHook('onRequest', banMiddleware);
 
     fastifyServer.setValidatorCompiler(evoluValidatorCompiler);
     fastifyServer.setErrorHandler(createCustomErrorHandler(deps.updateHealth));

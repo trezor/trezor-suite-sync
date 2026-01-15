@@ -151,7 +151,6 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
         });
 
         const ownerAliceLimit = await getLimitsForOwner({ ownerId: ownerIdAlice });
-        console.log(ownerAliceLimit);
         assert(ownerAliceLimit.ok);
         expect(ownerAliceLimit.value).toBe(50);
 
