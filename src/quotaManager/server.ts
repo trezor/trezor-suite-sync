@@ -1,6 +1,8 @@
+import fastifyMiddie from '@fastify/middie';
 import { randomBytes } from 'crypto';
 import fastify from 'fastify';
 
+import { banMiddleware } from './banMiddleware.js';
 import { registerChallengeEndpoints } from './challenge/registerChallengeEndpoints.js';
 import { createCustomErrorHandler } from './createCustomErrorHandler.js';
 import { evoluValidatorCompiler } from './evoluValidatorCompiler.js';
@@ -28,6 +30,9 @@ export const startQuotaManagerServer = async ({
     const server = fastify();
 
     try {
+        server.register(fastifyMiddie);
+        server.use(banMiddleware);
+
         server.setValidatorCompiler(evoluValidatorCompiler);
 
         server.setErrorHandler(createCustomErrorHandler(onHealthChange));
