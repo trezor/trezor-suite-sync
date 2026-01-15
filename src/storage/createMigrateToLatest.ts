@@ -31,6 +31,7 @@ export const createMigrateToLatest =
         for (const it of results ?? []) {
             switch (it.status) {
                 case 'Success':
+                    // eslint-disable-next-line no-console
                     console.log(`migration "${it.migrationName}" was executed successfully`);
 
                     return;
@@ -39,6 +40,7 @@ export const createMigrateToLatest =
 
                     return;
                 case 'NotExecuted':
+                    // eslint-disable-next-line no-console
                     console.log(`migration "${it.migrationName}" was NOT executed`);
 
                     return;
