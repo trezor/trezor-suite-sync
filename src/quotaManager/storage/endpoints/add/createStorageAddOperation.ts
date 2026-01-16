@@ -2,8 +2,11 @@ import { OwnerId, err, ok } from '@evolu/common';
 import { verifySignatureP256 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
-import type { CreateChallengeStorage } from '../../../../storage/challengeStorage/createChallengeStorage.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import {
+    Challenge,
+    SessionId,
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { ValidateAndConsumeChallengeDep } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import {
     AssignSpaceToOwnerDep,
@@ -39,9 +42,7 @@ type StorageAddError =
     | 'SqliteError'
     | 'ConsistencyError';
 
-export type StorageAddOperationDeps = {
-    challengeStorage: CreateChallengeStorage;
-} & AssignSpaceToOwnerDep;
+export type StorageAddOperationDeps = AssignSpaceToOwnerDep & ValidateAndConsumeChallengeDep;
 
 export type StorageAddInput = {
     publicKey: PublicKey;
@@ -73,7 +74,7 @@ export const createStorageAddOperation =
     async input => {
         const { publicKey, ownerId, size, challenge, sessionId, proof } = input;
 
-        const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge({
+        const challengeValidation = await deps.validateAndConsumeChallenge({
             sessionId,
             challenge,
         });

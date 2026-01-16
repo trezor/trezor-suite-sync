@@ -1,6 +1,6 @@
 import { Number, String, brand } from '@evolu/common';
 
-import { AppDatabaseDep } from './../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../posgres/createPostgreSql.js';
 import { AddLimitToPubkeyDep, createAddLimitToPubkey } from './methods/createAddLimitToPubkey.js';
 import {
     AssignSpaceToOwnerDep,

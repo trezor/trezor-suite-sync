@@ -47,12 +47,16 @@ export const createQuotaManagerCompositionRoot = (): QuotaManagerCompositionRoot
         assignSpaceToOwner,
     } = createLimitStorage({ db });
 
-    const challengeStorage = createChallengeStorage({ db, createTime });
+    const { validateAndConsumeChallenge, storeChallenge, cleanupExpiredChallenges } =
+        createChallengeStorage({
+            db,
+            createTime,
+        });
 
     const fastifyServer = createFastifyServer({ updateHealth: healthServer.updateHealth });
 
     const storageAddOperation = createStorageAddOperation({
-        challengeStorage,
+        validateAndConsumeChallenge,
         assignSpaceToOwner,
     });
     const storageAddHandler = createStorageAddHandler({ storageAddOperation });
@@ -65,7 +69,7 @@ export const createQuotaManagerCompositionRoot = (): QuotaManagerCompositionRoot
     fastifyServer.get('/storage/ask', storageAskRequestSchema, storageAskHandler);
 
     const storageRegisterOperation = createStorageRegisterOperation({
-        challengeStorage,
+        validateAndConsumeChallenge,
         getLimitsForPubkey,
         addLimitToPubkey,
     });
@@ -83,7 +87,8 @@ export const createQuotaManagerCompositionRoot = (): QuotaManagerCompositionRoot
     fastifyServer.post('/sync', syncPostRequestSchema, syncPostHandler);
 
     const challengeCreateOperation = createChallengeCreateOperation({
-        challengeStorage,
+        storeChallenge,
+        cleanupExpiredChallenges,
         generateRandomBytes,
     });
     const challengeCreateHandler = createChallengeCreateHandler({ challengeCreateOperation });

@@ -7,10 +7,20 @@ import { createStorageAddHandler } from './createStorageAddHandler.js';
 import { createStorageAddOperation } from './createStorageAddOperation.js';
 import { storageAddRequestSchema } from './storageAddSchema.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import {
+    Challenge,
+    SessionId,
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { createDeleteChallenge } from '../../../../storage/challengeStorage/methods/createDeleteChallenge.js';
+import { createStoreChallenge } from '../../../../storage/challengeStorage/methods/createStoreChallenge.js';
+import { createValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import { createAddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
+import { createAssignSpaceToOwner } from '../../../../storage/limitStorage/methods/createAssignSpaceToOwner.js';
+import { createGetLimitsForOwner } from '../../../../storage/limitStorage/methods/createGetLimitsForOwner.js';
+import { createGetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
-import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
 
 vi.mock('@trezor/device-authenticity', () => ({
     verifySignatureP256: vi.fn(),
@@ -26,27 +36,46 @@ const burnOwnerId = '0' as OwnerId;
 const size50 = getOrThrowTest(Size.from(50));
 const size20 = getOrThrowTest(Size.from(20));
 
+/**
+ * This is composition root of the app for tests. This is a lot of code as this is a heavy
+ * integration test.
+ */
 const createApp = async () => {
-    const services = await createTestFastifyApp();
+    const createTime = () => Date.now(); // Todo: freeze
 
-    await services.addLimitToPubkey({ publicKey, size: size50 });
+    const db = await createTestDatabase();
+
+    const deleteChallenge = createDeleteChallenge({ db });
+    const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+    const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
+    await addLimitToPubkey({ publicKey, size: size50 });
+
+    const validateAndConsumeChallenge = createValidateAndConsumeChallenge({
+        db,
+        createTime,
+        deleteChallenge,
+    });
+    const getLimitsForOwner = createGetLimitsForOwner({ db });
+    const assignSpaceToOwner = createAssignSpaceToOwner({
+        db,
+        getLimitsForPubkey,
+        getLimitsForOwner,
+    });
+    const storeChallenge = createStoreChallenge({ db, createTime });
+    const storageAddOperation = createStorageAddOperation({
+        assignSpaceToOwner,
+        validateAndConsumeChallenge,
+    });
 
     const app = Fastify();
-
     app.setValidatorCompiler(evoluValidatorCompiler);
-
     app.post(
         '/storage/add',
         storageAddRequestSchema,
-        createStorageAddHandler({
-            storageAddOperation: createStorageAddOperation({
-                assignSpaceToOwner: services.limitStorage.assignSpaceToOwner,
-                challengeStorage: services.challengeStorage,
-            }),
-        }),
+        createStorageAddHandler({ storageAddOperation }),
     );
 
-    return { ...services, app };
+    return { app, storeChallenge };
 };
 
 describe(createStorageAddHandler.name, () => {
@@ -56,16 +85,13 @@ describe(createStorageAddHandler.name, () => {
     });
 
     it('successfully assigns space and returns 200 with correct response format', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { app, storeChallenge } = await createApp();
 
         const sessionId = getOrThrowTest(SessionId.from('session-123'));
         const challenge = getOrThrowTest(
             Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
         );
-        const storeResult = await challengeStorage.storeChallenge({
-            sessionId,
-            challenge,
-        });
+        const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -90,16 +116,13 @@ describe(createStorageAddHandler.name, () => {
     });
 
     it('allows burning space when ownerId is zero', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { app, storeChallenge } = await createApp();
 
         const sessionId = getOrThrowTest(SessionId.from('session-456'));
         const challenge = getOrThrowTest(
             Challenge.from('39d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'),
         );
-        const storeResult = await challengeStorage.storeChallenge({
-            sessionId,
-            challenge,
-        });
+        const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -164,16 +187,13 @@ describe(createStorageAddHandler.name, () => {
     it('returns 400 when proof verification fails', async () => {
         vi.mocked(verifySignatureP256).mockResolvedValue(false);
 
-        const { app, challengeStorage } = await createApp();
+        const { app, storeChallenge } = await createApp();
 
         const sessionId = getOrThrowTest(SessionId.from('session-proof-fail'));
         const challenge = getOrThrowTest(
             Challenge.from('59d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7953'),
         );
-        const storeResult = await challengeStorage.storeChallenge({
-            sessionId,
-            challenge,
-        });
+        const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -195,13 +215,13 @@ describe(createStorageAddHandler.name, () => {
     });
 
     it('returns 400 when there is insufficient unspent space', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { app, storeChallenge } = await createApp();
 
         const sessionId1 = getOrThrowTest(SessionId.from('session-1'));
         const challenge1 = getOrThrowTest(
             Challenge.from('69d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7964'),
         );
-        const storeResult1 = await challengeStorage.storeChallenge({
+        const storeResult1 = await storeChallenge({
             sessionId: sessionId1,
             challenge: challenge1,
         });
@@ -226,7 +246,7 @@ describe(createStorageAddHandler.name, () => {
         const challenge2 = getOrThrowTest(
             Challenge.from('79d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7975'),
         );
-        const storeResult2 = await challengeStorage.storeChallenge({
+        const storeResult2 = await storeChallenge({
             sessionId: sessionId2,
             challenge: challenge2,
         });
