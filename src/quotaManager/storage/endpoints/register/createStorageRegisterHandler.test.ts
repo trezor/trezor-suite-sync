@@ -5,10 +5,18 @@ import { createStorageRegisterOperation } from './createStorageRegisterOperation
 import { storageRegisterRequestSchema } from './storageRegisterSchema.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import {
+    Challenge,
+    SessionId,
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { createDeleteChallenge } from '../../../../storage/challengeStorage/methods/createDeleteChallenge.js';
+import { createStoreChallenge } from '../../../../storage/challengeStorage/methods/createStoreChallenge.js';
+import { createValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
-import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
-import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
+import { createAddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
+import { createGetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
+import { createFastifyServer } from '../../../createFastifyServer.js';
 
 const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
     T2B1rootPubKeyOptiga:
@@ -43,35 +51,46 @@ vi.mock('@trezor/device-authenticity', () => ({
 const publicKey = getOrThrowTest(PublicKey.from('test-pubkey-123'));
 const size100 = getOrThrowTest(Size.from(100));
 
-type CreateAppParams = {
-    maxStoragePerDevice?: number;
-};
+/**
+ * This is composition root of the app for tests. This is a lot of code as this is a heavy
+ * integration test.
+ */
+const createApp = async () => {
+    const createTime = () => Date.now(); // Todo: freeze
 
-const createApp = async (params?: CreateAppParams) => {
-    const services = await createTestFastifyApp();
+    const db = await createTestDatabase();
 
-    services.app.setValidatorCompiler(evoluValidatorCompiler);
-
-    const storageRegisterOperation = createStorageRegisterOperation({
-        challengeStorage: services.challengeStorage,
-        getLimitsForPubkey: services.limitStorage.getLimitsForPubkey,
-        addLimitToPubkey: services.limitStorage.addLimitToPubkey,
+    const deleteChallenge = createDeleteChallenge({ db });
+    const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+    const validateAndConsumeChallenge = createValidateAndConsumeChallenge({
+        db,
+        createTime,
+        deleteChallenge,
     });
+    const storeChallenge = createStoreChallenge({ db, createTime });
+    const addLimitToPubkey = createAddLimitToPubkey({ getLimitsForPubkey, db });
+    const storageRegisterOperation = createStorageRegisterOperation({
+        validateAndConsumeChallenge,
+        getLimitsForPubkey,
+        addLimitToPubkey,
+    });
+
+    const app = createFastifyServer({ updateHealth: () => {} });
     const storageRegisterHandler = createStorageRegisterHandler({
         storageRegisterOperation,
     });
-    services.app.post('/storage/register', storageRegisterRequestSchema, storageRegisterHandler);
+    app.post('/storage/register', storageRegisterRequestSchema, storageRegisterHandler);
 
-    return services;
+    return { app, storeChallenge };
 };
 
 describe(createStorageRegisterHandler.name, () => {
     it('successfully registers storage and returns 200 with correct response format', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { app, storeChallenge } = await createApp();
 
         const sessionId = getOrThrowTest(SessionId.from('session-123'));
         const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
-        const storeResult = await challengeStorage.storeChallenge({
+        const storeResult = await storeChallenge({
             sessionId,
             challenge,
         });

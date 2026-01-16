@@ -6,8 +6,11 @@ import {
 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
-import type { ChallengeStorageDep } from '../../../../storage/challengeStorage/createChallengeStorage.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import {
+    Challenge,
+    SessionId,
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { ValidateAndConsumeChallengeDep } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkeyDep } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
@@ -44,7 +47,7 @@ export type RegisterOperationOutput = {
 
 export type RegisterOperationDeps = AddLimitToPubkeyDep &
     GetLimitsForPubkeyDep &
-    ChallengeStorageDep;
+    ValidateAndConsumeChallengeDep;
 
 export type StorageRegisterOperation = (
     input: RegisterOperationInput,
@@ -58,7 +61,7 @@ export const createStorageRegisterOperation =
         const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
             input;
 
-        const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge({
+        const challengeValidation = await deps.validateAndConsumeChallenge({
             sessionId,
             challenge,
         });
