@@ -4,7 +4,7 @@ import { banMiddleware } from './banMiddleware.js';
 import { createCustomErrorHandler } from './createCustomErrorHandler.js';
 import { evoluValidatorCompiler } from './evoluValidatorCompiler.js';
 import { ServerType } from './types.js';
-import { UpdateHealthDep } from '../health/startHealthServer.js';
+import { UpdateHealthDep } from '../health/createHealthServer.js';
 
 export type FastifyServerDeps = UpdateHealthDep;
 

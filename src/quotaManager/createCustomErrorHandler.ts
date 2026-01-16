@@ -1,9 +1,9 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 
-import { UpdateHealth } from '../health/startHealthServer.js';
+import { UpdateHealthDep } from '../health/createHealthServer.js';
 
 export const createCustomErrorHandler =
-    (updateHealth: UpdateHealth) =>
+    (updateHealth: UpdateHealthDep['updateHealth']) =>
     (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
         const statusCode = error.statusCode || 500;
 
