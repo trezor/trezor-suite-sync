@@ -5,8 +5,8 @@ import {
     type GetLimitsForPubkeyResponse,
 } from './createGetLimitsForPubkey.js';
 import { type ConsistencyError, consistencyError } from '../../../errors.js';
+import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
-import { AppDatabaseDep } from '../createPostgreSql.js';
 import { type PublicKey, type Size } from '../limitStorage.js';
 
 export type AddLimitToPubkeyDeps = AppDatabaseDep & GetLimitsForPubkeyDep;

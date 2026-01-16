@@ -2,7 +2,7 @@ import { OwnerId } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../createTestDatabase.js';
+import { createTestDatabase } from '../../posgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createAssignSpaceToOwner } from './createAssignSpaceToOwner.js';

@@ -3,11 +3,11 @@ import { assert, describe, expect, it } from 'vitest';
 import {
     Challenge,
     ChallengeStorageDeps,
-    SessionId,
     createChallengeStorage,
+    SessionId,
 } from './challengeStorage.js';
 import { getOrThrowTest } from '../../getOrThrowTest.js';
-import { createTestDatabase } from '../limitStorage/createTestDatabase.js';
+import { createTestDatabase } from '../posgres/createTestDatabase.js';
 
 const session123 = getOrThrowTest(SessionId.from('session-123'));
 const sessionNonExistent = getOrThrowTest(SessionId.from('session-non-existent'));
@@ -22,13 +22,11 @@ const prepareChallengeStorage = async (
 ) => {
     const db = await createTestDatabase();
 
-    const challengeStorage = createChallengeStorage({
+    return createChallengeStorage({
         createTime: () => Date.now(),
         db,
         ...deps,
     });
-
-    return challengeStorage;
 };
 
 describe('challengeStorage', () => {
