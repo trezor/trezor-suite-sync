@@ -37,6 +37,7 @@ export const createEvoluRelay =
 
                 return Promise.resolve(result.ok && result.value !== null);
             },
+
             /**
              * Owner is allowed to write if his usedBytes + requiredBytes <= storage limit.
              * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.

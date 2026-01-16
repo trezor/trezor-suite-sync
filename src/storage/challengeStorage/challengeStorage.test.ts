@@ -29,7 +29,7 @@ const prepareChallengeStorage = async (
     });
 };
 
-describe('challengeStorage', () => {
+describe(createChallengeStorage.name, () => {
     it('stores challenge successfully', async () => {
         const challengeStorage = await prepareChallengeStorage();
         const result = await challengeStorage.storeChallenge(session123, challengeABC);
