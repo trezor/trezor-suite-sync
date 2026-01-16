@@ -2,16 +2,16 @@ import { err, ok } from '@evolu/common';
 
 import {
     Challenge,
-    ChallengeStorage,
+    CreateChallengeStorage,
     SessionId,
-} from '../../../../storage/challengeStorage/challengeStorage.js';
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { GenerateRandomBytesDep } from '../../../GenerateRandomBytes.js';
 import { Result } from '../../../types.js';
 
 type ChallengeCreateError = { type: 'DatabaseError' } | { type: 'InvalidChallenge' };
 
 export type ChallengeCreateOperationDeps = {
-    challengeStorage: Pick<ChallengeStorage, 'storeChallenge' | 'cleanupExpiredChallenges'>;
+    challengeStorage: Pick<CreateChallengeStorage, 'storeChallenge' | 'cleanupExpiredChallenges'>;
 } & GenerateRandomBytesDep;
 
 export type ChallengeCreateOperationInput = {
@@ -41,7 +41,10 @@ export const createChallengeCreateOperation =
 
         const challenge = challengeResult.value;
 
-        const storeResult = await deps.challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await deps.challengeStorage.storeChallenge({
+            sessionId,
+            challenge,
+        });
 
         if (!storeResult.ok) {
             return err({ type: storeResult.error.type });

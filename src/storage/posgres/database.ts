@@ -1,6 +1,6 @@
 import { OwnerId } from '@evolu/common';
 
-import type { Challenge, SessionId } from '../challengeStorage/challengeStorage.js';
+import type { Challenge, SessionId } from '../challengeStorage/createChallengeStorage.js';
 import type { PublicKey, Size } from "../limitStorage/limitStorage.js";
 
 export type PubkeyStorageLimitsTable = {

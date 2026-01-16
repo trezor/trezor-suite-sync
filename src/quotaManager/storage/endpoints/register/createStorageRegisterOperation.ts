@@ -6,8 +6,8 @@ import {
 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
-import type { ChallengeStorageDep } from '../../../../storage/challengeStorage/challengeStorage.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
+import type { ChallengeStorageDep } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkeyDep } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
@@ -58,10 +58,10 @@ export const createStorageRegisterOperation =
         const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
             input;
 
-        const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge(
+        const challengeValidation = await deps.challengeStorage.validateAndConsumeChallenge({
             sessionId,
             challenge,
-        );
+        });
 
         if (!challengeValidation.ok) {
             return err('DatabaseError');
