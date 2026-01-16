@@ -1,32 +1,36 @@
 import { randomBytes } from 'crypto';
 
-import { createEvoluRelay } from './evoluRelay/createEvoluRelay.js';
-import { UpdateHealthDep } from './health/startHealthServer.js';
+import { EvoluRelayDep, createEvoluRelay } from './evoluRelay/createEvoluRelay.js';
+import { HealthServerDep, createHealthServer } from './health/createHealthServer.js';
 import { GenerateRandomBytes } from './quotaManager/GenerateRandomBytes.js';
 import { challengeCreateRequestSchema } from './quotaManager/challenge/endpoints/create/challengeCreateSchema.js';
 import { createChallengeCreateHandler } from './quotaManager/challenge/endpoints/create/createChallengeCreateHandler.js';
 import { createChallengeCreateOperation } from './quotaManager/challenge/endpoints/create/createChallengeCreateOperation.js';
 import { createFastifyServer } from './quotaManager/createFastifyServer.js';
-import { createQuotaManagerServer } from './quotaManager/createQuotaManagerServer.js';
+import {
+    QuotaManagerServerDep,
+    createQuotaManagerServer,
+} from './quotaManager/createQuotaManagerServer.js';
 import { createStorageAddHandler } from './quotaManager/storage/endpoints/add/createStorageAddHandler.js';
 import { createStorageAddOperation } from './quotaManager/storage/endpoints/add/createStorageAddOperation.js';
 import { storageAddRequestSchema } from './quotaManager/storage/endpoints/add/storageAddSchema.js';
 import { createStorageAskHandler } from './quotaManager/storage/endpoints/ask/createStorageAskHandler.js';
 import { storageAskRequestSchema } from './quotaManager/storage/endpoints/ask/storageAskSchema.js';
 import { createStorageDeleteHandler } from './quotaManager/storage/endpoints/delete/createStorageDeleteHandler.js';
+import { createStorageRegisterHandler } from './quotaManager/storage/endpoints/register/createStorageRegisterHandler.js';
 import { createStorageRegisterOperation } from './quotaManager/storage/endpoints/register/createStorageRegisterOperation.js';
 import { storageRegisterRequestSchema } from './quotaManager/storage/endpoints/register/storageRegisterSchema.js';
 import { createSyncPostHandler } from './quotaManager/sync/endpoints/post/createSyncPostHandler.js';
 import { syncPostRequestSchema } from './quotaManager/sync/endpoints/post/syncPostSchema.js';
-import { createStorageRegisterHandler } from './quotaManager/storage/endpoints/register/createStorageRegisterHandler.js';
 import { createChallengeStorage } from './storage/challengeStorage/challengeStorage.js';
-import { createMigrateToLatest } from './storage/createMigrateToLatest.js';
+import { MigrateToLatestDep, createMigrateToLatest } from './storage/createMigrateToLatest.js';
 import { createPostgreSql } from './storage/limitStorage/createPostgreSql.js';
 import { createLimitStorage } from './storage/limitStorage/limitStorage.js';
 
-type createQuotaManagerCompositionRootDeps = UpdateHealthDep;
-
-export const createCompositionRoot = (deps: createQuotaManagerCompositionRootDeps) => {
+export const createCompositionRoot = (): QuotaManagerServerDep &
+    HealthServerDep &
+    EvoluRelayDep &
+    MigrateToLatestDep => {
     const db = createPostgreSql();
 
     const migrateToLatest = createMigrateToLatest({ db });
@@ -47,7 +51,9 @@ export const createCompositionRoot = (deps: createQuotaManagerCompositionRootDep
         addLimitToPubkey,
     } = limitStorage;
 
-    const fastifyServer = createFastifyServer({ updateHealth: deps.updateHealth });
+    const healthServer = createHealthServer();
+
+    const fastifyServer = createFastifyServer({ updateHealth: healthServer.updateHealth });
 
     const storageAddOperation = createStorageAddOperation({
         challengeStorage,
@@ -89,12 +95,16 @@ export const createCompositionRoot = (deps: createQuotaManagerCompositionRootDep
 
     const quotaManagerServer = createQuotaManagerServer({
         fastifyServer,
-        updateHealth: deps.updateHealth,
+        updateHealth: healthServer.updateHealth,
     });
 
-    const evoluRelay = createEvoluRelay({ getLimitsForOwner });
+    const evoluRelay = createEvoluRelay({
+        getLimitsForOwner,
+        updateHealth: healthServer.updateHealth,
+    });
 
     return {
+        healthServer,
         evoluRelay,
         quotaManagerServer,
         migrateToLatest,

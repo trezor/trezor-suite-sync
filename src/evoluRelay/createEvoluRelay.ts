@@ -1,17 +1,19 @@
-import { Result, SqliteError, createConsole } from '@evolu/common';
-import { Relay } from '@evolu/common/local-first';
+import { createConsole } from '@evolu/common';
 import { createNodeJsRelay } from '@evolu/nodejs';
 
+import { UpdateHealthDep } from '../health/createHealthServer.js';
 import { GetLimitsForOwnerDep } from '../storage/limitStorage/methods/createGetLimitsForOwner.js';
 
-export type EvoluRelayDeps = GetLimitsForOwnerDep;
+export type EvoluRelayDeps = GetLimitsForOwnerDep & UpdateHealthDep;
 
 export type EvoluRelayParams = {
     port: number;
     shouldAuthenticate: boolean;
 };
 
-export type EvoluRelay = (params: EvoluRelayParams) => Promise<Result<Relay, SqliteError>>;
+export type EvoluRelay = (params: EvoluRelayParams) => Promise<void>;
+
+export type EvoluRelayDep = { evoluRelay: EvoluRelay };
 
 export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
@@ -20,7 +22,7 @@ export const createEvoluRelay =
             console: createConsole(),
         };
 
-        return await createNodeJsRelay(evoluDeps)({
+        const relayResult = await createNodeJsRelay(evoluDeps)({
             port,
             enableLogging: true,
             /**
@@ -51,4 +53,24 @@ export const createEvoluRelay =
                 );
             },
         });
+
+        if (!relayResult.ok) {
+            console.error('Relay failed', relayResult.error);
+            deps.updateHealth({ relay: 'error' });
+
+            return;
+        }
+
+        const dispose = () => {
+            // eslint-disable-next-line no-console
+            console.log('Evolu Relay is shutting down ...');
+            deps.updateHealth({ relay: 'exiting' });
+
+            if (relayResult.ok) relayResult.value[Symbol.dispose]();
+        };
+
+        process.on('SIGINT', dispose);
+        process.on('SIGTERM', dispose);
+
+        deps.updateHealth({ relay: 'ok' });
     };

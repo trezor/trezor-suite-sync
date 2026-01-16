@@ -27,4 +27,5 @@ COPY --from=builder /app .
 
 EXPOSE 4000 4001
 
+# Todo: this needs to be "yarn start-quota-manager" or "yarn start-evolu-relay"
 CMD ["yarn", "start"]

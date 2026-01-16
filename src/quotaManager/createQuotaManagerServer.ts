@@ -1,14 +1,14 @@
 import { FastifyServerDep } from './createFastifyServer.js';
-import { UpdateHealthDep } from '../health/startHealthServer.js';
+import { UpdateHealthDep } from '../health/createHealthServer.js';
 
-export type StartQuotaManagerServerDeps = FastifyServerDep & UpdateHealthDep;
+export type QuotaManagerServerDeps = FastifyServerDep & UpdateHealthDep;
 
-export type StartQuotaManagerServer = (params: { port: number }) => Promise<boolean>;
+export type QuotaManagerServer = (params: { port: number }) => Promise<void>;
 
-export type StartQuotaManagerServerDep = { startQuotaManagerServer: StartQuotaManagerServer };
+export type QuotaManagerServerDep = { quotaManagerServer: QuotaManagerServer };
 
 export const createQuotaManagerServer =
-    (deps: StartQuotaManagerServerDeps): StartQuotaManagerServer =>
+    (deps: QuotaManagerServerDeps): QuotaManagerServer =>
     async ({ port }) => {
         try {
             const address = await deps.fastifyServer.listen({ port, host: '0.0.0.0' });
@@ -20,8 +20,6 @@ export const createQuotaManagerServer =
             console.error('Failed to start Payment Server (Quota Manager):', err);
 
             deps.updateHealth({ quotaManager: 'error' });
-
-            return false;
         }
 
         const close = () => {
@@ -33,6 +31,4 @@ export const createQuotaManagerServer =
 
         process.on('SIGINT', close);
         process.on('SIGTERM', close);
-
-        return true;
     };
