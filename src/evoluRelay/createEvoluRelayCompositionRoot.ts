@@ -1,8 +1,8 @@
 import { EvoluRelayDep, createEvoluRelay } from './createEvoluRelay.js';
 import { HealthServerDep, createHealthServer } from '../health/createHealthServer.js';
 import { MigrateToLatestDep, createMigrateToLatest } from '../storage/createMigrateToLatest.js';
-import { createPostgreSql } from '../storage/limitStorage/createPostgreSql.js';
 import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
+import { createPostgreSql } from '../storage/posgres/createPostgreSql.js';
 
 export const createEvoluRelayCompositionRoot = (): HealthServerDep &
     EvoluRelayDep &

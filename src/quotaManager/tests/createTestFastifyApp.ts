@@ -1,10 +1,10 @@
 import Fastify from 'fastify';
 
 import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
-import { createTestDatabase } from '../../storage/limitStorage/createTestDatabase.js';
 import { createLimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import { createAddLimitToPubkey } from '../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from '../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { createTestDatabase } from '../../storage/posgres/createTestDatabase.js';
 
 /**
  * This is tool to set up whole QuotaManager App in test environment

@@ -1,10 +1,10 @@
 import { OwnerId, Result, ok } from '@evolu/common';
 import { Transaction } from 'kysely';
 
+import { AppDatabase } from '../../posgres/createPostgreSql.js';
+import { Database } from '../../posgres/database.js';
+import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../../posgres/tables.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
-import { AppDatabase } from '../createPostgreSql.js';
-import { Database } from '../database.js';
-import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 export type GetLimitsForOwnerDeps = {
     db: AppDatabase;

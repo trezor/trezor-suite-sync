@@ -3,10 +3,10 @@ import { assert, describe, expect, it } from 'vitest';
 
 import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
+import { createTestDatabase } from '../../posgres/createTestDatabase.js';
+import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../../posgres/tables.js';
 import { dbQuery } from '../../utils/dbQuery.js';
-import { createTestDatabase } from '../createTestDatabase.js';
 import { Size } from '../limitStorage.js';
-import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../tables.js';
 
 const ownerId123 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
 const ownerId456 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));

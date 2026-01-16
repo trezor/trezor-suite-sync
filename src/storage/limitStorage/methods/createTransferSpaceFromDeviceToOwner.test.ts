@@ -6,7 +6,7 @@ import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
 import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 import { createTransferSpaceFromDeviceToOwner } from './createTransferSpaceFromDeviceToOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../createTestDatabase.js';
+import { createTestDatabase } from '../../posgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));

@@ -1,6 +1,6 @@
 import { type Result, String, brand, ok } from '@evolu/common';
 
-import { AppDatabase, AppDatabaseDep } from '../limitStorage/createPostgreSql.js';
+import { AppDatabase, AppDatabaseDep } from '../posgres/createPostgreSql.js';
 import { DatabaseError, dbQuery } from '../utils/dbQuery.js';
 
 /**
