@@ -21,7 +21,8 @@ Run node stuff (2nd terminal):
 nvm i
 yarn
 yarn build
-yarn start
+yarn start-quota-manager
+yarn start-evolu-relay
 ```
 
 You can change ports by setting the ENV variables:
