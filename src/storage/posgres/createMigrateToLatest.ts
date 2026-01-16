@@ -3,8 +3,8 @@ import { FileMigrationProvider, Migrator } from 'kysely';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-import { exhaustive } from '../exhaustive.js';
-import { AppDatabaseDep } from './limitStorage/createPostgreSql.js';
+import { AppDatabaseDep } from './createPostgreSql.js';
+import { exhaustive } from '../../exhaustive.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
