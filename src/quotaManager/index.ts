@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { createCompositionRoot } from '../createCompositionRoot.js';
+import { createQuotaManagerCompositionRoot } from './createQuotaManagerCompositionRoot.js';
 
 const HEALTH_SERVER_PORT = process.env.HEALTH_PORT ? parseInt(process.env.HEALTH_PORT, 10) : 4002;
 
@@ -9,7 +9,8 @@ const QUOTA_MANAGER_PORT = process.env.QUOTA_MANAGER_PORT
     : 4001;
 
 const run = async () => {
-    const { migrateToLatest, quotaManagerServer, healthServer } = createCompositionRoot();
+    const { migrateToLatest, quotaManagerServer, healthServer } =
+        createQuotaManagerCompositionRoot();
 
     await migrateToLatest();
     healthServer.start({ port: HEALTH_SERVER_PORT });
