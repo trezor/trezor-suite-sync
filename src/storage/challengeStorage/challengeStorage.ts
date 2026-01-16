@@ -41,9 +41,6 @@ export type ChallengeStorageDeps = AppDatabaseDep & {
 
 export type ChallengeStorageDep = { challengeStorage: ChallengeStorage };
 
-// Todo: AI
-// Todo: split to functions, similar to LimitStorage
-
 const deleteChallenge = async ({
     db,
     sessionId,

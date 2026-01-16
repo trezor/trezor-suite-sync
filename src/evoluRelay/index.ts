@@ -3,8 +3,8 @@ import 'dotenv/config';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
-import { createCompositionRoot } from '../createCompositionRoot.js';
 import { IS_DEV_SERVER } from '../env.js';
+import { createEvoluRelayCompositionRoot } from './createEvoluRelayCompositionRoot.js';
 
 const HEALTH_SERVER_PORT = process.env.HEALTH_PORT ? parseInt(process.env.HEALTH_PORT, 10) : 4002;
 
@@ -18,7 +18,7 @@ mkdirSync(dataPath, { recursive: true });
 process.chdir(dataPath);
 
 const run = async () => {
-    const { migrateToLatest, evoluRelay, healthServer } = createCompositionRoot();
+    const { migrateToLatest, evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
 
     await migrateToLatest();
     healthServer.start({ port: HEALTH_SERVER_PORT });
