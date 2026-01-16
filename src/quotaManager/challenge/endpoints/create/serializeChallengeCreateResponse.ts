@@ -1,4 +1,4 @@
-import { Challenge } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { Challenge } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 
 export type ChallengeCreateResponse = {
     challenge: Challenge;

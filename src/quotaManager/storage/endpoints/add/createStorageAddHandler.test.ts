@@ -7,7 +7,7 @@ import { createStorageAddHandler } from './createStorageAddHandler.js';
 import { createStorageAddOperation } from './createStorageAddOperation.js';
 import { storageAddRequestSchema } from './storageAddSchema.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
@@ -62,7 +62,10 @@ describe(createStorageAddHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
         );
-        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge({
+            sessionId,
+            challenge,
+        });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -93,7 +96,10 @@ describe(createStorageAddHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('39d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'),
         );
-        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge({
+            sessionId,
+            challenge,
+        });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -164,7 +170,10 @@ describe(createStorageAddHandler.name, () => {
         const challenge = getOrThrowTest(
             Challenge.from('59d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7953'),
         );
-        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge({
+            sessionId,
+            challenge,
+        });
         assert(storeResult.ok);
 
         const response = await app.inject({
@@ -192,7 +201,10 @@ describe(createStorageAddHandler.name, () => {
         const challenge1 = getOrThrowTest(
             Challenge.from('69d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7964'),
         );
-        const storeResult1 = await challengeStorage.storeChallenge(sessionId1, challenge1);
+        const storeResult1 = await challengeStorage.storeChallenge({
+            sessionId: sessionId1,
+            challenge: challenge1,
+        });
         assert(storeResult1.ok);
 
         const firstResponse = await app.inject({
@@ -214,7 +226,10 @@ describe(createStorageAddHandler.name, () => {
         const challenge2 = getOrThrowTest(
             Challenge.from('79d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7975'),
         );
-        const storeResult2 = await challengeStorage.storeChallenge(sessionId2, challenge2);
+        const storeResult2 = await challengeStorage.storeChallenge({
+            sessionId: sessionId2,
+            challenge: challenge2,
+        });
         assert(storeResult2.ok);
 
         const response = await app.inject({

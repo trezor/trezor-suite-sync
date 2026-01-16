@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 
-import { createChallengeStorage } from '../../storage/challengeStorage/challengeStorage.js';
+import { createChallengeStorage } from '../../storage/challengeStorage/createChallengeStorage.js';
 import { createLimitStorage } from '../../storage/limitStorage/limitStorage.js';
 import { createAddLimitToPubkey } from '../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from '../../storage/limitStorage/methods/createGetLimitsForPubkey.js';

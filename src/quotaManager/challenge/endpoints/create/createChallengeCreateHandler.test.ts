@@ -4,7 +4,7 @@ import { challengeCreateRequestSchema } from './challengeCreateSchema.js';
 import { createChallengeCreateHandler } from './createChallengeCreateHandler.js';
 import { createChallengeCreateOperation } from './createChallengeCreateOperation.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import { SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
 
@@ -105,10 +105,10 @@ describe(createChallengeCreateHandler.name, () => {
         });
 
         const body = JSON.parse(response.body);
-        const isValid = await challengeStorage.validateAndConsumeChallenge(
-            session1,
-            body.challenge,
-        );
+        const isValid = await challengeStorage.validateAndConsumeChallenge({
+            sessionId: session1,
+            challenge: body.challenge,
+        });
 
         assert(isValid.ok);
         expect(isValid.value).toBe(true);

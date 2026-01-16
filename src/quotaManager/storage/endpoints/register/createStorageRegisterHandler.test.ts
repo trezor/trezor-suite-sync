@@ -5,7 +5,7 @@ import { createStorageRegisterOperation } from './createStorageRegisterOperation
 import { storageRegisterRequestSchema } from './storageRegisterSchema.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import { Challenge, SessionId } from '../../../../storage/challengeStorage/challengeStorage.js';
+import { Challenge, SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
@@ -71,7 +71,10 @@ describe(createStorageRegisterHandler.name, () => {
 
         const sessionId = getOrThrowTest(SessionId.from('session-123'));
         const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
-        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge({
+            sessionId,
+            challenge,
+        });
         assert(storeResult.ok);
 
         const response = await app.inject({
