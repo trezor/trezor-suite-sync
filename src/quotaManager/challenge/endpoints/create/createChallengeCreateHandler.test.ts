@@ -5,31 +5,48 @@ import { createChallengeCreateHandler } from './createChallengeCreateHandler.js'
 import { createChallengeCreateOperation } from './createChallengeCreateOperation.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import { SessionId } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { createCleanupExpiredChallenges } from '../../../../storage/challengeStorage/methods/createCleanupExpiredChallenges.js';
+import { createDeleteChallenge } from '../../../../storage/challengeStorage/methods/createDeleteChallenge.js';
+import { createStoreChallenge } from '../../../../storage/challengeStorage/methods/createStoreChallenge.js';
+import { createValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
+import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
+import { GenerateRandomBytes, GenerateRandomBytesDep } from '../../../GenerateRandomBytes.js';
+import { createFastifyServer } from '../../../createFastifyServer.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
-import { createTestFastifyApp } from '../../../tests/createTestFastifyApp.js';
 
-const staticCreateRandomBytes = () =>
+const generateStaticRandomBytes: GenerateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
 
 const session1 = getOrThrowTest(SessionId.from('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
 
-type CreateAppParams = {
-    createRandomBytes?: (size: number) => string;
-};
+type CreateAppDeps = GenerateRandomBytesDep;
 
-const createApp = async (params?: CreateAppParams) => {
-    const services = await createTestFastifyApp();
+/**
+ * This is composition root of the app for tests. This is a lot of code as this is a heavy
+ * integration test.
+ */
+const createApp = async (deps: Partial<CreateAppDeps> = {}) => {
+    const createTime = () => Date.now(); // Todo: freeze
 
-    services.app.setValidatorCompiler(evoluValidatorCompiler);
+    const db = await createTestDatabase();
+
+    const storeChallenge = createStoreChallenge({ db, createTime });
+
+    const cleanupExpiredChallenges = createCleanupExpiredChallenges({ db, createTime });
 
     const challengeCreateOperation = createChallengeCreateOperation({
-        challengeStorage: services.challengeStorage,
-        generateRandomBytes: params?.createRandomBytes ?? staticCreateRandomBytes,
+        cleanupExpiredChallenges,
+        storeChallenge,
+        generateRandomBytes: deps?.generateRandomBytes ?? generateStaticRandomBytes,
     });
     const challengeCreateHandler = createChallengeCreateHandler({ challengeCreateOperation });
-    services.app.post('/challenge', challengeCreateRequestSchema, challengeCreateHandler);
 
-    return services;
+    const app = createFastifyServer({ updateHealth: () => {} });
+    app.setValidatorCompiler(evoluValidatorCompiler);
+
+    app.post('/challenge', challengeCreateRequestSchema, challengeCreateHandler);
+
+    return { app, createTime, db };
 };
 
 // Todo: audit this test, some of test-cases shall be tested on lower level
@@ -60,7 +77,7 @@ describe(createChallengeCreateHandler.name, () => {
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const { app: app2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const { app: app2 } = await createApp({ generateRandomBytes: () => 'ABC' });
         const response2 = await app2.inject({
             method: 'POST',
             url: '/challenge',
@@ -82,7 +99,7 @@ describe(createChallengeCreateHandler.name, () => {
             payload: { sessionId: 'krdo9P9YkVGUVM4nznXTZYIroFsTM3iM' },
         });
 
-        const { app: server2 } = await createApp({ createRandomBytes: () => 'ABC' });
+        const { app: server2 } = await createApp({ generateRandomBytes: () => 'ABC' });
         const response2 = await server2.inject({
             method: 'POST',
             url: '/challenge',
@@ -96,7 +113,15 @@ describe(createChallengeCreateHandler.name, () => {
     });
 
     it('stores challenge that can be validated', async () => {
-        const { app, challengeStorage } = await createApp();
+        const { app, db, createTime } = await createApp();
+
+        const deleteChallenge = createDeleteChallenge({ db });
+
+        const validateAndConsumeChallenge = createValidateAndConsumeChallenge({
+            db,
+            createTime,
+            deleteChallenge,
+        });
 
         const response = await app.inject({
             method: 'POST',
@@ -105,7 +130,7 @@ describe(createChallengeCreateHandler.name, () => {
         });
 
         const body = JSON.parse(response.body);
-        const isValid = await challengeStorage.validateAndConsumeChallenge({
+        const isValid = await validateAndConsumeChallenge({
             sessionId: session1,
             challenge: body.challenge,
         });

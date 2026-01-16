@@ -2,17 +2,18 @@ import { err, ok } from '@evolu/common';
 
 import {
     Challenge,
-    CreateChallengeStorage,
     SessionId,
 } from '../../../../storage/challengeStorage/createChallengeStorage.js';
+import { CleanupExpiredChallengesDep } from '../../../../storage/challengeStorage/methods/createCleanupExpiredChallenges.js';
+import { StoreChallengeDep } from '../../../../storage/challengeStorage/methods/createStoreChallenge.js';
 import { GenerateRandomBytesDep } from '../../../GenerateRandomBytes.js';
 import { Result } from '../../../types.js';
 
 type ChallengeCreateError = { type: 'DatabaseError' } | { type: 'InvalidChallenge' };
 
-export type ChallengeCreateOperationDeps = {
-    challengeStorage: Pick<CreateChallengeStorage, 'storeChallenge' | 'cleanupExpiredChallenges'>;
-} & GenerateRandomBytesDep;
+export type ChallengeCreateOperationDeps = StoreChallengeDep &
+    CleanupExpiredChallengesDep &
+    GenerateRandomBytesDep;
 
 export type ChallengeCreateOperationInput = {
     sessionId: SessionId;
@@ -41,7 +42,7 @@ export const createChallengeCreateOperation =
 
         const challenge = challengeResult.value;
 
-        const storeResult = await deps.challengeStorage.storeChallenge({
+        const storeResult = await deps.storeChallenge({
             sessionId,
             challenge,
         });
@@ -51,7 +52,7 @@ export const createChallengeCreateOperation =
         }
 
         // Cleanup expired challenges (the best effort, don't fail if it errors)
-        await deps.challengeStorage.cleanupExpiredChallenges();
+        await deps.cleanupExpiredChallenges();
 
         return ok({ challenge });
     };

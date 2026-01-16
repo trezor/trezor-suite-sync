@@ -38,7 +38,9 @@ export type CreateChallengeStorage = StoreChallengeDep &
 
 export type ChallengeStorageDep = { challengeStorage: CreateChallengeStorage };
 
-export const createChallengeStorage = (deps: CreateChallengeStorageDeps): CreateChallengeStorage => {
+export const createChallengeStorage = (
+    deps: CreateChallengeStorageDeps,
+): CreateChallengeStorage => {
     const deleteChallenge = createDeleteChallenge({ db: deps.db });
     const storeChallenge = createStoreChallenge({ db: deps.db, createTime: deps.createTime });
     const validateAndConsumeChallenge = createValidateAndConsumeChallenge({

@@ -1,9 +1,9 @@
 import { type Result, ok } from '@evolu/common';
 import { Transaction } from 'kysely';
 
-import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
 import { Database } from '../../posgres/database.js';
+import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
 export type GetLimitsForPubkeyDeps = AppDatabaseDep;
