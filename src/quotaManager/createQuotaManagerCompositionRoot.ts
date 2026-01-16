@@ -4,9 +4,12 @@ import { GenerateRandomBytes } from './GenerateRandomBytes.js';
 import { createFastifyServer } from './createFastifyServer.js';
 import { QuotaManagerServerDep, createQuotaManagerServer } from './createQuotaManagerServer.js';
 import { HealthServerDep, createHealthServer } from '../health/createHealthServer.js';
-import { createChallengeStorage } from '../storage/challengeStorage/challengeStorage.js';
-import { MigrateToLatestDep, createMigrateToLatest } from '../storage/createMigrateToLatest.js';
+import { createChallengeStorage } from '../storage/challengeStorage/createChallengeStorage.js';
 import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
+import {
+    MigrateToLatestDep,
+    createMigrateToLatest,
+} from '../storage/posgres/createMigrateToLatest.js';
 import { createPostgreSql } from '../storage/posgres/createPostgreSql.js';
 import { challengeCreateRequestSchema } from './challenge/endpoints/create/challengeCreateSchema.js';
 import { createChallengeCreateHandler } from './challenge/endpoints/create/createChallengeCreateHandler.js';

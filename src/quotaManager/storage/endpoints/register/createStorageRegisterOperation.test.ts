@@ -10,9 +10,9 @@ import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/ce
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
 import {
     Challenge,
-    type ChallengeStorage,
+    type CreateChallengeStorage,
     SessionId,
-} from '../../../../storage/challengeStorage/challengeStorage.js';
+} from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
@@ -103,7 +103,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('successfully registers storage for new publicKey', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -133,7 +133,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(false)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -162,7 +162,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns ChallengeValidationFailed when challenge is consumed', async () => {
-        const challengeStorage: ChallengeStorage = (() => {
+        const challengeStorage: CreateChallengeStorage = (() => {
             const state = { hasBeenConsumed: false };
 
             return {
@@ -207,7 +207,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns StorageLimitExceeded when limit is exceeded', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -236,7 +236,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns StorageLimitExceeded when adding to existing storage exceeds limit', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -271,7 +271,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns SqliteError when challengeStorage.validateAndConsumeChallenge fails', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () =>
                 Promise.resolve(
                     err({ type: 'DatabaseError', error: new Error('Test SQLite error') } as any),
@@ -303,7 +303,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns SqliteError when limitStorage.getLimitsForPubkey fails', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -335,7 +335,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('returns ConsistencyError when limitStorage.addLimitToPubkey returns ConsistencyError', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -359,7 +359,7 @@ describe(createStorageRegisterOperation.name, () => {
     });
 
     it('successfully validates real Trezor Optiga certificate and signature', async () => {
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -394,7 +394,7 @@ describe(createStorageRegisterOperation.name, () => {
             error: 'INVALID_DEVICE_SIGNATURE',
         });
 
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -435,7 +435,7 @@ describe(createStorageRegisterOperation.name, () => {
             error: 'INVALID_DEVICE_SIGNATURE',
         });
 
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -475,7 +475,7 @@ describe(createStorageRegisterOperation.name, () => {
             error: 'INVALID_DEVICE_CERTIFICATE',
         });
 
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -516,7 +516,7 @@ describe(createStorageRegisterOperation.name, () => {
             error: 'INVALID_DEVICE_SIGNATURE',
         });
 
-        const challengeStorage: ChallengeStorage = {
+        const challengeStorage: CreateChallengeStorage = {
             validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
             storeChallenge: () => Promise.resolve(ok(undefined)),
             cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -552,7 +552,7 @@ describe(createStorageRegisterOperation.name, () => {
                 caPubKey: 'test-ca-pubkey',
             });
 
-            const challengeStorage: ChallengeStorage = {
+            const challengeStorage: CreateChallengeStorage = {
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -588,7 +588,7 @@ describe(createStorageRegisterOperation.name, () => {
                 rootPubKey: 'test-root-pubkey',
             });
 
-            const challengeStorage: ChallengeStorage = {
+            const challengeStorage: CreateChallengeStorage = {
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -624,7 +624,7 @@ describe(createStorageRegisterOperation.name, () => {
                 rootPubKey: 'test-root-pubkey',
             });
 
-            const challengeStorage: ChallengeStorage = {
+            const challengeStorage: CreateChallengeStorage = {
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
@@ -660,7 +660,7 @@ describe(createStorageRegisterOperation.name, () => {
                 rootPubKey: 'test-root-pubkey',
             });
 
-            const challengeStorage: ChallengeStorage = {
+            const challengeStorage: CreateChallengeStorage = {
                 validateAndConsumeChallenge: () => Promise.resolve(ok(true)),
                 storeChallenge: () => Promise.resolve(ok(undefined)),
                 cleanupExpiredChallenges: () => Promise.resolve(ok(undefined)),
