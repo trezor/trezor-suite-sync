@@ -1,6 +1,7 @@
 import { OwnerId } from '@evolu/common';
+import { verifySignatureP256 } from '@trezor/device-authenticity';
 import Fastify from 'fastify';
-import { assert, describe, expect, it, vi } from 'vitest';
+import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createStorageAskHandler } from './createStorageAskHandler.js';
 import { storageAskRequestSchema } from './storageAskSchema.js';
@@ -39,6 +40,7 @@ vi.mock('@trezor/device-authenticity', async () => {
             caPubKey: 'test-ca-pubkey',
             rootPubKey: 'test-root-pubkey',
         }),
+        verifySignatureP256: vi.fn(),
     };
 });
 
@@ -61,16 +63,6 @@ vi.mock('crypto', async () => {
             return verify;
         }),
     };
-});
-
-vi.stubGlobal('crypto', {
-    ...globalThis.crypto,
-    subtle: {
-        ...globalThis.crypto?.subtle,
-        importKey: vi.fn().mockResolvedValue({}),
-        exportKey: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
-        verify: vi.fn().mockResolvedValue(true),
-    } as any,
 });
 
 const publicKey1 = getOrThrowTest(
@@ -147,7 +139,7 @@ const registerDevice = async (
         url: '/storage/register',
         payload: {
             publicKey: publicKey.toString(),
-            size,
+            size: Number(size),
             challenge: challenge.toString(),
             sessionId: sessionId.toString(),
             proof: getOrThrowTest(Proof.from('valid-proof-hex')).toString(),
@@ -162,7 +154,12 @@ const registerDevice = async (
     expect(response.statusCode).toBe(200);
 };
 
-describe('GET /storage/ask', () => {
+describe(createStorageAskHandler.name, () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        vi.mocked(verifySignatureP256).mockResolvedValue(true);
+    });
+
     it('returns space information for ownerId', async () => {
         const { server, challengeStorage } = await createApp();
 
@@ -179,7 +176,7 @@ describe('GET /storage/ask', () => {
             payload: {
                 publicKey: publicKey1.toString(),
                 ownerId: ownerId1.toString(),
-                size: size50,
+                size: Number(size50),
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('proof-add-1')).toString(),
@@ -196,7 +193,7 @@ describe('GET /storage/ask', () => {
         expect(askResponse.statusCode).toBe(200);
         const body = JSON.parse(askResponse.body);
         expect(body).toHaveProperty('totalSpace');
-        expect(body.totalSpace).toBe(size50);
+        expect(body.totalSpace).toBe(50);
     });
 
     it('returns space information for publicKey', async () => {
@@ -213,8 +210,8 @@ describe('GET /storage/ask', () => {
         const body = JSON.parse(askResponse.body);
         expect(body).toHaveProperty('totalSpace');
         expect(body).toHaveProperty('unspentSpace');
-        expect(body.totalSpace).toBe(size100);
-        expect(body.unspentSpace).toBe(size100);
+        expect(body.totalSpace).toBe(100);
+        expect(body.unspentSpace).toBe(100);
     });
 
     it('returns updated unspent space after transfer', async () => {
@@ -233,7 +230,7 @@ describe('GET /storage/ask', () => {
             payload: {
                 publicKey: publicKey1.toString(),
                 ownerId: ownerId1.toString(),
-                size: size50,
+                size: Number(size50),
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
                 proof: getOrThrowTest(Proof.from('proof-add-2')).toString(),
@@ -249,8 +246,8 @@ describe('GET /storage/ask', () => {
 
         expect(askResponse.statusCode).toBe(200);
         const body = JSON.parse(askResponse.body);
-        expect(body.totalSpace).toBe(size100);
-        expect(body.unspentSpace).toBe(size50);
+        expect(body.totalSpace).toBe(100);
+        expect(body.unspentSpace).toBe(50);
     });
 
     it('returns 404 when ownerId is not found', async () => {

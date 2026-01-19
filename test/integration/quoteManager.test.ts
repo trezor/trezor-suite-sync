@@ -72,8 +72,6 @@ const ownerIdZero = getOrThrowTest(OwnerId.from('AAAAAAAAAAAAAAAAAAAAAA'));
 const size50 = getOrThrowTest(Size.from(50));
 const size100 = getOrThrowTest(Size.from(100));
 const size200 = getOrThrowTest(Size.from(200));
-const EXPECTED_UNSPENT_AFTER_100_ASSIGNMENT = 100;
-const EXPECTED_UNSPENT_AFTER_150_ASSIGNMENT = 50;
 
 describe('Quota Manager API Integration Tests', () => {
     beforeEach(() => {

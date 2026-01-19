@@ -1,7 +1,7 @@
 import { OwnerId } from '@evolu/common';
 import { randomBytes } from 'crypto';
 import Fastify from 'fastify';
-import { assert, expect } from 'vitest';
+import { expect } from 'vitest';
 
 import { getOrThrowTest } from '../../src/getOrThrowTest.js';
 import { challengeCreateRequestSchema } from '../../src/quotaManager/challenge/endpoints/create/challengeCreateSchema.js';

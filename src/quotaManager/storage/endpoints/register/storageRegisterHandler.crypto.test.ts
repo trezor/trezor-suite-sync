@@ -177,7 +177,8 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
 
         const sessionId = getOrThrowTest(SessionId.from('session-no-root'));
         const challenge = getOrThrowTest(Challenge.from('challenge-no-root'));
-        challengeStorage.storeChallenge(sessionId, challenge);
+        const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
+        assert(storeResult.ok);
 
         // Using valid certificates but they won't match any root pubkey in config
         // (assuming the config doesn't have the root pubkey for these certs)
