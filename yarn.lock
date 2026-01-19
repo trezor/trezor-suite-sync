@@ -644,9 +644,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evolu/common@npm:^6.0.1-preview.25":
-  version: 6.0.1-preview.28
-  resolution: "@evolu/common@npm:6.0.1-preview.28"
+"@evolu/common@npm:7.2.3":
+  version: 7.2.3
+  resolution: "@evolu/common@npm:7.2.3"
   dependencies:
     "@noble/ciphers": "npm:^2.0.0"
     "@noble/hashes": "npm:^2.0.0"
@@ -654,19 +654,19 @@ __metadata:
     kysely: "npm:^0.28.4"
     msgpackr: "npm:^1.11.5"
     random: "npm:^5.4.1"
-  checksum: 10c0/ba6f93da1f533a35aee0ee87e9039a550b4c53e5f6463abfadf200ea69aac366db2f7f43a2f215f8f8a6c9209adda73e8325c9b2225b410a15945fae095aaf4a
+  checksum: 10c0/604bb82935514e6c5bd4f354e454bfae2a852a1acb9ae34bf335d1e936e2c26769d0d8cb98b430b2966b36c1f26e5efa1890d6de29e389ae51c5ddd5432df318
   languageName: node
   linkType: hard
 
-"@evolu/nodejs@npm:^1.0.1-preview.9":
-  version: 1.0.1-preview.10
-  resolution: "@evolu/nodejs@npm:1.0.1-preview.10"
+"@evolu/nodejs@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@evolu/nodejs@npm:2.2.1"
   dependencies:
     better-sqlite3: "npm:^12.1.1"
     ws: "npm:^8.18.2"
   peerDependencies:
-    "@evolu/common": ^6.0.1-preview.26
-  checksum: 10c0/e8ae9231513a0130e1d5d946a5134955342a48cc21bbf72677e96aad8c1bf6418f76dc728fb3064e33df9bda155dcc7e8d9fcccab7c04a7559843b83f5233d28
+    "@evolu/common": ^7.2.1
+  checksum: 10c0/8676d72615c83912690be009c0640d64342bc93a0dc37c2b352540e77bc3aa83852096638890a42ec7aa454a017d050bff877e4993f3eda750a3f8d51e0924a1
   languageName: node
   linkType: hard
 
@@ -1046,19 +1046,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:^1.9.7":
-  version: 1.9.7
-  resolution: "@noble/curves@npm:1.9.7"
+"@noble/curves@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@noble/curves@npm:2.0.1"
   dependencies:
-    "@noble/hashes": "npm:1.8.0"
-  checksum: 10c0/150014751ebe8ca06a8654ca2525108452ea9ee0be23430332769f06808cddabfe84f248b6dbf836916bc869c27c2092957eec62c7506d68a1ed0a624017c2a3
-  languageName: node
-  linkType: hard
-
-"@noble/hashes@npm:1.8.0":
-  version: 1.8.0
-  resolution: "@noble/hashes@npm:1.8.0"
-  checksum: 10c0/06a0b52c81a6fa7f04d67762e08b2c476a00285858150caeaaff4037356dd5e119f45b2a530f638b77a5eeca013168ec1b655db41bae3236cb2e9d511484fc77
+    "@noble/hashes": "npm:2.0.1"
+  checksum: 10c0/e0b329eb9229e862d3b7203e0444bd479e9ecf2d5990181908dad416aab69106717ca696fc7b12ad0eb19d710f58c454646b27ce517a4298ab9abc89a9bdb6ee
   languageName: node
   linkType: hard
 
@@ -1422,25 +1415,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/crypto-utils@npm:1.1.5":
-  version: 1.1.5
-  resolution: "@trezor/crypto-utils@npm:1.1.5"
+"@trezor/crypto-utils@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@trezor/crypto-utils@npm:1.2.0"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/8e85103973dd6bbf711915236e1d7e2f8d2f847b5ebcea6fadb5f86c6b95a5d5e539b40062aa1747bdcc75f9d1576c50a846a0f8ae68608f81f81c61ed94950d
+  checksum: 10c0/35b7ac47d4dba8198e2c85786046c2d9ab2d80d857420aa523947f70488ee8a800ddaccb1a7059bbc2d0ea0055f4e60e2e19e1b2f1ba34a1b2fba0111613f39d
   languageName: node
   linkType: hard
 
-"@trezor/device-authenticity@npm:^1.0.1-beta.1":
-  version: 1.0.1-beta.1
-  resolution: "@trezor/device-authenticity@npm:1.0.1-beta.1"
+"@trezor/device-authenticity@npm:^1.1.0":
+  version: 1.1.1
+  resolution: "@trezor/device-authenticity@npm:1.1.1"
   dependencies:
-    "@noble/curves": "npm:^1.9.7"
-    "@trezor/crypto-utils": "npm:1.1.5"
-    "@trezor/protobuf": "npm:1.4.5-beta.1"
-    "@trezor/schema-utils": "npm:1.3.4"
-    "@trezor/utils": "npm:9.4.5-beta.1"
-  checksum: 10c0/b4c2eb6c5a1176a57122d2a7350a2846aba1fe8966176429c1dbd3e2aa6cd8f97b474b123ff65e0fa4b2289a91c91ddc38ae44adbae342527b728807f52c069b
+    "@noble/curves": "npm:^2.0.1"
+    "@trezor/crypto-utils": "npm:1.2.0"
+    "@trezor/protobuf": "npm:1.5.1"
+    "@trezor/schema-utils": "npm:1.4.0"
+    "@trezor/utils": "npm:9.5.0"
+  checksum: 10c0/7d7dac9142c8a4c69bd67bf4b0e16515d85e397aeccab27fd2a34bf478a083de8c13a421ddc7ff9591cdeae88ef8c9e7c818cb9cd551843b2f7461793f016806
   languageName: node
   linkType: hard
 
@@ -1449,17 +1442,22 @@ __metadata:
   resolution: "@trezor/evolu-relay@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.38.0"
-    "@evolu/common": "npm:^6.0.1-preview.25"
-    "@evolu/nodejs": "npm:^1.0.1-preview.9"
+    "@evolu/common": "npm:7.2.3"
+    "@evolu/nodejs": "npm:2.2.1"
     "@jest/globals": "npm:^30.2.0"
-    "@trezor/device-authenticity": "npm:^1.0.1-beta.1"
+    "@trezor/device-authenticity": "npm:^1.1.0"
     "@trezor/protobuf": "npm:^1.4.5-beta.1"
+    "@types/better-sqlite3": "npm:^7.6.13"
     "@types/node": "npm:^24.9.1"
+    "@types/pg": "npm:^8"
+    better-sqlite3: "npm:^12.4.6"
     dotenv: "npm:^17.2.3"
     eslint: "npm:^9.38.0"
     eslint-plugin-import: "npm:^2.32.0"
     fastify: "npm:^5.5.0"
     globals: "npm:^16.4.0"
+    kysely: "npm:^0.28.8"
+    pg: "npm:^8.16.3"
     prettier: "npm:^3.6.2"
     tslib: "npm:^2.8.1"
     tsx: "npm:^4.20.6"
@@ -1469,7 +1467,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trezor/protobuf@npm:1.4.5-beta.1, @trezor/protobuf@npm:^1.4.5-beta.1":
+"@trezor/protobuf@npm:1.5.1":
+  version: 1.5.1
+  resolution: "@trezor/protobuf@npm:1.5.1"
+  dependencies:
+    "@trezor/schema-utils": "npm:1.4.0"
+    long: "npm:5.2.5"
+    protobufjs: "npm:7.4.0"
+  peerDependencies:
+    tslib: ^2.6.2
+  checksum: 10c0/a83a3eced65a28b38cd825afb54a2297f0b3e74620324637e8b63cbab7dcadfbaa3597d34f41d2a09ff3de3a6896c4f4d6bb0d8542228d0541d51c3b100446e3
+  languageName: node
+  linkType: hard
+
+"@trezor/protobuf@npm:^1.4.5-beta.1":
   version: 1.4.5-beta.1
   resolution: "@trezor/protobuf@npm:1.4.5-beta.1"
   dependencies:
@@ -1494,14 +1505,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/utils@npm:9.4.5-beta.1":
-  version: 9.4.5-beta.1
-  resolution: "@trezor/utils@npm:9.4.5-beta.1"
+"@trezor/schema-utils@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@trezor/schema-utils@npm:1.4.0"
+  dependencies:
+    "@sinclair/typebox": "npm:^0.33.7"
+    ts-mixer: "npm:^6.0.3"
+  peerDependencies:
+    tslib: ^2.6.2
+  checksum: 10c0/9d398c436a967dbec582e1d1862a282a4e58c36ad78859a9b22890d9b80933da9c8adf865fa9d8af6c4409077e0680b88a98ba77913526085144f60dc5d39580
+  languageName: node
+  linkType: hard
+
+"@trezor/utils@npm:9.5.0":
+  version: 9.5.0
+  resolution: "@trezor/utils@npm:9.5.0"
   dependencies:
     bignumber.js: "npm:^9.3.1"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/56cd3c143976f26aacb5ba8b295f9e0e467ff4515c8f92c9cb6ecdcc9ef78aab45ea335d6c85764b18288657addbd07783c33411d8adc3f958048ec14e1644b4
+  checksum: 10c0/10083b7eb9d7d950bb27e510d4b023ce00695560fe1c379d164a311420f74fe0ec60e0a72641f7c748031c84c9cdfe756c416052a3f622814f3e968d2c60351e
+  languageName: node
+  linkType: hard
+
+"@types/better-sqlite3@npm:^7.6.13":
+  version: 7.6.13
+  resolution: "@types/better-sqlite3@npm:7.6.13"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/c4336e7b92343eb0e988ded007c53fa9887b98a38d61175226e86124a1a2c28b1a4e3892873c5041e350b7bfa2901f85c82db1542c4f0eed1d3a899682c92106
   languageName: node
   linkType: hard
 
@@ -1574,6 +1606,17 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/d6bca7a78f550fbb376f236f92b405d676003a8a09a1b411f55920ef34286ee3ee51f566203920e835478784df52662b5b2af89159d9d319352e9ea21801c002
+  languageName: node
+  linkType: hard
+
+"@types/pg@npm:^8":
+  version: 8.16.0
+  resolution: "@types/pg@npm:8.16.0"
+  dependencies:
+    "@types/node": "npm:*"
+    pg-protocol: "npm:*"
+    pg-types: "npm:^2.2.0"
+  checksum: 10c0/421fe7c07d5c0226835d362414a63653f86251ee966150d807ed60174c13921d1b8a3e2f1c2bfba9659ec0282ca50974030c4c1efcd575003eb922ea12ca7d05
   languageName: node
   linkType: hard
 
@@ -2160,6 +2203,17 @@ __metadata:
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
   checksum: 10c0/88773a75d996b4171e5690a38459b05dc814a792701b224bd9909ee084dc0b4c64aaffbdbcf4bbbc6d4e247faf19e91b2a56cf4175d746d3bd9ff14764eb05aa
+  languageName: node
+  linkType: hard
+
+"better-sqlite3@npm:^12.4.6":
+  version: 12.6.2
+  resolution: "better-sqlite3@npm:12.6.2"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    node-gyp: "npm:latest"
+    prebuild-install: "npm:^7.1.1"
+  checksum: 10c0/a58fb3f7a7f5469ba0b8de0855aa67396ff34f951a6975746e4b21987f530be6a34427d1d4bd5958cf48c67ed7ba1df038ae163d2ee9d944237f6b8112f6640d
   languageName: node
   linkType: hard
 
@@ -4243,6 +4297,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kysely@npm:^0.28.8":
+  version: 0.28.10
+  resolution: "kysely@npm:0.28.10"
+  checksum: 10c0/46a42f7092035ccc2adbe5f447ff5377431e9aabd1c55ca2c9f79a11595b97cd446a0ffdcc3e14a993a23fbd7e2a7ab7e874f2b7388f42ddd7d76c6aee9a1241
+  languageName: node
+  linkType: hard
+
 "levn@npm:^0.4.1":
   version: 0.4.1
   resolution: "levn@npm:0.4.1"
@@ -4873,6 +4934,87 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-cloudflare@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "pg-cloudflare@npm:1.3.0"
+  checksum: 10c0/b0866c88af8e54c7b3ed510719d92df37714b3af5e3a3a10d9f761fcec99483e222f5b78a1f2de590368127648087c45c01aaf66fadbe46edb25673eedc4f8fc
+  languageName: node
+  linkType: hard
+
+"pg-connection-string@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "pg-connection-string@npm:2.10.0"
+  checksum: 10c0/6639d3e12f66bc3cc5fa1e5794b4b22a4212e30424cbf001422e041c77c598ee0cd19395a9d79cb99a962da612b03c021e8148c3437cf01a29a18437bad193eb
+  languageName: node
+  linkType: hard
+
+"pg-int8@npm:1.0.1":
+  version: 1.0.1
+  resolution: "pg-int8@npm:1.0.1"
+  checksum: 10c0/be6a02d851fc2a4ae3e9de81710d861de3ba35ac927268973eb3cb618873a05b9424656df464dd43bd7dc3fc5295c3f5b3c8349494f87c7af50ec59ef14e0b98
+  languageName: node
+  linkType: hard
+
+"pg-pool@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "pg-pool@npm:3.11.0"
+  peerDependencies:
+    pg: ">=8.0"
+  checksum: 10c0/4b104b48a47257a0edad0c62e5ea1908b72cb79386270264b452e69895e9e4c589d00cdbf6e46d4e9c05bc7e7d191656b66814b5282d65f33b12648a21df3c7f
+  languageName: node
+  linkType: hard
+
+"pg-protocol@npm:*, pg-protocol@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "pg-protocol@npm:1.11.0"
+  checksum: 10c0/93e83581781418c9173eba4e4545f73392cfe66b78dd1d3624d7339fbd37e7f4abebaf2615e68e0701a9bf0edf5b81a4ad533836f388f775fe25fa24a691c464
+  languageName: node
+  linkType: hard
+
+"pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "pg-types@npm:2.2.0"
+  dependencies:
+    pg-int8: "npm:1.0.1"
+    postgres-array: "npm:~2.0.0"
+    postgres-bytea: "npm:~1.0.0"
+    postgres-date: "npm:~1.0.4"
+    postgres-interval: "npm:^1.1.0"
+  checksum: 10c0/ab3f8069a323f601cd2d2279ca8c425447dab3f9b61d933b0601d7ffc00d6200df25e26a4290b2b0783b59278198f7dd2ed03e94c4875797919605116a577c65
+  languageName: node
+  linkType: hard
+
+"pg@npm:^8.16.3":
+  version: 8.17.1
+  resolution: "pg@npm:8.17.1"
+  dependencies:
+    pg-cloudflare: "npm:^1.3.0"
+    pg-connection-string: "npm:^2.10.0"
+    pg-pool: "npm:^3.11.0"
+    pg-protocol: "npm:^1.11.0"
+    pg-types: "npm:2.2.0"
+    pgpass: "npm:1.0.5"
+  peerDependencies:
+    pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
+  peerDependenciesMeta:
+    pg-native:
+      optional: true
+  checksum: 10c0/39a92391adfc73f793d195b4062bc2d21aa3537073e3973f3979d72901d92a59e129f31f42577ff916038a6c3f9fe423b6024717529609ae8548fda21248cfe7
+  languageName: node
+  linkType: hard
+
+"pgpass@npm:1.0.5":
+  version: 1.0.5
+  resolution: "pgpass@npm:1.0.5"
+  dependencies:
+    split2: "npm:^4.1.0"
+  checksum: 10c0/5ea6c9b2de04c33abb08d33a2dded303c4a3c7162a9264519cbe85c0a9857d712463140ba42fad0c7cd4b21f644dd870b45bb2e02fcbe505b4de0744fd802c1d
+  languageName: node
+  linkType: hard
+
 "picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
@@ -4953,6 +5095,36 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/5127cc7c91ed7a133a1b7318012d8bfa112da9ef092dddf369ae699a1f10ebbd89b1b9f25f3228795b84585c72aabd5ced5fc11f2ba467eedf7b081a66fad024
+  languageName: node
+  linkType: hard
+
+"postgres-array@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "postgres-array@npm:2.0.0"
+  checksum: 10c0/cbd56207e4141d7fbf08c86f2aebf21fa7064943d3f808ec85f442ff94b48d891e7a144cc02665fb2de5dbcb9b8e3183a2ac749959e794b4a4cfd379d7a21d08
+  languageName: node
+  linkType: hard
+
+"postgres-bytea@npm:~1.0.0":
+  version: 1.0.1
+  resolution: "postgres-bytea@npm:1.0.1"
+  checksum: 10c0/10b28a27c9d703d5befd97c443e62b551096d1014bc59ab574c65bf0688de7f3f068003b2aea8dcff83cf0f6f9a35f9f74457c38856cf8eb81b00cf3fb44f164
+  languageName: node
+  linkType: hard
+
+"postgres-date@npm:~1.0.4":
+  version: 1.0.7
+  resolution: "postgres-date@npm:1.0.7"
+  checksum: 10c0/0ff91fccc64003e10b767fcfeefb5eaffbc522c93aa65d5051c49b3c4ce6cb93ab091a7d22877a90ad60b8874202c6f1d0f935f38a7235ed3b258efd54b97ca9
+  languageName: node
+  linkType: hard
+
+"postgres-interval@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "postgres-interval@npm:1.2.0"
+  dependencies:
+    xtend: "npm:^4.0.0"
+  checksum: 10c0/c1734c3cb79e7f22579af0b268a463b1fa1d084e742a02a7a290c4f041e349456f3bee3b4ee0bb3f226828597f7b76deb615c1b857db9a742c45520100456272
   languageName: node
   linkType: hard
 
@@ -5622,7 +5794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"split2@npm:^4.0.0":
+"split2@npm:^4.0.0, split2@npm:^4.1.0":
   version: 4.2.0
   resolution: "split2@npm:4.2.0"
   checksum: 10c0/b292beb8ce9215f8c642bb68be6249c5a4c7f332fc8ecadae7be5cbdf1ea95addc95f0459ef2e7ad9d45fd1064698a097e4eb211c83e772b49bc0ee423e91534
@@ -6439,6 +6611,13 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/eac918213de265ef7cb3d4ca348b891a51a520d839aa51cdb8ca93d4fa7ff9f6ccb339ccee89e4075324097f0a55157c89fa3f7147bde9d8d7e90335dc087b53
+  languageName: node
+  linkType: hard
+
+"xtend@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "xtend@npm:4.0.2"
+  checksum: 10c0/366ae4783eec6100f8a02dff02ac907bf29f9a00b82ac0264b4d8b832ead18306797e283cf19de776538babfdcb2101375ec5646b59f08c52128ac4ab812ed0e
   languageName: node
   linkType: hard
 
