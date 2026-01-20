@@ -29,7 +29,7 @@ describe(createAddLimitToPubkey.name, () => {
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(50);
-        expect(result.value.unspendStorageSize).toBe(50);
+        expect(result.value.unspentStorageSize).toBe(50);
     });
 
     it('adds to existing limit for same pubkey', async () => {
@@ -46,7 +46,7 @@ describe(createAddLimitToPubkey.name, () => {
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(80);
-        expect(result.value.unspendStorageSize).toBe(80);
+        expect(result.value.unspentStorageSize).toBe(80);
     });
 
     it('handles zero size addition', async () => {
@@ -61,7 +61,7 @@ describe(createAddLimitToPubkey.name, () => {
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(0);
-        expect(result.value.unspendStorageSize).toBe(0);
+        expect(result.value.unspentStorageSize).toBe(0);
     });
 
     it('handles different pubkeys independently', async () => {
@@ -74,6 +74,6 @@ describe(createAddLimitToPubkey.name, () => {
         assert(result.ok);
 
         expect(result.value.totalStorageSize).toBe(200);
-        expect(result.value.unspendStorageSize).toBe(200);
+        expect(result.value.unspentStorageSize).toBe(200);
     });
 });

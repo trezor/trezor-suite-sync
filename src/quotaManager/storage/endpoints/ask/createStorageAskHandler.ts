@@ -62,7 +62,7 @@ export const createStorageAskHandler =
 
             return reply.code(200).send({
                 totalSpace: result.value.totalStorageSize,
-                unspentSpace: result.value.unspendStorageSize,
+                unspentSpace: result.value.unspentStorageSize,
             });
         }
 

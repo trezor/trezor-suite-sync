@@ -6,7 +6,7 @@ import type { PublicKey, Size } from '../limitStorage/limitStorage.js';
 export type PubkeyStorageLimitsTable = {
     publicKey: PublicKey;
     totalStorageSize: Size;
-    unspendStorageSize: Size;
+    unspentStorageSize: Size;
 };
 
 export type OwnerStorageLimitsTable = {

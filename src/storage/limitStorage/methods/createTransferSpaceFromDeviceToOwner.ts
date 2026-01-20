@@ -57,7 +57,7 @@ export const createTransferSpaceFromDeviceToOwner =
                     throw noSpaceAllowanceErr('No space for the given publicKey');
                 }
 
-                if (limitsResult.value.unspendStorageSize < size) {
+                if (limitsResult.value.unspentStorageSize < size) {
                     throw noSpaceAllowanceErr('Insufficient space for the given publicKey');
                 }
 
@@ -65,7 +65,7 @@ export const createTransferSpaceFromDeviceToOwner =
                 await trx
                     .updateTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
                     .where('publicKey', '=', publicKey)
-                    .set(r => ({ unspendStorageSize: r('unspendStorageSize', '-', size) }))
+                    .set(r => ({ unspentStorageSize: r('unspentStorageSize', '-', size) }))
                     .executeTakeFirst();
 
                 // Add size to `ownerId`
