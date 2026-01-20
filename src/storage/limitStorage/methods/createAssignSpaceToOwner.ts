@@ -50,7 +50,7 @@ export const createAssignSpaceToOwner =
             return err(noSpaceAllowanceErr('No space allowance for the given publicKey'));
         }
 
-        if (limitsResult.value.unspendStorageSize < size) {
+        if (limitsResult.value.unspentStorageSize < size) {
             return err(noSpaceAllowanceErr('Insufficient unspent space for the given publicKey'));
         }
 
@@ -58,8 +58,8 @@ export const createAssignSpaceToOwner =
             db
                 .updateTable(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
                 .set({
-                    unspendStorageSize: eb =>
-                        eb('pubkey_storage_limits.unspendStorageSize', '-', size),
+                    unspentStorageSize: eb =>
+                        eb('pubkey_storage_limits.unspentStorageSize', '-', size),
                 })
                 .where('publicKey', '=', publicKey)
                 .executeTakeFirst(),

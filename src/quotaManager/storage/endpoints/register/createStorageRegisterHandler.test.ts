@@ -116,9 +116,9 @@ describe(createStorageRegisterHandler.name, () => {
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
         expect(body).toHaveProperty('totalStorageSize');
-        expect(body).toHaveProperty('unspendStorageSize');
+        expect(body).toHaveProperty('unspentStorageSize');
         expect(body.totalStorageSize).toBe(size100);
-        expect(body.unspendStorageSize).toBe(size100);
+        expect(body.unspentStorageSize).toBe(size100);
     });
 
     it('returns 400 when schema validation fails', async () => {

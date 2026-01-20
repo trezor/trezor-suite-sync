@@ -111,7 +111,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -125,7 +125,7 @@ describe(createStorageRegisterOperation.name, () => {
         expect(result.ok).toBe(true);
         if (result.ok) {
             expect(result.value.totalStorageSize).toBe(100);
-            expect(result.value.unspendStorageSize).toBe(100);
+            expect(result.value.unspentStorageSize).toBe(100);
         }
     });
 
@@ -138,7 +138,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -173,7 +173,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size50,
-                    unspendStorageSize: size50,
+                    unspentStorageSize: size50,
                 }),
             );
 
@@ -203,7 +203,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: maxSize,
-                    unspendStorageSize: maxSize,
+                    unspentStorageSize: maxSize,
                 }),
             );
 
@@ -228,14 +228,14 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: maxSize,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
         const addLimitToPubkey = () =>
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -263,7 +263,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -292,7 +292,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -339,7 +339,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -353,7 +353,7 @@ describe(createStorageRegisterOperation.name, () => {
         expect(result.ok).toBe(true);
         if (result.ok) {
             expect(result.value.totalStorageSize).toBe(100);
-            expect(result.value.unspendStorageSize).toBe(100);
+            expect(result.value.unspentStorageSize).toBe(100);
         }
     });
 
@@ -371,7 +371,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -409,7 +409,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -446,7 +446,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -484,7 +484,7 @@ describe(createStorageRegisterOperation.name, () => {
             Promise.resolve(
                 ok({
                     totalStorageSize: size100,
-                    unspendStorageSize: size100,
+                    unspentStorageSize: size100,
                 }),
             );
 
@@ -517,7 +517,7 @@ describe(createStorageRegisterOperation.name, () => {
                 Promise.resolve(
                     ok({
                         totalStorageSize: size100,
-                        unspendStorageSize: size100,
+                        unspentStorageSize: size100,
                     }),
                 );
 
@@ -550,7 +550,7 @@ describe(createStorageRegisterOperation.name, () => {
                 Promise.resolve(
                     ok({
                         totalStorageSize: size100,
-                        unspendStorageSize: size100,
+                        unspentStorageSize: size100,
                     }),
                 );
 
@@ -583,7 +583,7 @@ describe(createStorageRegisterOperation.name, () => {
                 Promise.resolve(
                     ok({
                         totalStorageSize: size100,
-                        unspendStorageSize: size100,
+                        unspentStorageSize: size100,
                     }),
                 );
 
@@ -616,7 +616,7 @@ describe(createStorageRegisterOperation.name, () => {
                 Promise.resolve(
                     ok({
                         totalStorageSize: size100,
-                        unspendStorageSize: size100,
+                        unspentStorageSize: size100,
                     }),
                 );
 

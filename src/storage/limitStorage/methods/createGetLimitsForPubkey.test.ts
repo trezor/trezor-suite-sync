@@ -32,7 +32,7 @@ describe(createGetLimitsForPubkey.name, () => {
         assert(result.ok);
         expect(result.value).toEqual({
             totalStorageSize: 100,
-            unspendStorageSize: 100,
+            unspentStorageSize: 100,
         });
     });
 
@@ -47,7 +47,7 @@ describe(createGetLimitsForPubkey.name, () => {
         assert(result.ok);
         expect(result.value).toEqual({
             totalStorageSize: 80,
-            unspendStorageSize: 80,
+            unspentStorageSize: 80,
         });
     });
 });

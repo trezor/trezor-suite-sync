@@ -15,7 +15,7 @@ export type GetLimitsForPubkeyParams = {
 
 export type GetLimitsForPubkeyResponse = {
     totalStorageSize: Size;
-    unspendStorageSize: Size;
+    unspentStorageSize: Size;
 };
 
 export type GetLimitsForPubkey = (
@@ -32,7 +32,7 @@ export const createGetLimitsForPubkey =
                 await (trx ?? db)
                     .selectFrom('pubkey_storage_limits')
                     .where('publicKey', '=', publicKey)
-                    .select(['totalStorageSize', 'unspendStorageSize'])
+                    .select(['totalStorageSize', 'unspentStorageSize'])
                     .executeTakeFirst(),
         );
 

@@ -47,7 +47,7 @@ describe(createAssignSpaceToOwner.name, () => {
 
         assert(result.ok);
 
-        expect(result.value.publicKeyLimits.unspendStorageSize).toBe(30);
+        expect(result.value.publicKeyLimits.unspentStorageSize).toBe(30);
         expect(result.value.ownerStorageLimit).toBe(20);
     });
 
@@ -67,7 +67,7 @@ describe(createAssignSpaceToOwner.name, () => {
 
         assert(result.ok);
 
-        expect(result.value.publicKeyLimits.unspendStorageSize).toBe(10);
+        expect(result.value.publicKeyLimits.unspentStorageSize).toBe(10);
         expect(result.value.ownerStorageLimit).toBe(40);
     });
 
@@ -89,7 +89,7 @@ describe(createAssignSpaceToOwner.name, () => {
 
         assert(result.ok);
 
-        expect(result.value.publicKeyLimits.unspendStorageSize).toBe(30);
+        expect(result.value.publicKeyLimits.unspentStorageSize).toBe(30);
         expect(result.value.ownerStorageLimit).toBeNull();
     });
 

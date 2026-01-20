@@ -128,7 +128,7 @@ export const createStorageAddOperation =
         }
 
         return ok({
-            publicKeyUnspentSpace: assignResult.value.publicKeyLimits.unspendStorageSize,
+            publicKeyUnspentSpace: assignResult.value.publicKeyLimits.unspentStorageSize,
             ownerTotalSpace: assignResult.value.ownerStorageLimit,
         });
     };
