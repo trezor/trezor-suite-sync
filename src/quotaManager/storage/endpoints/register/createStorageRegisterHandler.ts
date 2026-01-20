@@ -48,6 +48,6 @@ export const createStorageRegisterHandler =
 
         return reply.code(200).send({
             totalStorageSize: result.value.totalStorageSize,
-            unspendStorageSize: result.value.unspendStorageSize,
+            unspentStorageSize: result.value.unspentStorageSize,
         });
     };

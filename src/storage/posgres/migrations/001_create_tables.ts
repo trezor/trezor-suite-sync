@@ -6,7 +6,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .ifNotExists()
         .addColumn('publicKey', 'text', col => col.notNull().primaryKey())
         .addColumn('totalStorageSize', 'integer', col => col.notNull())
-        .addColumn('unspendStorageSize', 'integer', col => col.notNull())
+        .addColumn('unspentStorageSize', 'integer', col => col.notNull())
         .execute();
 
     await db.schema

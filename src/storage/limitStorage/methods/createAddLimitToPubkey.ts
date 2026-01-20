@@ -31,14 +31,14 @@ export const createAddLimitToPubkey =
                 .values({
                     publicKey,
                     totalStorageSize: size,
-                    unspendStorageSize: size,
+                    unspentStorageSize: size,
                 })
                 .onConflict(oc =>
                     oc.column('publicKey').doUpdateSet({
                         totalStorageSize: eb =>
                             eb('pubkey_storage_limits.totalStorageSize', '+', size),
-                        unspendStorageSize: eb =>
-                            eb('pubkey_storage_limits.unspendStorageSize', '+', size),
+                        unspentStorageSize: eb =>
+                            eb('pubkey_storage_limits.unspentStorageSize', '+', size),
                     }),
                 )
                 .execute(),

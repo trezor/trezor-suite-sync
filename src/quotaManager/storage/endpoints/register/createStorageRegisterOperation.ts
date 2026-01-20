@@ -42,7 +42,7 @@ export type RegisterOperationInput = {
 
 export type RegisterOperationOutput = {
     totalStorageSize: number;
-    unspendStorageSize: number;
+    unspentStorageSize: number;
 };
 
 export type RegisterOperationDeps = AddLimitToPubkeyDep &
@@ -129,6 +129,6 @@ export const createStorageRegisterOperation =
 
         return ok({
             totalStorageSize: result.value.totalStorageSize,
-            unspendStorageSize: result.value.unspendStorageSize,
+            unspentStorageSize: result.value.unspentStorageSize,
         });
     };

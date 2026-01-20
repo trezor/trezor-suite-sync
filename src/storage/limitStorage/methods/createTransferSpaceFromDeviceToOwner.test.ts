@@ -45,7 +45,7 @@ describe(createTransferSpaceFromDeviceToOwner.name, () => {
 
         const pubkeyLimits = await getLimitsForPubkey({ publicKey: PublicKeyAAA });
         assert(pubkeyLimits.ok);
-        expect(pubkeyLimits.value?.unspendStorageSize).toBe(50);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(50);
     });
 
     it('returns error when pubkey has no space', async () => {

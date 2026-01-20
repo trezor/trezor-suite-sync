@@ -63,7 +63,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
+                        unspentStorageSize: 30 as Size,
                     },
                     ownerStorageLimit: 20 as Size,
                 }),
@@ -91,7 +91,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
+                        unspentStorageSize: 30 as Size,
                     },
                     ownerStorageLimit: null,
                 }),
@@ -119,7 +119,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: size50 as Size,
+                        unspentStorageSize: size50 as Size,
                     },
                     ownerStorageLimit: 20 as Size,
                 }),
@@ -155,7 +155,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: 30 as Size,
+                        unspentStorageSize: 30 as Size,
                     },
                     ownerStorageLimit: 20 as Size,
                 }),
@@ -188,7 +188,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: size50,
+                        unspentStorageSize: size50,
                     },
                     ownerStorageLimit: 20 as Size,
                 }),
@@ -255,7 +255,7 @@ describe(createStorageAddOperation.name, () => {
                 ok({
                     publicKeyLimits: {
                         totalStorageSize: size50,
-                        unspendStorageSize: size50,
+                        unspentStorageSize: size50,
                     },
                     ownerStorageLimit: 20 as Size,
                 }),
