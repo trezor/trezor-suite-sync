@@ -66,7 +66,7 @@ export const createQuotaManagerCompositionRoot = (): QuotaManagerCompositionRoot
         getLimitsForPubkey,
         getLimitsForOwner,
     });
-    fastifyServer.get('/storage/ask', storageAskRequestSchema, storageAskHandler);
+    fastifyServer.post('/storage/ask', storageAskRequestSchema, storageAskHandler);
 
     const storageRegisterOperation = createStorageRegisterOperation({
         validateAndConsumeChallenge,
