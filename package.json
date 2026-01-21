@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "tsc -p tsconfig.json",
+        "start": "printf \"\\e[31mDEPRECATION WARNING: This is only for Backward Compatibility.\n\\e[0m\" && node dist/src/index.js",
         "start-quota-manager": "node dist/src/quotaManager/index.js",
         "start-evolu-relay": "node dist/src/evoluRelay/index.js",
         "dev": "tsx watch src/index.ts",
