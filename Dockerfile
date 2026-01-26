@@ -25,7 +25,24 @@ WORKDIR /app
 
 COPY --from=builder /app .
 
-EXPOSE 4000 4001
+# Build argument to specify which service to run
+ARG SERVICE=quota-manager
+ENV SERVICE=${SERVICE}
 
-# Todo: this needs to be "yarn start-quota-manager" or "yarn start-evolu-relay"
-CMD ["yarn", "start"]
+# Expose ports for both services (they won't conflict as only one runs)
+EXPOSE 4000 4001 4002
+
+# Create entrypoint script
+RUN cat > /entrypoint.sh << 'EOF' && chmod +x /entrypoint.sh
+#!/bin/sh
+if [ "$SERVICE" = "quota-manager" ]; then
+  exec yarn start-quota-manager
+elif [ "$SERVICE" = "evolu-relay" ]; then
+  exec yarn start-evolu-relay
+else
+  echo "Error: SERVICE must be either 'quota-manager' or 'evolu-relay'"
+  exit 1
+fi
+EOF
+
+ENTRYPOINT ["/entrypoint.sh"]
