@@ -129,8 +129,12 @@ const registerDevice = async (
     publicKey: PublicKey,
     size: Size,
 ) => {
-    const sessionId: SessionId = getOrThrowTest(SessionId.from(`session-register-${publicKey.toString()}`));
-    const challenge: Challenge = getOrThrowTest(Challenge.from(`challenge-${publicKey.toString()}`));
+    const sessionId: SessionId = getOrThrowTest(
+        SessionId.from(`session-register-${publicKey.toString()}`),
+    );
+    const challenge: Challenge = getOrThrowTest(
+        Challenge.from(`challenge-${publicKey.toString()}`),
+    );
     const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
     assert(storeResult.ok);
 
