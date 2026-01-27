@@ -6,6 +6,7 @@ import { createStorageRegisterOperation } from './createStorageRegisterOperation
 import { storageRegisterRequestSchema } from './storageRegisterSchema.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
+import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
 import {
     Challenge,
     SessionId,
@@ -71,8 +72,8 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
     it('returns 400 when device certificate is malformed', async () => {
         const { app, challengeStorage } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-malformed-cert'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-malformed-cert'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-malformed-cert'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-malformed-cert'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
@@ -105,8 +106,8 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
     it('returns 400 when CA certificate is malformed', async () => {
         const { app, challengeStorage } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-malformed-ca'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-malformed-ca'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-malformed-ca'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-malformed-ca'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
@@ -139,8 +140,8 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
     it('returns 400 when certificate chain is invalid (wrong CA)', async () => {
         const { app, challengeStorage } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-wrong-ca'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-wrong-ca'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-wrong-ca'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-wrong-ca'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
@@ -175,8 +176,8 @@ describe('POST /storage/register - Real Cryptography Tests', () => {
     it('returns 400 when root pubkey is not found in config', async () => {
         const { app, challengeStorage } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-no-root'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-no-root'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-no-root'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-no-root'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 

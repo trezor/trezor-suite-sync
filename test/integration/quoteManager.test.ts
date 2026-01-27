@@ -88,7 +88,7 @@ describe('Quota Manager API Integration Tests', () => {
         it('completes full registration and space assignment flow', async () => {
             const { server, challengeStorage } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-full-flow'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-full-flow'));
             const challenge = await getChallenge(server, sessionId);
             expect(challenge).toBeDefined();
 
@@ -189,7 +189,7 @@ describe('Quota Manager API Integration Tests', () => {
             await registerDevice(server, challengeStorage, publicKey1, size50);
             await registerDevice(server, challengeStorage, publicKey1, size50);
 
-            const sessionId = getOrThrowTest(SessionId.from('session-limit-exceeded'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-limit-exceeded'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -222,7 +222,7 @@ describe('Quota Manager API Integration Tests', () => {
                 error: 'Invalid certificate chain',
             });
 
-            const sessionId = getOrThrowTest(SessionId.from('session-invalid-cert'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-invalid-cert'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -254,7 +254,7 @@ describe('Quota Manager API Integration Tests', () => {
 
             await registerDevice(server, challengeStorage, publicKey1, size50);
 
-            const sessionId = getOrThrowTest(SessionId.from('session-insufficient'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-insufficient'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -278,7 +278,7 @@ describe('Quota Manager API Integration Tests', () => {
         it('prevents assignment when publicKey is unknown', async () => {
             const { server } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-unknown'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-unknown'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -349,7 +349,7 @@ describe('Quota Manager API Integration Tests', () => {
         it('generates different challenges for same session on multiple calls', async () => {
             const { server } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-repeated'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-repeated'));
 
             const challenge1 = await getChallenge(server, sessionId);
             const challenge2 = await getChallenge(server, sessionId);
@@ -360,7 +360,7 @@ describe('Quota Manager API Integration Tests', () => {
         it('validates challenge is consumed after registration', async () => {
             const { server } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-consume'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-consume'));
             const challenge = await getChallenge(server, sessionId);
 
             const response1 = await server.inject({
@@ -432,7 +432,7 @@ describe('Quota Manager API Integration Tests', () => {
 
             await registerDevice(server, challengeStorage, publicKey1, size200);
 
-            const sessionId = getOrThrowTest(SessionId.from('session-consume-add'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-consume-add'));
             const challenge = await getChallenge(server, sessionId);
 
             const response1 = await server.inject({
@@ -646,7 +646,7 @@ describe('Quota Manager API Integration Tests', () => {
         it('validates registration proof signature verification is called', async () => {
             const { server } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-proof-validation'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-proof-validation'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -675,7 +675,7 @@ describe('Quota Manager API Integration Tests', () => {
 
             await registerDevice(server, challengeStorage, publicKey1, size200);
 
-            const sessionId = getOrThrowTest(SessionId.from('session-add-proof-validation'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-add-proof-validation'));
             const challenge = await getChallenge(server, sessionId);
 
             vi.mocked(globalThis.crypto.subtle.verify).mockResolvedValue(true);
@@ -705,7 +705,7 @@ describe('Quota Manager API Integration Tests', () => {
                 error: 'Invalid signature',
             });
 
-            const sessionId = getOrThrowTest(SessionId.from('session-invalid-proof'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-invalid-proof'));
             const challenge = await getChallenge(server, sessionId);
 
             const response = await server.inject({
@@ -735,7 +735,7 @@ describe('Quota Manager API Integration Tests', () => {
 
             await registerDevice(server, challengeStorage, publicKey1, size200);
 
-            const sessionId = getOrThrowTest(SessionId.from('session-invalid-add-proof'));
+            const sessionId: SessionId = getOrThrowTest(SessionId.from('session-invalid-add-proof'));
             const challenge = await getChallenge(server, sessionId);
 
             vi.mocked(globalThis.crypto.subtle.verify).mockResolvedValueOnce(false);

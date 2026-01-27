@@ -121,7 +121,7 @@ export const registerDevice = async (
     publicKey: PublicKey,
     size: Size,
 ): Promise<{ totalStorageSize: number; unspendStorageSize: number }> => {
-    const sessionId = getOrThrowTest(
+    const sessionId: SessionId = getOrThrowTest(
         SessionId.from(`session-register-${publicKey.toString()}-${Date.now()}`),
     );
     const challenge = await getChallenge(server, sessionId);
@@ -160,7 +160,7 @@ export const assignSpace = async (
     ownerId: OwnerId,
     size: Size,
 ): Promise<{ storageLimit: number; unspentSpace?: number }> => {
-    const sessionId = getOrThrowTest(
+    const sessionId: SessionId = getOrThrowTest(
         SessionId.from(`session-add-${publicKey.toString()}-${Date.now()}`),
     );
     const challenge = await getChallenge(server, sessionId);

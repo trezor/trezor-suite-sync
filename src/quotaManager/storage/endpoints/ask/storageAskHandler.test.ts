@@ -7,9 +7,9 @@ import { createStorageAskHandler } from './createStorageAskHandler.js';
 import { storageAskRequestSchema } from './storageAskSchema.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
+import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
 import {
     Challenge,
-    ChallengeStorage,
     SessionId,
     createChallengeStorage,
 } from '../../../../storage/challengeStorage/challengeStorage.js';
@@ -129,8 +129,8 @@ const registerDevice = async (
     publicKey: PublicKey,
     size: Size,
 ) => {
-    const sessionId = getOrThrowTest(SessionId.from(`session-register-${publicKey.toString()}`));
-    const challenge = getOrThrowTest(Challenge.from(`challenge-${publicKey.toString()}`));
+    const sessionId: SessionId = getOrThrowTest(SessionId.from(`session-register-${publicKey.toString()}`));
+    const challenge: Challenge = getOrThrowTest(Challenge.from(`challenge-${publicKey.toString()}`));
     const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
     assert(storeResult.ok);
 
@@ -165,8 +165,8 @@ describe(createStorageAskHandler.name, () => {
 
         await registerDevice(server, challengeStorage, publicKey1, size100);
 
-        const sessionId = getOrThrowTest(SessionId.from('session-add-1'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-add-1'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-add-1'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-add-1'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
@@ -219,8 +219,8 @@ describe(createStorageAskHandler.name, () => {
 
         await registerDevice(server, challengeStorage, publicKey1, size100);
 
-        const sessionId = getOrThrowTest(SessionId.from('session-add-2'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-add-2'));
+        const sessionId: SessionId = getOrThrowTest(SessionId.from('session-add-2'));
+        const challenge: Challenge = getOrThrowTest(Challenge.from('challenge-add-2'));
         const storeResult = await challengeStorage.storeChallenge(sessionId, challenge);
         assert(storeResult.ok);
 
