@@ -26,16 +26,11 @@ export const createEvoluRelay =
             port,
             enableLogging: true,
             /**
-             * Owner is allowed to access the relay if they have any registered storage limit.
+             * Anyone is allowed to read, so that there is no unnecessary quota allocation in QM.
+             * TODO: high loads from malicious users should be mitigated by rate limiting (post-MVP).
              */
-            async isOwnerAllowed(ownerId) {
-                const result = await deps.getLimitsForOwner({ ownerId });
-
-                if (!shouldAuthenticate) {
-                    return Promise.resolve(true);
-                }
-
-                return Promise.resolve(result.ok && result.value !== null);
+            isOwnerAllowed() {
+                return Promise.resolve(true);
             },
 
             /**
