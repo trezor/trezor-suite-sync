@@ -6,7 +6,6 @@ import { createStorageRegisterOperation } from './createStorageRegisterOperation
 import { storageRegisterRequestSchema } from './storageRegisterSchema.js';
 import { CA_CERT_OPTIGA, DEVICE_CERT_OPTIGA } from '../../../../../test/mocks/certificates.js';
 import { getOrThrowTest } from '../../../../getOrThrowTest.js';
-import type { ChallengeStorage } from '../../../../storage/challengeStorage/challengeStorage.js';
 import {
     Challenge,
     SessionId,
