@@ -1,4 +1,4 @@
-import { Number, String, brand } from '@evolu/common';
+import { Number, PositiveInt, String, brand } from '@evolu/common';
 
 import { AppDatabaseDep } from '../posgres/createPostgreSql.js';
 import { AddLimitToPubkeyDep, createAddLimitToPubkey } from './methods/createAddLimitToPubkey.js';
@@ -34,7 +34,7 @@ export type PublicKey = typeof PublicKey.Type;
 /**
  * Size of the storage limits in bytes.
  */
-export const Size = brand('Size', Number);
+export const Size = brand('Size', PositiveInt);
 export type Size = typeof Size.Type;
 
 /**
