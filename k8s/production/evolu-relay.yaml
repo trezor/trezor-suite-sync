@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: evolu-relay
+  namespace: suite-sync
+  labels:
+    app.kubernetes.io/name: evolu-relay
+    app.kubernetes.io/part-of: suite-sync
+spec:
+  serviceName: evolu-relay
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: evolu-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: evolu-relay
+        app.kubernetes.io/part-of: suite-sync
+    spec:
+      containers:
+        - name: evolu-relay
+          image: ghcr.io/trezor/suite-sync:release-latest
+          command: ["yarn", "start-evolu-relay"]
+          ports:
+            - name: relay
+              containerPort: 4000
+            - name: health
+              containerPort: 4002
+          env:
+            - name: SERVER_ENV
+              value: "prod"
+            - name: DATA_DIR
+              value: "/data"
+          volumeMounts:
+            - name: evolu-relay-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: evolu-relay-data
+      spec:
+        storageClassName: ebs-sc
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: evolu-relay
+  namespace: suite-sync
+  labels:
+    app.kubernetes.io/name: evolu-relay
+    app.kubernetes.io/part-of: suite-sync
+spec:
+  selector:
+    app.kubernetes.io/name: evolu-relay
+  ports:
+    - name: relay
+      port: 4000
+      targetPort: 4000
+    - name: health
+      port: 4002
+      targetPort: 4002
