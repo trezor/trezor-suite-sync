@@ -38,6 +38,17 @@ nvm i
 yarn dev
 ```
 
+### Kubernetes Deployment
+
+Manifests live in `k8s/` and use [Kustomize](https://kustomize.io/) overlays for production and development.
+
+Each overlay deploys:
+- **evolu-relay** -- Evolu sync relay (port 4000)
+- **quota-manager** -- Payment/quota server (port 4001)
+- **postgres** -- PostgreSQL StatefulSet with persistent storage
+
+Production runs 2 replicas per service; development runs 1.
+
 ### API
 
 - Good API tool to play with API: https://www.usebruno.com/downloads
