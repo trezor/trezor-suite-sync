@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: quota-manager
-          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-prod
           command: ["yarn", "start-quota-manager"]
           ports:
             - name: http
@@ -33,14 +33,20 @@ spec:
               value: "prod"
             - name: LOG_LEVEL
               value: "info"
-            - name: POSTGRES_GATE_USER
-              value: "suite-sync"
+            - name: QUOTA_MANAGER_PORT    
+              value: "4001"
+            - name: HEALTH_PORT
+              value: "4002"              
             - name: POSTGRES_GATE_HOST
               value: "prod-trading-1.cyppbowknane.eu-central-1.rds.amazonaws.com" #! CHANGE THIS TO REAL RDS HOST
+            - name: POSTGRES_GATE_USER
+              value: "suite-sync"
             - name: POSTGRES_GATE_PORT
               value: "5432"
             - name: POSTGRES_GATE_DB
-              value: "suite-sync-quota-manager"
+              value: "suite_sync_qm_prod"
+            - name: POSTGRES_GATE_SSL
+              value: "true"              
             - name: POSTGRES_GATE_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -60,10 +66,10 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 500m
+              memory: 1024Mi
             limits:
-              memory: 512Mi
+              memory: 1024Mi
 ---
 apiVersion: v1
 kind: Service

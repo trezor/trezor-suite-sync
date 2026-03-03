@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: evolu-relay
-          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-dev
           command: ["yarn", "start-evolu-relay"]
           ports:
             - name: relay
@@ -32,6 +32,25 @@ spec:
               value: "dev"
             - name: DATA_DIR
               value: "/data"
+            - name: QUOTA_MANAGER_PORT    
+              value: "4001"
+            - name: HEALTH_PORT
+              value: "4002"
+            - name: POSTGRES_GATE_HOST
+              value: "dev-rds-postgres-01.cluster-ro-cyppbowknane.eu-central-1.rds.amazonaws.com"
+            - name: POSTGRES_GATE_USER
+              value: "suite-sync"
+            - name: POSTGRES_GATE_PORT
+              value: "5432"
+            - name: POSTGRES_GATE_DB
+              value: "suite_sync_qm_dev"
+            - name: POSTGRES_GATE_SSL
+              value: "true"
+            - name: POSTGRES_GATE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-dev-secrets
+                  key: POSTGRES_GATE_PASSWORD              
           volumeMounts:
             - name: evolu-relay-data
               mountPath: /data
@@ -39,7 +58,7 @@ spec:
             httpGet:
               path: /
               port: health
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 10
           livenessProbe:
             httpGet:
@@ -50,7 +69,7 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 256Mi
             limits:
               memory: 256Mi
   volumeClaimTemplates:

@@ -8,6 +8,7 @@ export const config = {
         port: parseInt(getEnvOrThrow('POSTGRES_GATE_PORT'), 10),
         db: getEnvOrThrow('POSTGRES_GATE_DB'),
         password: getEnvOrThrow('POSTGRES_GATE_PASSWORD'),
+        ssl: process.env.POSTGRES_GATE_SSL === 'true',
     },
     relay: {
         port: getOptionalEnvInt('RELAY_PORT', 4000),
