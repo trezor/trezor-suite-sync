@@ -38,8 +38,7 @@ jobs:
         with:
           cmd: |
             yq -i '
-               (.images[] | select(.name == "538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync").newName) = "${{ needs.build-suite-sync-image.outputs.image_registry }}/suite-sync-prod" |
-               (.images[] | select(.name == "538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync").newTag)  = "${{ github.ref_name }}"
+               (.images[] | select(.name == "538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-prod").newTag)  = "sha-${{ github.ref_name }}"
             ' .k8s/production/kustomization.yaml
 
       - name: Generate GitHub App token
