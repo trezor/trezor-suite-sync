@@ -19,8 +19,8 @@ mkdirSync(dataPath, { recursive: true });
 process.chdir(dataPath);
 
 const runAll = async () => {
-    const { migrateToLatest, evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
-    const { quotaManagerServer } = createQuotaManagerCompositionRoot();
+    const { evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
+    const { quotaManagerServer, migrateToLatest } = createQuotaManagerCompositionRoot();
 
     await migrateToLatest();
 

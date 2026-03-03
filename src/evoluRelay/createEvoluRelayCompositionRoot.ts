@@ -1,17 +1,10 @@
 import { EvoluRelayDep, createEvoluRelay } from './createEvoluRelay.js';
 import { HealthServerDep, createHealthServer } from '../health/createHealthServer.js';
 import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
-import {
-    MigrateToLatestDep,
-    createMigrateToLatest,
-} from '../storage/postgres/createMigrateToLatest.js';
 import { createPostgreSql } from '../storage/postgres/createPostgreSql.js';
 
-export const createEvoluRelayCompositionRoot = (): HealthServerDep &
-    EvoluRelayDep &
-    MigrateToLatestDep => {
+export const createEvoluRelayCompositionRoot = (): HealthServerDep & EvoluRelayDep => {
     const db = createPostgreSql();
-    const migrateToLatest = createMigrateToLatest({ db });
     const { getLimitsForOwner } = createLimitStorage({ db });
     const healthServer = createHealthServer();
 
@@ -23,6 +16,5 @@ export const createEvoluRelayCompositionRoot = (): HealthServerDep &
     return {
         healthServer,
         evoluRelay,
-        migrateToLatest,
     };
 };
