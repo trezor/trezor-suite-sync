@@ -15,7 +15,7 @@ import { createValidateAndConsumeChallenge } from '../../../../storage/challenge
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
 import { createAddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
-import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../../../storage/postgres/createTestDatabase.js';
 import { createFastifyServer } from '../../../createFastifyServer.js';
 
 const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({

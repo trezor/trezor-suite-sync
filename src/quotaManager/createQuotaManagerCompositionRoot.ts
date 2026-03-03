@@ -9,8 +9,8 @@ import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
 import {
     MigrateToLatestDep,
     createMigrateToLatest,
-} from '../storage/posgres/createMigrateToLatest.js';
-import { createPostgreSql } from '../storage/posgres/createPostgreSql.js';
+} from '../storage/postgres/createMigrateToLatest.js';
+import { createPostgreSql } from '../storage/postgres/createPostgreSql.js';
 import { challengeCreateRequestSchema } from './challenge/endpoints/create/challengeCreateSchema.js';
 import { createChallengeCreateHandler } from './challenge/endpoints/create/createChallengeCreateHandler.js';
 import { createChallengeCreateOperation } from './challenge/endpoints/create/createChallengeCreateOperation.js';
