@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: quota-manager
     app.kubernetes.io/part-of: suite-sync
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: quota-manager
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: quota-manager
-          image: ghcr.io/trezor/suite-sync:release-latest
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync
           command: ["yarn", "start-quota-manager"]
           ports:
             - name: http
@@ -30,13 +30,13 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: SERVER_ENV
-              value: "prod"
+              value: "dev"
             - name: LOG_LEVEL
               value: "info"
             - name: POSTGRES_GATE_USER
               value: "suite-sync"
             - name: POSTGRES_GATE_HOST
-              value: "prod-trading-1.cyppbowknane.eu-central-1.rds.amazonaws.com" #! CHANGE THIS TO REAL RDS HOST
+              value: "dev-rds-postgres-01-1.cyppbowknane.eu-central-1.rds.amazonaws.com" #! CHANGE THIS TO REAL RDS HOST
             - name: POSTGRES_GATE_PORT
               value: "5432"
             - name: POSTGRES_GATE_DB
@@ -44,7 +44,7 @@ spec:
             - name: POSTGRES_GATE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: suite-sync-prod-secrets
+                  name: suite-sync-dev-secrets
                   key: POSTGRES_GATE_PASSWORD
           readinessProbe:
             httpGet:
@@ -60,11 +60,10 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 128Mi
             limits:
-              cpu: "1"
-              memory: 512Mi
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service

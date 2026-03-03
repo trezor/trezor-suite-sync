@@ -11,51 +11,59 @@ permissions:
   id-token: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
-jobs: 
+jobs:
   build-suite-sync-image:
-    environment: production
+    uses: ./.github/workflows/build-and-push-image.yml
+    with:
+      image_name: suite-sync-prod
+      environment: 'prod'
+      push: true
+      build-args: |
+        BUILDKIT_INLINE_CACHE=1
+
+  update-deployment-manifests:
+    name: deployment-manifests-backend
     runs-on: ubuntu-latest
+    needs:
+      - build-suite-sync-image
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
-        with:
-          platforms: arm64
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
+        uses: actions/checkout@v6
 
-      - name: Login to ECR 
-        uses: aws-actions/configure-aws-credentials@v5
+      - name: Update to current prod images
+        uses: mikefarah/yq@v4.52.4
         with:
-          role-to-assume: arn:aws:iam::538326561891:role/gh_actions_suite_sync_ecr_image
-          aws-region: eu-central-1
+          cmd: |
+            yq -i '
+               (.images[] | select(.name == "538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync").newName) = "${{ needs.build-suite-sync-image.outputs.image_registry }}/suite-sync-prod" |
+               (.images[] | select(.name == "538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync").newTag)  = "${{ github.ref_name }}"
+            ' .k8s/production/kustomization.yaml
 
-      - name: Setup docker tags and labels
-        id: meta
-        uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893
+      - name: Generate GitHub App token
+        id: trezor-bot-token
+        uses: actions/create-github-app-token@v2
         with:
-          images: |
-            538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync
-          tags: |
-            type=ref,event=tag
-            type=raw,value=latest
+          app-id: ${{ secrets.TREZOR_BOT_APP_ID }}
+          private-key: ${{ secrets.TREZOR_BOT_PRIVATE_KEY }}
 
-      - name: Build and push base image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+      - name: Create Pull Request with updated images
+        uses: peter-evans/create-pull-request@v8
         with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          provenance: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
-
+          token: ${{ steps.trezor-bot-token.outputs.token }}
+          commit-message: "[Deployment production] update to current production image tag"
+          committer: ${{ steps.trezor-bot-token.outputs.app-slug }}[bot] <208941332+${{ steps.trezor-bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: deploy/${{github.ref_name}}
+          base: gitops/prod
+          delete-branch: true
+          title: "[Deployment production] update current production image tag"
+          assignees: ${{ github.actor }}
+          draft: false
+          labels: |
+            ready-to-merge
+            deployment
+            automated

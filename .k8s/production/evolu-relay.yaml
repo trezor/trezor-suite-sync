@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/part-of: suite-sync
 spec:
   serviceName: evolu-relay
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: evolu-relay
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: evolu-relay
-          image: ghcr.io/trezor/suite-sync:main
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync
           command: ["yarn", "start-evolu-relay"]
           ports:
             - name: relay
@@ -29,7 +29,7 @@ spec:
               containerPort: 4002
           env:
             - name: SERVER_ENV
-              value: "dev"
+              value: "prod"
             - name: DATA_DIR
               value: "/data"
           volumeMounts:
@@ -49,11 +49,10 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 500m
+              cpu: 100m
               memory: 256Mi
+            limits:
+              memory: 512Mi
   volumeClaimTemplates:
     - metadata:
         name: evolu-relay-data
@@ -63,7 +62,7 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 20Gi
+            storage: 100Gi
 ---
 apiVersion: v1
 kind: Service

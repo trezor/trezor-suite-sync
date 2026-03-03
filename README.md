@@ -40,7 +40,7 @@ yarn dev
 
 ### Kubernetes Deployment
 
-Manifests live in `k8s/` and use [Kustomize](https://kustomize.io/) overlays for production and development.
+Manifests live in `.k8s/` and use [Kustomize](https://kustomize.io/) overlays for production and development.
 
 Each overlay deploys:
 - **evolu-relay** -- Evolu sync relay (port 4000)
