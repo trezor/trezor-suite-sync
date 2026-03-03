@@ -6,6 +6,7 @@ import {
 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
 
+import { IS_DEV_SERVER } from '../../../../env.js';
 import {
     Challenge,
     SessionId,
@@ -92,7 +93,7 @@ export const createStorageRegisterOperation =
             bufferChunks,
             config: deviceAuthenticityConfig,
             blacklistConfig: deviceAuthenticityBlacklistConfig,
-            allowDebugKeys: true, // let currently enabled for testing purposes
+            allowDebugKeys: IS_DEV_SERVER,
         });
 
         if (!proofValidation.valid) {
