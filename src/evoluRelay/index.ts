@@ -10,10 +10,9 @@ const dataPath = join(process.cwd(), config.dataDir);
 mkdirSync(dataPath, { recursive: true });
 process.chdir(dataPath);
 
-const run = async () => {
-    const { migrateToLatest, evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
+const run = () => {
+    const { evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
 
-    await migrateToLatest();
     healthServer.start({ port: config.health.port });
     evoluRelay({ port: config.relay.port });
 };
