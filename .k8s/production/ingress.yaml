@@ -5,11 +5,12 @@ metadata:
   namespace: suite-sync
   annotations:
     ingress.health.argocd.io/ip-not-requested: "true"
+    nginx.org/websocket-services: "evolu-relay"
     nginx.org/path-regex: "case_sensitive"
     nginx.org/rewrite-target: "/$2"
+    nginx.org/proxy-send-timeout: "100s"
     nginx.org/proxy-read-timeout: "100s"
-    nginx.org/proxy-send-timeout: "10s"
-    nginx.org/proxy-connect-timeout: "10s"
+    nginx.org/proxy-connect-timeout: "100s"
 spec:
   ingressClassName: nginx
   rules:
