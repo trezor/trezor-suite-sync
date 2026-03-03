@@ -17,6 +17,7 @@ export const createPostgreSql = (): AppDatabase => {
             user: config.postgres.user,
             password: config.postgres.password,
             database: config.postgres.db,
+            ssl: config.postgres.ssl ? { rejectUnauthorized: false } : undefined,
         }),
     });
 
