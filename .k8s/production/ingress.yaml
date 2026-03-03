@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: suite-sync-prod
-  namespace: suite-sync-prod
+  namespace: suite-sync
   annotations:
     ingress.health.argocd.io/ip-not-requested: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
