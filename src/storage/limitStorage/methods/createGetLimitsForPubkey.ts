@@ -1,8 +1,8 @@
 import { type Result, ok } from '@evolu/common';
 import { Transaction } from 'kysely';
 
-import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
-import { Database } from '../../posgres/database.js';
+import { AppDatabaseDep } from '../../postgres/createPostgreSql.js';
+import { Database } from '../../postgres/database.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
 

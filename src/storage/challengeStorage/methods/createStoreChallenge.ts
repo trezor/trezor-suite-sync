@@ -1,7 +1,7 @@
 import { type Result, ok } from '@evolu/common';
 
 import { CreateTimeDep } from '../../../CreateTime.js';
-import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../../postgres/createPostgreSql.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 

@@ -3,7 +3,7 @@ import { assert, describe, expect, it } from 'vitest';
 import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../../posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
 const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));

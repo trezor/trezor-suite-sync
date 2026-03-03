@@ -3,11 +3,11 @@ import { OwnerId, type Result, err, ok } from '@evolu/common';
 import { GetLimitsForOwnerDep } from './createGetLimitsForOwner.js';
 import { GetLimitsForPubkeyDep } from './createGetLimitsForPubkey.js';
 import { noSpaceAllowanceErr } from '../../../errors.js';
-import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../../postgres/createPostgreSql.js';
 import {
     OWNER_STORAGE_LIMITS_TABLE_NAME,
     PUBKEY_STORAGE_LIMITS_TABLE_NAME,
-} from '../../posgres/tables.js';
+} from '../../postgres/tables.js';
 import { DatabaseError } from '../../utils/dbQuery.js';
 import { type PublicKey, type Size } from '../limitStorage.js';
 

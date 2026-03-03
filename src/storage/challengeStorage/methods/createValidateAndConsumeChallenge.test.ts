@@ -5,7 +5,7 @@ import { createStoreChallenge } from './createStoreChallenge.js';
 import { createValidateAndConsumeChallenge } from './createValidateAndConsumeChallenge.js';
 import { CreateTimeDep } from '../../../CreateTime.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../../posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
 const session123 = getOrThrowTest(SessionId.from('session-123'));

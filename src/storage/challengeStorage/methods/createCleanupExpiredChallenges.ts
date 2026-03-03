@@ -1,6 +1,6 @@
 import { type Result, ok } from '@evolu/common';
 
-import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../../postgres/createPostgreSql.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 
 export type CleanupExpiredChallengesDeps = AppDatabaseDep & {

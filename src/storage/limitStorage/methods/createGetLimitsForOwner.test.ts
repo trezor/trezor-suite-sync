@@ -3,8 +3,8 @@ import { assert, describe, expect, it } from 'vitest';
 
 import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../../posgres/createTestDatabase.js';
-import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../../posgres/tables.js';
+import { createTestDatabase } from '../../postgres/createTestDatabase.js';
+import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../../postgres/tables.js';
 import { dbQuery } from '../../utils/dbQuery.js';
 import { Size } from '../limitStorage.js';
 

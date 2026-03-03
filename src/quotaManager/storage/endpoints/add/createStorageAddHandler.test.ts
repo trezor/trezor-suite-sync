@@ -19,7 +19,7 @@ import { createAddLimitToPubkey } from '../../../../storage/limitStorage/methods
 import { createAssignSpaceToOwner } from '../../../../storage/limitStorage/methods/createAssignSpaceToOwner.js';
 import { createGetLimitsForOwner } from '../../../../storage/limitStorage/methods/createGetLimitsForOwner.js';
 import { createGetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
-import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../../../storage/postgres/createTestDatabase.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 
 vi.mock('@trezor/device-authenticity', () => ({

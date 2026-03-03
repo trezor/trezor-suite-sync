@@ -1,6 +1,6 @@
 import { String, type TypeError, brand, err, ok, utf8ToBytes } from '@evolu/common';
 
-import { AppDatabaseDep } from '../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../postgres/createPostgreSql.js';
 import {
     CleanupExpiredChallengesDep,
     createCleanupExpiredChallenges,
