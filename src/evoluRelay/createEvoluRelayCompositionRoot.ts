@@ -4,8 +4,8 @@ import { createLimitStorage } from '../storage/limitStorage/limitStorage.js';
 import {
     MigrateToLatestDep,
     createMigrateToLatest,
-} from '../storage/posgres/createMigrateToLatest.js';
-import { createPostgreSql } from '../storage/posgres/createPostgreSql.js';
+} from '../storage/postgres/createMigrateToLatest.js';
+import { createPostgreSql } from '../storage/postgres/createPostgreSql.js';
 
 export const createEvoluRelayCompositionRoot = (): HealthServerDep &
     EvoluRelayDep &

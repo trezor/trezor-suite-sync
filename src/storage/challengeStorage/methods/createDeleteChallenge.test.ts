@@ -3,7 +3,7 @@ import { assert, describe, expect, it } from 'vitest';
 import { createDeleteChallenge } from './createDeleteChallenge.js';
 import { createStoreChallenge } from './createStoreChallenge.js';
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
-import { createTestDatabase } from '../../posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
 const session123 = getOrThrowTest(SessionId.from('session-123'));

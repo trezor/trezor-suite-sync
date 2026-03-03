@@ -9,7 +9,7 @@ import { createCleanupExpiredChallenges } from '../../../../storage/challengeSto
 import { createDeleteChallenge } from '../../../../storage/challengeStorage/methods/createDeleteChallenge.js';
 import { createStoreChallenge } from '../../../../storage/challengeStorage/methods/createStoreChallenge.js';
 import { createValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
-import { createTestDatabase } from '../../../../storage/posgres/createTestDatabase.js';
+import { createTestDatabase } from '../../../../storage/postgres/createTestDatabase.js';
 import { GenerateRandomBytes, GenerateRandomBytesDep } from '../../../GenerateRandomBytes.js';
 import { createFastifyServer } from '../../../createFastifyServer.js';
 import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';

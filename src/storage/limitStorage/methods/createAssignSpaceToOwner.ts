@@ -6,11 +6,11 @@ import {
     type GetLimitsForPubkeyResponse,
 } from './createGetLimitsForPubkey.js';
 import { type ConsistencyError, consistencyError, noSpaceAllowanceErr } from '../../../errors.js';
-import { AppDatabaseDep } from '../../posgres/createPostgreSql.js';
+import { AppDatabaseDep } from '../../postgres/createPostgreSql.js';
 import {
     OWNER_STORAGE_LIMITS_TABLE_NAME,
     PUBKEY_STORAGE_LIMITS_TABLE_NAME,
-} from '../../posgres/tables.js';
+} from '../../postgres/tables.js';
 import { DatabaseError, dbQuery } from '../../utils/dbQuery.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
