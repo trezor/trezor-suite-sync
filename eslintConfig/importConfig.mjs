@@ -5,6 +5,7 @@ export const globalNoExtraneousDependenciesDevDependencies = [
     '**/*.test.{tsx,ts,js}',
     '**/eslint.config.mjs',
     '**/eslintConfig/**',
+    '**/vitest.config.{ts,js,mts,mjs}',
 ];
 
 export const importConfig = [
