@@ -1,5 +1,6 @@
 import fastify from 'fastify';
 
+import { allowOriginMiddleware } from './allowOriginMiddleware.js';
 import { banMiddleware } from './banMiddleware.js';
 import { createCustomErrorHandler } from './createCustomErrorHandler.js';
 import { evoluValidatorCompiler } from './evoluValidatorCompiler.js';
@@ -13,6 +14,7 @@ export type FastifyServerDep = { fastifyServer: ServerType };
 export const createFastifyServer = (deps: FastifyServerDeps): ServerType => {
     const fastifyServer = fastify();
 
+    fastifyServer.addHook('onRequest', allowOriginMiddleware);
     fastifyServer.addHook('onRequest', banMiddleware);
 
     fastifyServer.setValidatorCompiler(evoluValidatorCompiler);
