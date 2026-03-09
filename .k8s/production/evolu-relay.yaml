@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/part-of: suite-sync
 spec:
   serviceName: evolu-relay
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: evolu-relay
