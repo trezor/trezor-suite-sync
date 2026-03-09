@@ -10,4 +10,4 @@ resources:
 
 images:
   - name: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-prod
-    newTag: sha-78ef1442c7dda6ef71e3eabc644e942c21c90d6e
+    newTag: v0.1.6
