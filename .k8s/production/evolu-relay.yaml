@@ -37,7 +37,7 @@ spec:
             - name: HEALTH_PORT
               value: "4002"              
             - name: POSTGRES_GATE_HOST
-              value: "prod-trading-1.cyppbowknane.eu-central-1.rds.amazonaws.com" #! CHANGE THIS TO REAL RDS HOST - we can use read only endpoint for this relay only needs to read data
+              value: "rds-suite-sync-prod.cluster-ro-cyppbowknane.eu-central-1.rds.amazonaws.com"
             - name: POSTGRES_GATE_USER
               value: "suite-sync"
             - name: POSTGRES_GATE_PORT
@@ -76,7 +76,7 @@ spec:
     - metadata:
         name: evolu-relay-data
       spec:
-        storageClassName: ebs-sc
+        storageClassName: ebs-sc-retain
         accessModes:
           - ReadWriteOnce
         resources:
