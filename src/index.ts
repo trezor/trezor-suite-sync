@@ -12,8 +12,6 @@ import { config } from './config.js';
 import { createEvoluRelayCompositionRoot } from './evoluRelay/createEvoluRelayCompositionRoot.js';
 import { createQuotaManagerCompositionRoot } from './quotaManager/createQuotaManagerCompositionRoot.js';
 
-const shouldAuthenticate = !config.server.isDevServer;
-
 const dataPath = join(process.cwd(), config.dataDir);
 mkdirSync(dataPath, { recursive: true });
 process.chdir(dataPath);
@@ -25,7 +23,7 @@ const runAll = async () => {
     await migrateToLatest();
 
     healthServer.start({ port: config.health.port });
-    evoluRelay({ port: config.relay.port, shouldAuthenticate });
+    evoluRelay({ port: config.relay.port });
     quotaManagerServer({ port: config.quotaManager.port });
 };
 

@@ -8,7 +8,6 @@ export type EvoluRelayDeps = GetLimitsForOwnerDep & UpdateHealthDep;
 
 export type EvoluRelayParams = {
     port: number;
-    shouldAuthenticate: boolean;
 };
 
 export type EvoluRelay = (params: EvoluRelayParams) => Promise<void>;
@@ -17,7 +16,7 @@ export type EvoluRelayDep = { evoluRelay: EvoluRelay };
 
 export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
-    async ({ port, shouldAuthenticate }) => {
+    async ({ port }) => {
         const evoluDeps = {
             console: createConsole(),
         };
@@ -31,10 +30,6 @@ export const createEvoluRelay =
             async isOwnerAllowed(ownerId) {
                 const result = await deps.getLimitsForOwner({ ownerId });
 
-                if (!shouldAuthenticate) {
-                    return Promise.resolve(true);
-                }
-
                 return Promise.resolve(result.ok && result.value !== null);
             },
 
@@ -44,10 +39,6 @@ export const createEvoluRelay =
              */
             async isOwnerWithinQuota(ownerId, requiredBytes) {
                 const result = await deps.getLimitsForOwner({ ownerId });
-
-                if (!shouldAuthenticate) {
-                    return Promise.resolve(true);
-                }
 
                 return Promise.resolve(
                     result.ok && result.value !== null && result.value >= requiredBytes,
