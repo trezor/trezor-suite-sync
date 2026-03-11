@@ -1,4 +1,4 @@
-name: "[Build/Deploy] test suite-sync image"
+name: "[Build] suite-sync docker image"
 
 on:
   push:
@@ -61,12 +61,3 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             BUILDKIT_INLINE_CACHE=1
-
-  deploy-suite-sync-image:
-    if: github.ref == 'refs/heads/main'
-    runs-on: dev-suite-sync-deploy
-    needs: build-suite-sync-image
-    steps:
-      - name: Restart service to pull new image
-        run: |
-          sudo /run/current-system/sw/bin/systemctl restart docker-suite-sync.service
