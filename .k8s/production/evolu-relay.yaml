@@ -30,8 +30,6 @@ spec:
           env:
             - name: SERVER_ENV
               value: "prod"
-            - name: DATA_DIR
-              value: "/data"
             - name: QUOTA_MANAGER_PORT    
               value: "4001"
             - name: HEALTH_PORT
@@ -53,7 +51,7 @@ spec:
                   key: POSTGRES_GATE_PASSWORD              
           volumeMounts:
             - name: evolu-relay-data
-              mountPath: /data
+              mountPath: /app/data
           readinessProbe:
             httpGet:
               path: /

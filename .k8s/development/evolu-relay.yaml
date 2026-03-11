@@ -30,8 +30,6 @@ spec:
           env:
             - name: SERVER_ENV
               value: "dev"
-            - name: DATA_DIR
-              value: "/data"
             - name: QUOTA_MANAGER_PORT    
               value: "4001"
             - name: HEALTH_PORT
@@ -50,10 +48,10 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: suite-sync-dev-secrets
-                  key: POSTGRES_GATE_PASSWORD              
+                  key: POSTGRES_GATE_PASSWORD
           volumeMounts:
             - name: evolu-relay-data
-              mountPath: /data
+              mountPath: /app/data
           readinessProbe:
             httpGet:
               path: /
