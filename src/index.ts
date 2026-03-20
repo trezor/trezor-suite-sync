@@ -23,8 +23,18 @@ const runAll = async () => {
     await migrateToLatest();
 
     healthServer.start({ port: config.health.port });
-    evoluRelay({ port: config.relay.port });
-    quotaManagerServer({ port: config.quotaManager.port });
+
+    // Intentionally not awaited, we want to run both!
+    quotaManagerServer({ port: config.quotaManager.port }).catch(error => {
+        console.error('Failed to start services:', error);
+        process.exitCode = 1;
+    });
+
+    evoluRelay({ port: config.relay.port }).catch(error => {
+        console.error('Failed to start services:', error);
+        process.exitCode = 1;
+    });
 };
 
+// Intentionally not awaited, we want to run both!
 runAll();

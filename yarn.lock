@@ -826,29 +826,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evolu/common@npm:7.4.1":
+"@evolu/common@github:evoluhq/evolu#workspace=@evolu/common&head=common-v8":
   version: 7.4.1
-  resolution: "@evolu/common@npm:7.4.1"
+  resolution: "@evolu/common@https://github.com/evoluhq/evolu.git#workspace=%40evolu%2Fcommon&commit=5cb304afdcff78aeec365cf482cf21ebf1fa6e58"
   dependencies:
-    "@noble/ciphers": "npm:^2.0.0"
-    "@noble/hashes": "npm:^2.0.0"
-    "@scure/bip39": "npm:^2.0.0"
-    kysely: "npm:^0.28.4"
-    msgpackr: "npm:^1.11.5"
+    "@noble/ciphers": "npm:^2.1.1"
+    "@noble/hashes": "npm:^2.0.1"
+    "@scure/bip39": "npm:^2.0.1"
+    kysely: "npm:^0.28.15"
+    msgpackr: "npm:^1.11.8"
     random: "npm:^5.4.1"
-  checksum: 10c0/feb55556eee6eb7a01e2654d0701c84155d20256e81aa05f555ec43ff5dfe8d24953f1c1e10d4a69f79f8057698918c0dc6f08066389d6b76251f578998dcf1c
+  checksum: 10c0/930b89487c7222141e948bd62a86255901dd9017ca44ede8123a483ce05e6eb6188736e11264f4d05775ec08bfb5e9a6b8759aea1bcbb5b20dbb1977fe487092
   languageName: node
   linkType: hard
 
-"@evolu/nodejs@npm:2.4.0":
+"@evolu/nodejs@github:evoluhq/evolu#workspace=@evolu/nodejs&head=common-v8":
   version: 2.4.0
-  resolution: "@evolu/nodejs@npm:2.4.0"
+  resolution: "@evolu/nodejs@https://github.com/evoluhq/evolu.git#workspace=%40evolu%2Fnodejs&commit=5cb304afdcff78aeec365cf482cf21ebf1fa6e58"
   dependencies:
-    better-sqlite3: "npm:^12.1.1"
-    ws: "npm:^8.18.2"
+    better-sqlite3: "npm:^12.6.2"
+    ws: "npm:^8.19.0"
   peerDependencies:
-    "@evolu/common": ^7.4.0
-  checksum: 10c0/5e47534ed246ce904073fc635df97b8b2f49f2b3328b56f9be47f70f01320fb128002bd8e2e976def29f5e09c5ca663d678f98ed782f45eaef28b00c2fea4073
+    "@evolu/common": ^7.4.1
+  checksum: 10c0/82666eb26139e662ab5e96d680ff8877572a11a7c018c52b5de1bee70640527cd9aef4729ff15457beabb194969e84cb92961719ba80faf7d523602e6c4d0ce8
   languageName: node
   linkType: hard
 
@@ -1191,10 +1191,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/ciphers@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "@noble/ciphers@npm:2.0.1"
-  checksum: 10c0/62318ec45224bcabd636ffe75409834c7a2ee151c68592935e73c9c6d2d13225247292d3e1c631113d088d57cf52a49458e32738d791cae95765a6d0900d290d
+"@noble/ciphers@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@noble/ciphers@npm:2.1.1"
+  checksum: 10c0/f02662723475a9785a2f7bcd6e8e12d4b5f77537154f5e21edb0fed398051fb1ae5057eb444987e1c65342f8632474f0143ea612a2dad49593d3358eb730a079
   languageName: node
   linkType: hard
 
@@ -1207,7 +1207,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:2.0.1, @noble/hashes@npm:^2.0.0":
+"@noble/hashes@npm:2.0.1, @noble/hashes@npm:^2.0.1":
   version: 2.0.1
   resolution: "@noble/hashes@npm:2.0.1"
   checksum: 10c0/e81769ce21c3b1c80141a3b99bd001f17edea09879aa936692ae39525477386d696101cd573928a304806efb2b9fa751e1dd83241c67d0c84d30091e85c79bdb
@@ -1491,7 +1491,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:^2.0.0":
+"@scure/bip39@npm:^2.0.1":
   version: 2.0.1
   resolution: "@scure/bip39@npm:2.0.1"
   dependencies:
@@ -1567,8 +1567,8 @@ __metadata:
   resolution: "@trezor/evolu-relay@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.2"
-    "@evolu/common": "npm:7.4.1"
-    "@evolu/nodejs": "npm:2.4.0"
+    "@evolu/common": "github:evoluhq/evolu#workspace=@evolu/common&head=common-v8"
+    "@evolu/nodejs": "github:evoluhq/evolu#workspace=@evolu/nodejs&head=common-v8"
     "@jest/globals": "npm:^30.2.0"
     "@trezor/device-authenticity": "npm:^1.1.1"
     "@trezor/protobuf": "npm:1.5.1"
@@ -2279,7 +2279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^12.1.1, better-sqlite3@npm:^12.6.2":
+"better-sqlite3@npm:^12.6.2":
   version: 12.6.2
   resolution: "better-sqlite3@npm:12.6.2"
   dependencies:
@@ -4378,10 +4378,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kysely@npm:^0.28.11, kysely@npm:^0.28.4":
-  version: 0.28.11
-  resolution: "kysely@npm:0.28.11"
-  checksum: 10c0/3fa4f0617bd015a51de559f00835ac2733e9f0e4c8e2c8bcd091dea4b1a24586c3a445cd4afe02c77e248f232c8c9ba3143989eac3c5a3d233d3e241f53a9f99
+"kysely@npm:^0.28.11, kysely@npm:^0.28.15":
+  version: 0.28.15
+  resolution: "kysely@npm:0.28.15"
+  checksum: 10c0/48a3a69ee423e255dde3112261be41e8fd505cd970a868c8dce957f7fa602d3cb9d7a328f95d0e94bd232cf60176fc7512d72ce37cd85664bc483c238dcf4659
   languageName: node
   linkType: hard
 
@@ -4675,15 +4675,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msgpackr@npm:^1.11.5":
-  version: 1.11.5
-  resolution: "msgpackr@npm:1.11.5"
+"msgpackr@npm:^1.11.8":
+  version: 1.11.9
+  resolution: "msgpackr@npm:1.11.9"
   dependencies:
     msgpackr-extract: "npm:^3.0.2"
   dependenciesMeta:
     msgpackr-extract:
       optional: true
-  checksum: 10c0/f35ffd218661e8afc52490cde3dbf2656304e7940563c5313aa2f45e31ac5bdce3b58f27e55b785c700085ee76f26fc7afbae25ae5abe05068a8f000fd0ac6cd
+  checksum: 10c0/e52c62cda60398261541dc6fdb06b0db473ff83b9b1cb8f34535fb9ac33325e3c2f9bfdfbb87bf7ff5f70b532b6477c8e95bd3537ecb695493e30e22d7176ceb
   languageName: node
   linkType: hard
 
@@ -6586,9 +6586,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.2":
-  version: 8.18.3
-  resolution: "ws@npm:8.18.3"
+"ws@npm:^8.19.0":
+  version: 8.19.0
+  resolution: "ws@npm:8.19.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -6597,7 +6597,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10c0/eac918213de265ef7cb3d4ca348b891a51a520d839aa51cdb8ca93d4fa7ff9f6ccb339ccee89e4075324097f0a55157c89fa3f7147bde9d8d7e90335dc087b53
+  checksum: 10c0/4741d9b9bc3f9c791880882414f96e36b8b254e34d4b503279d6400d9a4b87a033834856dbdd94ee4b637944df17ea8afc4bce0ff4a1560d2166be8855da5b04
   languageName: node
   linkType: hard
 
