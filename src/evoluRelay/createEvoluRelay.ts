@@ -1,5 +1,5 @@
-import { createConsole } from '@evolu/common';
-import { createNodeJsRelay } from '@evolu/nodejs';
+import { createConsole, createConsoleFormatter } from '@evolu/common';
+import { createRelayDeps, createRun, startRelay } from '@evolu/nodejs';
 
 import { UpdateHealthDep } from '../health/createHealthServer.js';
 import { GetLimitsForOwnerDep } from '../storage/limitStorage/methods/createGetLimitsForOwner.js';
@@ -17,52 +17,65 @@ export type EvoluRelayDep = { evoluRelay: EvoluRelay };
 export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
     async ({ port }) => {
-        const evoluDeps = {
-            console: createConsole(),
-        };
-
-        const relayResult = await createNodeJsRelay(evoluDeps)({
-            port,
-            enableLogging: true,
-            /**
-             * Owner is allowed to access the relay if they have any registered storage limit.
-             */
-            async isOwnerAllowed(ownerId) {
-                const result = await deps.getLimitsForOwner({ ownerId });
-
-                return Promise.resolve(result.ok && result.value !== null);
-            },
-
-            /**
-             * Owner is allowed to write if his usedBytes + requiredBytes <= storage limit.
-             * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.
-             */
-            async isOwnerWithinQuota(ownerId, requiredBytes) {
-                const result = await deps.getLimitsForOwner({ ownerId });
-
-                return Promise.resolve(
-                    result.ok && result.value !== null && result.value >= requiredBytes,
-                );
-            },
+        const console = createConsole({
+            level: 'debug',
+            formatter: createConsoleFormatter()({
+                timestampFormat: 'relative',
+            }),
         });
 
-        if (!relayResult.ok) {
-            console.error('Relay failed', relayResult.error);
+        const run = createRun({
+            ...createRelayDeps(),
+            console,
+        });
+        const stack = new AsyncDisposableStack();
+        let relayStarted = false;
+
+        try {
+            const relay = await run.orThrow(
+                startRelay({
+                    port,
+
+                    /**
+                     * Owner is allowed to access the relay if they have any registered storage limit.
+                     */
+                    async isOwnerAllowed(ownerId) {
+                        const result = await deps.getLimitsForOwner({ ownerId });
+
+                        return Promise.resolve(result.ok && result.value !== null);
+                    },
+
+                    /**
+                     * Owner is allowed to write if his usedBytes + requiredBytes <= storage limit.
+                     * NOTE: Required bytes are not only required bytes for upload, but also the already used storage.
+                     */
+                    async isOwnerWithinQuota(ownerId, requiredBytes) {
+                        const result = await deps.getLimitsForOwner({ ownerId });
+
+                        return Promise.resolve(
+                            result.ok && result.value !== null && result.value >= requiredBytes,
+                        );
+                    },
+                }),
+            );
+
+            stack.use(relay);
+            relayStarted = true;
+            deps.updateHealth({ relay: 'ok' });
+
+            await run.deps.shutdown;
+        } catch (error) {
+            console.error('Relay failed', error);
             deps.updateHealth({ relay: 'error' });
 
             return;
+        } finally {
+            if (relayStarted) {
+                console.log('Evolu Relay is shutting down ...');
+                deps.updateHealth({ relay: 'exiting' });
+            }
+
+            await stack[Symbol.asyncDispose]();
+            await run[Symbol.asyncDispose]();
         }
-
-        const dispose = () => {
-            // eslint-disable-next-line no-console
-            console.log('Evolu Relay is shutting down ...');
-            deps.updateHealth({ relay: 'exiting' });
-
-            if (relayResult.ok) relayResult.value[Symbol.dispose]();
-        };
-
-        process.on('SIGINT', dispose);
-        process.on('SIGTERM', dispose);
-
-        deps.updateHealth({ relay: 'ok' });
     };

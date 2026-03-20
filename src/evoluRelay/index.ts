@@ -10,11 +10,14 @@ const dataPath = join(process.cwd(), config.dataDir);
 mkdirSync(dataPath, { recursive: true });
 process.chdir(dataPath);
 
-const run = () => {
+const run = async () => {
     const { evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
 
     healthServer.start({ port: config.health.port });
-    evoluRelay({ port: config.relay.port });
+    await evoluRelay({ port: config.relay.port });
 };
 
-run();
+void run().catch(error => {
+    console.error('Failed to start Evolu Relay:', error);
+    process.exitCode = 1;
+});
