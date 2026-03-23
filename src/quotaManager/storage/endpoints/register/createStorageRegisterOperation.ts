@@ -2,6 +2,7 @@ import { err, ok } from '@evolu/common';
 import {
     deviceAuthenticityBlacklistConfig,
     deviceAuthenticityConfig,
+    prepareDeviceAuthenticityData,
     verifyAuthenticityProof,
 } from '@trezor/device-authenticity';
 import { MessagesSchema as PROTO } from '@trezor/protobuf';
@@ -84,13 +85,15 @@ export const createStorageRegisterOperation =
             sizeBuffer,
         ];
 
+        const data = prepareDeviceAuthenticityData({
+            prefix: REGISTER_OPERATION_PROOF_HEADER,
+            payload: bufferChunks,
+        });
         const proofValidation = await verifyAuthenticityProof({
             certificates: [certificateChain.deviceCert, certificateChain.caCert],
-            challengePrefix: REGISTER_OPERATION_PROOF_HEADER,
-            challenge: Buffer.from(challenge, 'hex'),
+            data,
             signature: proof,
             deviceModel: deviceModel as PROTO.DeviceModelInternal,
-            bufferChunks,
             config: deviceAuthenticityConfig,
             blacklistConfig: deviceAuthenticityBlacklistConfig,
             allowDebugKeys: IS_DEV_SERVER,
