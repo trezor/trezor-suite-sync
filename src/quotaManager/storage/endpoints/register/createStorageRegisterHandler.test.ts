@@ -25,6 +25,7 @@ const { T2B1rootPubKeyOptiga } = vi.hoisted(() => ({
 }));
 
 vi.mock('@trezor/device-authenticity', () => ({
+    prepareDeviceAuthenticityData: vi.fn().mockReturnValue(Buffer.from('mock-signed-data')),
     verifyAuthenticityProof: vi.fn().mockResolvedValue({
         valid: true,
         caPubKey: 'test-ca-pubkey',

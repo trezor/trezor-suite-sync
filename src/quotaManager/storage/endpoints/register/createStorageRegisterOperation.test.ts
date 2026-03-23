@@ -1,5 +1,8 @@
 import { err, ok } from '@evolu/common';
-import { verifyAuthenticityProof } from '@trezor/device-authenticity';
+import {
+    prepareDeviceAuthenticityData,
+    verifyAuthenticityProof,
+} from '@trezor/device-authenticity';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -35,6 +38,7 @@ const { T2B1rootPubKeyOptiga, mockParseCertificate } = vi.hoisted(() => ({
 }));
 
 vi.mock('@trezor/device-authenticity', () => ({
+    prepareDeviceAuthenticityData: vi.fn().mockReturnValue(Buffer.from('mock-signed-data')),
     verifyAuthenticityProof: vi.fn().mockResolvedValue({
         valid: true,
         caPubKey: 'test-ca-pubkey',
@@ -188,10 +192,10 @@ describe(createStorageRegisterOperation.name, () => {
             const result = await storageRegisterOperation(createMockInput(inputOverrides));
 
             expect(result.ok).toBe(true);
-            expect(verifyAuthenticityProof).toHaveBeenCalledWith(
+            expect(prepareDeviceAuthenticityData).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    challengePrefix: expectedChallengePrefix,
-                    bufferChunks: expectedBufferChunks,
+                    prefix: expectedChallengePrefix,
+                    payload: expectedBufferChunks,
                 }),
             );
         },

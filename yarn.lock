@@ -374,6 +374,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bufbuild/protobuf@npm:^2.11.0":
+  version: 2.12.0
+  resolution: "@bufbuild/protobuf@npm:2.12.0"
+  checksum: 10c0/28959e371fd2e7c8d67d52af9e3c8f8e6770e2e116dcc5508f469ca736afa6905e216bc76183835898a5f3deb8aa2e7db47d4a0e706fba76115e9a1996893191
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.25.12":
   version: 0.25.12
   resolution: "@esbuild/aix-ppc64@npm:0.25.12"
@@ -1191,26 +1198,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/ciphers@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@noble/ciphers@npm:2.1.1"
-  checksum: 10c0/f02662723475a9785a2f7bcd6e8e12d4b5f77537154f5e21edb0fed398051fb1ae5057eb444987e1c65342f8632474f0143ea612a2dad49593d3358eb730a079
+"@noble/ciphers@npm:^2.1.1, @noble/ciphers@npm:~2.2.0":
+  version: 2.2.0
+  resolution: "@noble/ciphers@npm:2.2.0"
+  checksum: 10c0/56396fa9b2cd7863999d9d70c6cbfcc03db9644cbbac9bb9d383d18f701bee3eb09f36878d8252a763c8d1fb6f0807339e06e2d28f18b14c525133c57c14508d
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@noble/curves@npm:2.0.1"
+"@noble/curves@npm:^2.0.1, @noble/curves@npm:~2.2.0":
+  version: 2.2.0
+  resolution: "@noble/curves@npm:2.2.0"
   dependencies:
-    "@noble/hashes": "npm:2.0.1"
-  checksum: 10c0/e0b329eb9229e862d3b7203e0444bd479e9ecf2d5990181908dad416aab69106717ca696fc7b12ad0eb19d710f58c454646b27ce517a4298ab9abc89a9bdb6ee
+    "@noble/hashes": "npm:2.2.0"
+  checksum: 10c0/e545d3bb03ebedd5c04c2cab81342d64f5ce8a4c1019cfe207f3dc69174bc0ad7cfb50effc31bfa8616b8340900f445dd053da7454190428857c4eedd3b51413
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:2.0.1, @noble/hashes@npm:^2.0.1":
+"@noble/hashes@npm:2.0.1":
   version: 2.0.1
   resolution: "@noble/hashes@npm:2.0.1"
   checksum: 10c0/e81769ce21c3b1c80141a3b99bd001f17edea09879aa936692ae39525477386d696101cd573928a304806efb2b9fa751e1dd83241c67d0c84d30091e85c79bdb
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:2.2.0, @noble/hashes@npm:^2.0.1, @noble/hashes@npm:~2.2.0":
+  version: 2.2.0
+  resolution: "@noble/hashes@npm:2.2.0"
+  checksum: 10c0/cad8630c504d6b9271984f685cd0af9101b40988fc2dfbe17ccdf068a9941f95cc5c9957d89e9ca4b7ca94c15cb35f93510c5d53a09fbcc83ee503b93d0a1034
+  languageName: node
+  linkType: hard
+
+"@noble/post-quantum@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@noble/post-quantum@npm:0.6.1"
+  dependencies:
+    "@noble/ciphers": "npm:~2.2.0"
+    "@noble/curves": "npm:~2.2.0"
+    "@noble/hashes": "npm:~2.2.0"
+  checksum: 10c0/ac0dfed583ab20aeb93b4aa734f2228c6b5ebc6bc1f32de28f7b4b97511a5bac29c6067394f8828006fdce4f10874cda088160a2f1b996e59db3313d48861940
   languageName: node
   linkType: hard
 
@@ -1254,79 +1279,6 @@ __metadata:
   version: 0.2.9
   resolution: "@pkgr/core@npm:0.2.9"
   checksum: 10c0/ac8e4e8138b1a7a4ac6282873aef7389c352f1f8b577b4850778f5182e4a39a5241facbe48361fec817f56d02b51691b383010843fb08b34a8e8ea3614688fd5
-  languageName: node
-  linkType: hard
-
-"@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@protobufjs/aspromise@npm:1.1.2"
-  checksum: 10c0/a83343a468ff5b5ec6bff36fd788a64c839e48a07ff9f4f813564f58caf44d011cd6504ed2147bf34835bd7a7dd2107052af755961c6b098fd8902b4f6500d0f
-  languageName: node
-  linkType: hard
-
-"@protobufjs/base64@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@protobufjs/base64@npm:1.1.2"
-  checksum: 10c0/eec925e681081af190b8ee231f9bad3101e189abbc182ff279da6b531e7dbd2a56f1f306f37a80b1be9e00aa2d271690d08dcc5f326f71c9eed8546675c8caf6
-  languageName: node
-  linkType: hard
-
-"@protobufjs/codegen@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "@protobufjs/codegen@npm:2.0.4"
-  checksum: 10c0/26ae337c5659e41f091606d16465bbcc1df1f37cc1ed462438b1f67be0c1e28dfb2ca9f294f39100c52161aef82edf758c95d6d75650a1ddf31f7ddee1440b43
-  languageName: node
-  linkType: hard
-
-"@protobufjs/eventemitter@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@protobufjs/eventemitter@npm:1.1.0"
-  checksum: 10c0/1eb0a75180e5206d1033e4138212a8c7089a3d418c6dfa5a6ce42e593a4ae2e5892c4ef7421f38092badba4040ea6a45f0928869989411001d8c1018ea9a6e70
-  languageName: node
-  linkType: hard
-
-"@protobufjs/fetch@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@protobufjs/fetch@npm:1.1.0"
-  dependencies:
-    "@protobufjs/aspromise": "npm:^1.1.1"
-    "@protobufjs/inquire": "npm:^1.1.0"
-  checksum: 10c0/cda6a3dc2d50a182c5865b160f72077aac197046600091dbb005dd0a66db9cce3c5eaed6d470ac8ed49d7bcbeef6ee5f0bc288db5ff9a70cbd003e5909065233
-  languageName: node
-  linkType: hard
-
-"@protobufjs/float@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@protobufjs/float@npm:1.0.2"
-  checksum: 10c0/18f2bdede76ffcf0170708af15c9c9db6259b771e6b84c51b06df34a9c339dbbeec267d14ce0bddd20acc142b1d980d983d31434398df7f98eb0c94a0eb79069
-  languageName: node
-  linkType: hard
-
-"@protobufjs/inquire@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@protobufjs/inquire@npm:1.1.0"
-  checksum: 10c0/64372482efcba1fb4d166a2664a6395fa978b557803857c9c03500e0ac1013eb4b1aacc9ed851dd5fc22f81583670b4f4431bae186f3373fedcfde863ef5921a
-  languageName: node
-  linkType: hard
-
-"@protobufjs/path@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@protobufjs/path@npm:1.1.2"
-  checksum: 10c0/cece0a938e7f5dfd2fa03f8c14f2f1cf8b0d6e13ac7326ff4c96ea311effd5fb7ae0bba754fbf505312af2e38500250c90e68506b97c02360a43793d88a0d8b4
-  languageName: node
-  linkType: hard
-
-"@protobufjs/pool@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@protobufjs/pool@npm:1.1.0"
-  checksum: 10c0/eda2718b7f222ac6e6ad36f758a92ef90d26526026a19f4f17f668f45e0306a5bd734def3f48f51f8134ae0978b6262a5c517c08b115a551756d1a3aadfcf038
-  languageName: node
-  linkType: hard
-
-"@protobufjs/utf8@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@protobufjs/utf8@npm:1.1.0"
-  checksum: 10c0/a3fe31fe3fa29aa3349e2e04ee13dc170cc6af7c23d92ad49e3eeaf79b9766264544d3da824dba93b7855bd6a2982fb40032ef40693da98a136d835752beb487
   languageName: node
   linkType: hard
 
@@ -1508,17 +1460,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinclair/typebox@npm:^0.33.7":
-  version: 0.33.22
-  resolution: "@sinclair/typebox@npm:0.33.22"
-  checksum: 10c0/8c50b8295e0af8477e6cb5102c18a9d37d890ce08600b72d21273f5ed85183e1d9e83bb4b49aab7ff5e85e9c4b40605c1110ff6f99a08e562d6b10b38ea214a5
-  languageName: node
-  linkType: hard
-
-"@sinclair/typebox@npm:^0.34.0":
-  version: 0.34.41
-  resolution: "@sinclair/typebox@npm:0.34.41"
-  checksum: 10c0/0fb61fc2f90c25e30b19b0096eb8ab3ccef401d3e2acfce42168ff0ee877ba5981c8243fa6b1035ac756cde95316724e978b2837dd642d7e4e095de03a999c90
+"@sinclair/typebox@npm:^0.34.0, @sinclair/typebox@npm:^0.34.49":
+  version: 0.34.49
+  resolution: "@sinclair/typebox@npm:0.34.49"
+  checksum: 10c0/16b7d87f039a49b68c10bb4cdcae2ce5242b2472228851fd6483731616aba4ef977690aa517b230a8d20da8185bb416eb34e326f30568b3963c1cf26b05d1ad8
   languageName: node
   linkType: hard
 
@@ -1547,25 +1492,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/crypto-utils@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@trezor/crypto-utils@npm:1.2.0"
-  peerDependencies:
-    tslib: ^2.6.2
-  checksum: 10c0/35b7ac47d4dba8198e2c85786046c2d9ab2d80d857420aa523947f70488ee8a800ddaccb1a7059bbc2d0ea0055f4e60e2e19e1b2f1ba34a1b2fba0111613f39d
-  languageName: node
-  linkType: hard
-
-"@trezor/device-authenticity@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@trezor/device-authenticity@npm:1.1.1"
+"@trezor/device-authenticity@npm:10.0.0-beta.1":
+  version: 10.0.0-beta.1
+  resolution: "@trezor/device-authenticity@npm:10.0.0-beta.1"
   dependencies:
     "@noble/curves": "npm:^2.0.1"
-    "@trezor/crypto-utils": "npm:1.2.0"
-    "@trezor/protobuf": "npm:1.5.1"
-    "@trezor/schema-utils": "npm:1.4.0"
-    "@trezor/utils": "npm:9.5.0"
-  checksum: 10c0/7d7dac9142c8a4c69bd67bf4b0e16515d85e397aeccab27fd2a34bf478a083de8c13a421ddc7ff9591cdeae88ef8c9e7c818cb9cd551843b2f7461793f016806
+    "@noble/post-quantum": "npm:^0.6.1"
+    "@trezor/protobuf": "npm:10.0.0-beta.1"
+    "@trezor/schema-utils": "npm:10.0.0-beta.1"
+    "@trezor/utils": "npm:10.0.0-beta.1"
+  checksum: 10c0/25841ffc4adb315546d0d20d86929d847398039f63489672da10eb2f6699678e207547e1119054f7b8e939c8d071fc2c17f172e8c76ceb118f04e9d134ab6f88
   languageName: node
   linkType: hard
 
@@ -1577,8 +1513,8 @@ __metadata:
     "@evolu/common": "npm:8.0.0-next.1"
     "@evolu/nodejs": "npm:3.0.0-next.1"
     "@jest/globals": "npm:^30.2.0"
-    "@trezor/device-authenticity": "npm:^1.1.1"
-    "@trezor/protobuf": "npm:1.5.1"
+    "@trezor/device-authenticity": "npm:10.0.0-beta.1"
+    "@trezor/protobuf": "npm:10.0.0-beta.1"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/node": "npm:^25.2.3"
     "@types/pg": "npm:^8"
@@ -1600,39 +1536,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@trezor/protobuf@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@trezor/protobuf@npm:1.5.1"
+"@trezor/protobuf@npm:10.0.0-beta.1":
+  version: 10.0.0-beta.1
+  resolution: "@trezor/protobuf@npm:10.0.0-beta.1"
   dependencies:
-    "@trezor/schema-utils": "npm:1.4.0"
-    long: "npm:5.2.5"
-    protobufjs: "npm:7.4.0"
+    "@bufbuild/protobuf": "npm:^2.11.0"
+    "@trezor/schema-utils": "npm:10.0.0-beta.1"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/a83a3eced65a28b38cd825afb54a2297f0b3e74620324637e8b63cbab7dcadfbaa3597d34f41d2a09ff3de3a6896c4f4d6bb0d8542228d0541d51c3b100446e3
+  checksum: 10c0/66edb723441b8daf47c1375c2cd0a3e46c1448d1c822d4331bc2eade3b9b3ae4e75fb8446502fe77448700d2b7edc2b724fe1f1b28cb2fcc7d701280939fb3fe
   languageName: node
   linkType: hard
 
-"@trezor/schema-utils@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@trezor/schema-utils@npm:1.4.0"
+"@trezor/schema-utils@npm:10.0.0-beta.1":
+  version: 10.0.0-beta.1
+  resolution: "@trezor/schema-utils@npm:10.0.0-beta.1"
   dependencies:
-    "@sinclair/typebox": "npm:^0.33.7"
-    ts-mixer: "npm:^6.0.3"
+    "@sinclair/typebox": "npm:^0.34.49"
+    "@trezor/utils": "npm:10.0.0-beta.1"
+    ts-mixer: "npm:^6.0.4"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/9d398c436a967dbec582e1d1862a282a4e58c36ad78859a9b22890d9b80933da9c8adf865fa9d8af6c4409077e0680b88a98ba77913526085144f60dc5d39580
+  checksum: 10c0/9ae2a2f3b5e24738e8343866d6752cb8cc118b32ed727c93cf772964f45b4343afe46924543429555fac9f966b6d6f25c682e6dfb027cfd11c1a45172aae9666
   languageName: node
   linkType: hard
 
-"@trezor/utils@npm:9.5.0":
-  version: 9.5.0
-  resolution: "@trezor/utils@npm:9.5.0"
+"@trezor/utils@npm:10.0.0-beta.1":
+  version: 10.0.0-beta.1
+  resolution: "@trezor/utils@npm:10.0.0-beta.1"
   dependencies:
-    bignumber.js: "npm:^9.3.1"
+    bignumber.js: "npm:^11.1.4"
   peerDependencies:
     tslib: ^2.6.2
-  checksum: 10c0/10083b7eb9d7d950bb27e510d4b023ce00695560fe1c379d164a311420f74fe0ec60e0a72641f7c748031c84c9cdfe756c416052a3f622814f3e968d2c60351e
+  checksum: 10c0/329af9d08089a73c798d145912e14eb6143a24de6f2db12e7adccc4ac76c03337eec64ee459e439a496fabdc95665e51608571a13551179be88074081d5b6211
   languageName: node
   linkType: hard
 
@@ -1708,7 +1644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^25.2.3":
+"@types/node@npm:*, @types/node@npm:^25.2.3":
   version: 25.2.3
   resolution: "@types/node@npm:25.2.3"
   dependencies:
@@ -2298,10 +2234,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:^9.3.1":
-  version: 9.3.1
-  resolution: "bignumber.js@npm:9.3.1"
-  checksum: 10c0/61342ba5fe1c10887f0ecf5be02ff6709271481aff48631f86b4d37d55a99b87ce441cfd54df3d16d10ee07ceab7e272fc0be430c657ffafbbbf7b7d631efb75
+"bignumber.js@npm:^11.1.4":
+  version: 11.1.5
+  resolution: "bignumber.js@npm:11.1.5"
+  checksum: 10c0/8e829402c6c190d92becb2495d62581c66f170deae99f43ae859e54cdc586d4375c752131d07f60fcc709b84c9ca4c362623c97f3703629e69792c7bb1def00c
   languageName: node
   linkType: hard
 
@@ -4446,20 +4382,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:5.2.5":
-  version: 5.2.5
-  resolution: "long@npm:5.2.5"
-  checksum: 10c0/f5050631f2054ebf66b3842c3480ade911091e6b6aaccce8735c99db481819d3735084695881056a3f5b50ab1c0d12c98f0b601d1ce083741741e678ee7d50c2
-  languageName: node
-  linkType: hard
-
-"long@npm:^5.0.0":
-  version: 5.3.2
-  resolution: "long@npm:5.3.2"
-  checksum: 10c0/7130fe1cbce2dca06734b35b70d380ca3f70271c7f8852c922a7c62c86c4e35f0c39290565eca7133c625908d40e126ac57c02b1b1a4636b9457d77e1e60b981
-  languageName: node
-  linkType: hard
-
 "lru-cache@npm:^11.0.0, lru-cache@npm:^11.1.0, lru-cache@npm:^11.2.1":
   version: 11.2.2
   resolution: "lru-cache@npm:11.2.2"
@@ -5305,26 +5227,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.4.0":
-  version: 7.4.0
-  resolution: "protobufjs@npm:7.4.0"
-  dependencies:
-    "@protobufjs/aspromise": "npm:^1.1.2"
-    "@protobufjs/base64": "npm:^1.1.2"
-    "@protobufjs/codegen": "npm:^2.0.4"
-    "@protobufjs/eventemitter": "npm:^1.1.0"
-    "@protobufjs/fetch": "npm:^1.1.0"
-    "@protobufjs/float": "npm:^1.0.2"
-    "@protobufjs/inquire": "npm:^1.1.0"
-    "@protobufjs/path": "npm:^1.1.2"
-    "@protobufjs/pool": "npm:^1.1.0"
-    "@protobufjs/utf8": "npm:^1.1.0"
-    "@types/node": "npm:>=13.7.0"
-    long: "npm:^5.0.0"
-  checksum: 10c0/a5460a63fe596523b9a067cbce39a6b310d1a71750fda261f076535662aada97c24450e18c5bc98a27784f70500615904ff1227e1742183509f0db4fdede669b
-  languageName: node
-  linkType: hard
-
 "pump@npm:^3.0.0":
   version: 3.0.3
   resolution: "pump@npm:3.0.3"
@@ -6156,7 +6058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-mixer@npm:^6.0.3":
+"ts-mixer@npm:^6.0.4":
   version: 6.0.4
   resolution: "ts-mixer@npm:6.0.4"
   checksum: 10c0/4c442fc99cdffd4a3f0ce55c624fb703f4ded5cab6912f97705489565c4a74d3e4213f10c33499ec5150900a628d38537a9a6a9e35b5045b65129a84b4db21ae
