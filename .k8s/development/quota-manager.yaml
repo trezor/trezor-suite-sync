@@ -38,7 +38,10 @@ spec:
             - name: HEALTH_PORT
               value: "4002"              
             - name: POSTGRES_GATE_HOST
-              value: "dev-rds-postgres-01.cluster-cyppbowknane.eu-central-1.rds.amazonaws.com"
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-dev-secrets
+                  key: POSTGRES_GATE_HOST
             - name: POSTGRES_GATE_USER
               value: "suite-sync"
             - name: POSTGRES_GATE_PORT
