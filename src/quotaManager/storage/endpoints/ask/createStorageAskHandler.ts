@@ -33,10 +33,10 @@ export const createStorageAskHandler =
             }
 
             if (result.value === null) {
-                return reply.code(404).send({ error: 'OwnerNotFound' });
+                return reply.code(200).send({ status: 'NoQuota' });
             }
 
-            return reply.code(200).send({ totalSpace: result.value });
+            return reply.code(200).send({ status: 'Allocated', totalSpace: result.value });
         }
 
         if (publicKey !== undefined) {
@@ -57,10 +57,11 @@ export const createStorageAskHandler =
             }
 
             if (result.value === null) {
-                return reply.code(404).send({ error: 'Public key not found' });
+                return reply.code(200).send({ status: 'NoQuota' });
             }
 
             return reply.code(200).send({
+                status: 'Allocated',
                 totalSpace: result.value.totalStorageSize,
                 unspentSpace: result.value.unspentStorageSize,
             });
