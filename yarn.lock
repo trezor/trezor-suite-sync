@@ -826,9 +826,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evolu/common@github:evoluhq/evolu#workspace=@evolu/common&head=common-v8":
-  version: 7.4.1
-  resolution: "@evolu/common@https://github.com/evoluhq/evolu.git#workspace=%40evolu%2Fcommon&commit=5cb304afdcff78aeec365cf482cf21ebf1fa6e58"
+"@evolu/common@npm:8.0.0-next.0":
+  version: 8.0.0-next.0
+  resolution: "@evolu/common@npm:8.0.0-next.0"
   dependencies:
     "@noble/ciphers": "npm:^2.1.1"
     "@noble/hashes": "npm:^2.0.1"
@@ -836,19 +836,19 @@ __metadata:
     kysely: "npm:^0.28.15"
     msgpackr: "npm:^1.11.8"
     random: "npm:^5.4.1"
-  checksum: 10c0/930b89487c7222141e948bd62a86255901dd9017ca44ede8123a483ce05e6eb6188736e11264f4d05775ec08bfb5e9a6b8759aea1bcbb5b20dbb1977fe487092
+  checksum: 10c0/46d82e83c3a2126e502ecd4b2fa57ccca2745df1cb1bb9b66eec339a7429a2710f47d8bc5d3e42d6d95bb899ca762d8ddaf80b48e33e597ada6b238e2f657aa2
   languageName: node
   linkType: hard
 
-"@evolu/nodejs@github:evoluhq/evolu#workspace=@evolu/nodejs&head=common-v8":
-  version: 2.4.0
-  resolution: "@evolu/nodejs@https://github.com/evoluhq/evolu.git#workspace=%40evolu%2Fnodejs&commit=5cb304afdcff78aeec365cf482cf21ebf1fa6e58"
+"@evolu/nodejs@npm:3.0.0-next.0":
+  version: 3.0.0-next.0
+  resolution: "@evolu/nodejs@npm:3.0.0-next.0"
   dependencies:
     better-sqlite3: "npm:^12.6.2"
     ws: "npm:^8.19.0"
   peerDependencies:
-    "@evolu/common": ^7.4.1
-  checksum: 10c0/82666eb26139e662ab5e96d680ff8877572a11a7c018c52b5de1bee70640527cd9aef4729ff15457beabb194969e84cb92961719ba80faf7d523602e6c4d0ce8
+    "@evolu/common": ^8.0.0-next.0
+  checksum: 10c0/6f1b21f68180b17ca184d435026229d76fb739f2a152f5fa5f32282ed52f0635d9709acf1fc02bf93d8dcb41feb81c97708d63693c7e1f676a669b12838c1058
   languageName: node
   linkType: hard
 
@@ -1567,8 +1567,8 @@ __metadata:
   resolution: "@trezor/evolu-relay@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.2"
-    "@evolu/common": "github:evoluhq/evolu#workspace=@evolu/common&head=common-v8"
-    "@evolu/nodejs": "github:evoluhq/evolu#workspace=@evolu/nodejs&head=common-v8"
+    "@evolu/common": "npm:8.0.0-next.0"
+    "@evolu/nodejs": "npm:3.0.0-next.0"
     "@jest/globals": "npm:^30.2.0"
     "@trezor/device-authenticity": "npm:^1.1.1"
     "@trezor/protobuf": "npm:1.5.1"
