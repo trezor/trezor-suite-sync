@@ -1,6 +1,7 @@
 import { createConsole, createConsoleFormatter } from '@evolu/common';
 import { createRelayDeps, createRun, startRelay } from '@evolu/nodejs';
 
+import { IS_DEV_SERVER } from '../env.js';
 import { UpdateHealthDep } from '../health/createHealthServer.js';
 import { GetLimitsForOwnerDep } from '../storage/limitStorage/methods/createGetLimitsForOwner.js';
 
@@ -18,7 +19,7 @@ export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
     async ({ port }) => {
         const console = createConsole({
-            level: 'debug',
+            level: IS_DEV_SERVER ? 'log' : 'info',
             formatter: createConsoleFormatter()({
                 timestampFormat: 'relative',
             }),
