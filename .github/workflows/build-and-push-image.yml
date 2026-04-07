@@ -60,7 +60,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-
       - name: Setup docker tags and labels
         id: meta
         uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893
