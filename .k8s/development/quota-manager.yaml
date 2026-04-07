@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quota-manager
+  namespace: suite-sync
+  labels:
+    app.kubernetes.io/name: quota-manager
+    app.kubernetes.io/part-of: suite-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: quota-manager
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: quota-manager
+        app.kubernetes.io/part-of: suite-sync
+    spec:
+      containers:
+        - name: quota-manager
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-dev
+          command: ["yarn", "start-quota-manager"]
+          ports:
+            - name: http
+              containerPort: 4001
+            - name: health
+              containerPort: 4002
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: SERVER_ENV
+              value: "dev"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: QUOTA_MANAGER_PORT    
+              value: "4001"
+            - name: HEALTH_PORT
+              value: "4002"              
+            - name: POSTGRES_GATE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-dev-secrets
+                  key: POSTGRES_GATE_HOST
+            - name: POSTGRES_GATE_USER
+              value: "suite-sync"
+            - name: POSTGRES_GATE_PORT
+              value: "5432"
+            - name: POSTGRES_GATE_DB
+              value: "suite_sync_qm_dev"
+            - name: POSTGRES_GATE_SSL
+              value: "true"
+            - name: POSTGRES_GATE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-dev-secrets
+                  key: POSTGRES_GATE_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quota-manager
+  namespace: suite-sync
+  labels:
+    app.kubernetes.io/name: quota-manager
+    app.kubernetes.io/part-of: suite-sync
+spec:
+  selector:
+    app.kubernetes.io/name: quota-manager
+  ports:
+    - name: http
+      port: 4001
+      targetPort: 4001
+    - name: health
+      port: 4002
+      targetPort: 4002

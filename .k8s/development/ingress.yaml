@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: suite-sync-dev
+  namespace: suite-sync-dev
+  annotations:
+    ingress.health.argocd.io/ip-not-requested: "true"
+    nginx.org/websocket-services: "evolu-relay"
+    nginx.org/path-regex: "case_sensitive"
+    nginx.org/rewrite-target: "/$2"
+    nginx.org/proxy-send-timeout: "100s"
+    nginx.org/proxy-read-timeout: "100s"
+    nginx.org/proxy-connect-timeout: "100s"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: suite-sync-dev.suite.sldev.cz
+      http:
+        paths:
+          - path: /evolu(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: evolu-relay
+                port:
+                  number: 4000
+          - path: /quota-manager(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: quota-manager
+                port:
+                  number: 4001
