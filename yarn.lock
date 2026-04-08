@@ -826,9 +826,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@evolu/common@npm:8.0.0-next.0":
-  version: 8.0.0-next.0
-  resolution: "@evolu/common@npm:8.0.0-next.0"
+"@evolu/common@npm:8.0.0-next.1":
+  version: 8.0.0-next.1
+  resolution: "@evolu/common@npm:8.0.0-next.1"
   dependencies:
     "@noble/ciphers": "npm:^2.1.1"
     "@noble/hashes": "npm:^2.0.1"
@@ -836,19 +836,19 @@ __metadata:
     kysely: "npm:^0.28.15"
     msgpackr: "npm:^1.11.8"
     random: "npm:^5.4.1"
-  checksum: 10c0/46d82e83c3a2126e502ecd4b2fa57ccca2745df1cb1bb9b66eec339a7429a2710f47d8bc5d3e42d6d95bb899ca762d8ddaf80b48e33e597ada6b238e2f657aa2
+  checksum: 10c0/1bec09c4b836ecf5c6791e71372ac2e4acb115134a651e2dee0ad138981e13e20e75cf6240c7226d88ebee7e930de9fcd2aa26c7b93c9a0d0b5fd1bd77e14ccd
   languageName: node
   linkType: hard
 
-"@evolu/nodejs@npm:3.0.0-next.0":
-  version: 3.0.0-next.0
-  resolution: "@evolu/nodejs@npm:3.0.0-next.0"
+"@evolu/nodejs@npm:3.0.0-next.1":
+  version: 3.0.0-next.1
+  resolution: "@evolu/nodejs@npm:3.0.0-next.1"
   dependencies:
     better-sqlite3: "npm:^12.6.2"
     ws: "npm:^8.19.0"
   peerDependencies:
     "@evolu/common": ^8.0.0-next.0
-  checksum: 10c0/6f1b21f68180b17ca184d435026229d76fb739f2a152f5fa5f32282ed52f0635d9709acf1fc02bf93d8dcb41feb81c97708d63693c7e1f676a669b12838c1058
+  checksum: 10c0/edbafdf652069538157aafa47668a0fa9c87c7fbac7438985004167702167dae2b2a1ae05294369e21ebc5afa848d4bb1a1750376ba1304e93f96a805e616d76
   languageName: node
   linkType: hard
 
@@ -1567,8 +1567,8 @@ __metadata:
   resolution: "@trezor/evolu-relay@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.2"
-    "@evolu/common": "npm:8.0.0-next.0"
-    "@evolu/nodejs": "npm:3.0.0-next.0"
+    "@evolu/common": "npm:8.0.0-next.1"
+    "@evolu/nodejs": "npm:3.0.0-next.1"
     "@jest/globals": "npm:^30.2.0"
     "@trezor/device-authenticity": "npm:^1.1.1"
     "@trezor/protobuf": "npm:1.5.1"
