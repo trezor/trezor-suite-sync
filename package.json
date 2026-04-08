@@ -17,8 +17,8 @@
         "lint:fix": "eslint . --fix"
     },
     "dependencies": {
-        "@evolu/common": "8.0.0-next.0",
-        "@evolu/nodejs": "3.0.0-next.0",
+        "@evolu/common": "8.0.0-next.1",
+        "@evolu/nodejs": "3.0.0-next.1",
         "@trezor/device-authenticity": "^1.1.1",
         "@trezor/protobuf": "1.5.1",
         "dotenv": "^17.2.4",
