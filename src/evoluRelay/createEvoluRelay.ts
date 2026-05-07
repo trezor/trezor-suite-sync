@@ -15,15 +15,26 @@ export type EvoluRelay = (params: EvoluRelayParams) => Promise<void>;
 
 export type EvoluRelayDep = { evoluRelay: EvoluRelay };
 
+/**
+ * Writes directly to stdout with an ISO timestamp, bypassing the Evolu
+ * console abstraction so these lines are always visible regardless of the
+ * configured log level.
+ */
+const relayLog = (msg: string): void => {
+    process.stdout.write(`[RELAY-VERBOSE ${new Date().toISOString()}] ${msg}\n`);
+};
+
 export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
     async ({ port }) => {
         const console = createConsole({
-            level: IS_DEV_SERVER ? 'log' : 'info',
+            level: IS_DEV_SERVER ? 'debug' : 'info',
             formatter: createConsoleFormatter()({
                 timestampFormat: 'relative',
             }),
         });
+
+        relayLog(`Starting relay on port ${port}`);
 
         const run = createRun({
             ...createRelayDeps(),
@@ -42,8 +53,20 @@ export const createEvoluRelay =
                      */
                     async isOwnerAllowed(ownerId) {
                         const result = await deps.getLimitsForOwner({ ownerId });
-
-                        return Promise.resolve(result.ok && result.value !== null);
+                        const allowed = result.ok && result.value !== null;
+                        if (allowed) {
+                            relayLog(
+                                `Client connection accepted ownerId=${ownerId} quota_limit=${result.value}`,
+                            );
+                        } else {
+                            const reason = !result.ok
+                                ? `db_error:${JSON.stringify(result)}`
+                                : 'no_quota_record';
+                            relayLog(
+                                `Client connection rejected ownerId=${ownerId} reason=${reason}`,
+                            );
+                        }
+                        return Promise.resolve(allowed);
                     },
 
                     /**
@@ -52,10 +75,21 @@ export const createEvoluRelay =
                      */
                     async isOwnerWithinQuota(ownerId, requiredBytes) {
                         const result = await deps.getLimitsForOwner({ ownerId });
-
-                        return Promise.resolve(
-                            result.ok && result.value !== null && result.value >= requiredBytes,
-                        );
+                        const allowed =
+                            result.ok && result.value !== null && result.value >= requiredBytes;
+                        if (allowed) {
+                            relayLog(
+                                `Write stored ownerId=${ownerId} bytes=${requiredBytes} limit=${result.value}`,
+                            );
+                        } else {
+                            const reason = !result.ok
+                                ? 'db_error'
+                                : result.value === null
+                                  ? 'no_quota_record'
+                                  : `quota_exceeded used=${requiredBytes} limit=${result.value}`;
+                            relayLog(`Write denied ownerId=${ownerId} reason=${reason}`);
+                        }
+                        return Promise.resolve(allowed);
                     },
                 }),
             );
@@ -63,10 +97,12 @@ export const createEvoluRelay =
             stack.use(relay);
             relayStarted = true;
             deps.updateHealth({ relay: 'ok' });
+            relayLog(`Relay up and healthy on port ${port}`);
 
             await run.deps.shutdown;
         } catch (error) {
             console.error('Relay failed', error);
+            relayLog(`Relay FAILED: ${String(error)}`);
             deps.updateHealth({ relay: 'error' });
 
             return;
