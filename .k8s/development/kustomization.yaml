@@ -7,4 +7,4 @@ resources:
   - ingress.yaml
 images:
   - name: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-dev
-    newTag: sha-b035a16d3ef39e8e1a018921c709982bccde8570
+    newTag: sha-9708a3917e56adf8efd57bf21974c140ae483454
