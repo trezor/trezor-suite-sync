@@ -19,7 +19,7 @@ export const createEvoluRelay =
     (deps: EvoluRelayDeps): EvoluRelay =>
     async ({ port }) => {
         const console = createConsole({
-            level: IS_DEV_SERVER ? 'log' : 'info',
+            level: IS_DEV_SERVER ? 'debug' : 'info',
             formatter: createConsoleFormatter()({
                 timestampFormat: 'relative',
             }),
