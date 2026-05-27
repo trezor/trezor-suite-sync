@@ -1,0 +1,37 @@
+diff --git a/dist/src/local-first/Relay.js b/dist/src/local-first/Relay.js
+index 3a1cea1dfe56c18b2a04b4e7fc48c08efbedc90c..561081674f9174edaf2712bd14fc0a2cc97e2a6c 100644
+--- a/dist/src/local-first/Relay.js
++++ b/dist/src/local-first/Relay.js
+@@ -137,6 +137,7 @@ export const startRelay = ({ port = 443, name = Name.orThrow("evolu-relay"), isO
+             });
+         }));
+         const ownerSocketRelation = createRelation();
++        const wsOwnerIds = new WeakMap();
+         const relayRun = stack.use(run.create().addDeps({
+             storage: createRelaySqliteStorage(deps)({
+                 isOwnerWithinQuota,
+@@ -202,6 +203,7 @@ export const startRelay = ({ port = 443, name = Name.orThrow("evolu-relay"), isO
+             const options = {
+                 subscribe: (ownerId) => {
+                     ownerSocketRelation.add(ownerId, ws);
++                    wsOwnerIds.set(ws, ownerId);
+                     console.debug("subscribe", ownerId, ownerSocketRelation.bCountForA(ownerId));
+                 },
+                 unsubscribe: (ownerId) => {
+@@ -226,11 +228,16 @@ export const startRelay = ({ port = 443, name = Name.orThrow("evolu-relay"), isO
+                         console.error(response);
+                         return;
+                     }
++                    const ownerId = wsOwnerIds.get(ws) ?? "unknown";
++                    console.debug("sync exchange", ownerId, "request_bytes", message.length, "response_bytes", response.value.message.length);
+                     ws.send(response.value.message, { binary: true });
+                 })();
+             });
+             ws.on("close", () => {
++                const ownerId = wsOwnerIds.get(ws) ?? "unknown";
++                console.debug("ws close", ownerId, wss.clients.size);
+                 ownerSocketRelation.removeByB(ws);
++                wsOwnerIds.delete(ws);
+                 console.debug("ws close", wss.clients.size);
+             });
+         });
