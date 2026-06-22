@@ -14,3 +14,22 @@ services:
             interval: 30s
             timeout: 10s
             retries: 5
+
+    prometheus:
+        image: prom/prometheus
+        network_mode: host
+        configs:
+            - source: prometheus_config
+              target: /etc/prometheus/prometheus.yml
+
+configs:
+    prometheus_config:
+        content: |
+            global:
+                scrape_interval: 30s
+
+            scrape_configs:
+                - job_name: trezor-suite-sync-metrics
+                  static_configs:
+                      - targets:
+                            - localhost:4003

@@ -16,6 +16,9 @@ export const config = {
     quotaManager: {
         port: getOptionalEnvInt('QUOTA_MANAGER_PORT', 4001),
     },
+    metrics: {
+        port: getOptionalEnvInt('METRICS_PORT', 4003),
+    },
     health: {
         port: getOptionalEnvInt('HEALTH_PORT', 4002),
     },
