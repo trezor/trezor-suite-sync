@@ -9,7 +9,7 @@
 Run database (1st terminal):
 
 ```bash
-cp .env.sample .env 
+cp .env.sample .env
 docker compose up
 ```
 
@@ -23,12 +23,16 @@ yarn
 yarn build
 yarn start-quota-manager
 yarn start-evolu-relay
+yarn start-metrics
 ```
+
+Prometheus is included in `docker compose up` for local metric checks. It uses host networking and
+scrapes the metrics server running on the host at `http://localhost:4003/metrics`.
 
 You can change ports by setting the ENV variables:
 
 ```bash
-QUOTA_MANAGER_PORT=1111 RELAY_PORT=2222 yarn start
+QUOTA_MANAGER_PORT=1111 RELAY_PORT=2222 METRICS_PORT=3333 yarn start
 ```
 
 ### Dev
@@ -43,6 +47,7 @@ yarn dev
 Manifests live in `.k8s/` and use [Kustomize](https://kustomize.io/) overlays for production and development.
 
 Each overlay deploys:
+
 - **evolu-relay** -- Evolu sync relay (port 4000)
 - **quota-manager** -- Payment/quota server (port 4001)
 - **postgres** -- PostgreSQL StatefulSet with persistent storage

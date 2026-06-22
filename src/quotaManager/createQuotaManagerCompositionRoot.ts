@@ -48,10 +48,7 @@ export const createQuotaManagerCompositionRoot = (): QuotaManagerCompositionRoot
     } = createLimitStorage({ db });
 
     const { validateAndConsumeChallenge, storeChallenge, cleanupExpiredChallenges } =
-        createChallengeStorage({
-            db,
-            createTime,
-        });
+        createChallengeStorage({ db, createTime });
 
     const fastifyServer = createFastifyServer({ updateHealth: healthServer.updateHealth });
 

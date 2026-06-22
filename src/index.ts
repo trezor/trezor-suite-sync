@@ -10,6 +10,7 @@ import { join } from 'path';
 
 import { config } from './config.js';
 import { createEvoluRelayCompositionRoot } from './evoluRelay/createEvoluRelayCompositionRoot.js';
+import { createMetricsCompositionRoot } from './metrics/createMetricsCompositionRoot.js';
 import { createQuotaManagerCompositionRoot } from './quotaManager/createQuotaManagerCompositionRoot.js';
 
 const dataPath = join(process.cwd(), config.dataDir);
@@ -19,6 +20,7 @@ process.chdir(dataPath);
 const runAll = async () => {
     const { evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
     const { quotaManagerServer, migrateToLatest } = createQuotaManagerCompositionRoot();
+    const { metricsServer } = createMetricsCompositionRoot();
 
     await migrateToLatest();
 
@@ -34,7 +36,12 @@ const runAll = async () => {
         console.error('Failed to start services:', error);
         process.exitCode = 1;
     });
+
+    metricsServer({ port: config.metrics.port }).catch(error => {
+        console.error('Failed to start services:', error);
+        process.exitCode = 1;
+    });
 };
 
-// Intentionally not awaited, we want to run both!
+// Intentionally not awaited, we want to run all!
 runAll();
