@@ -50,9 +50,10 @@ Each overlay deploys:
 
 - **evolu-relay** -- Evolu sync relay (port 4000)
 - **quota-manager** -- Payment/quota server (port 4001)
+- **quota-manager-metrics** -- internal Prometheus metrics service for the quota-manager metrics sidecar (port 4003, `/metrics`)
 - **postgres** -- PostgreSQL StatefulSet with persistent storage
 
-Production runs 2 replicas per service; development runs 1.
+Production runs 2 quota-manager replicas; development runs 1.
 
 ### API
 
