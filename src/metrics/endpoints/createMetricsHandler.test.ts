@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import { createMetricsHandler } from './createMetricsHandler.js';
 import { getOrThrowTest } from '../../getOrThrowTest.js';
 import { PublicKey, Size } from '../../storage/limitStorage/limitStorage.js';
-import { createGetDevicesAllocatedTotal } from '../../storage/metrics/createGetDevicesAllocatedTotal.js';
 import { createGetDevicesCount } from '../../storage/metrics/createGetDevicesCount.js';
-import { createGetDevicesUnspendTotal } from '../../storage/metrics/createGetDevicesUnspendTotal.js';
+import { createGetDevicesUsedTotal } from '../../storage/metrics/createGetDevicesUsedTotal.js';
+import { createGetDevicesUsedTotalBreakdown } from '../../storage/metrics/createGetDevicesUsedTotalBreakdown.js';
 import { createGetOwnersAllocatedTotal } from '../../storage/metrics/createGetOwnersAllocatedTotal.js';
 import { createGetOwnersAllocatedTotalBreakdown } from '../../storage/metrics/createGetOwnersAllocatedTotalBreakdown.js';
 import { createGetOwnersCount } from '../../storage/metrics/createGetOwnersCount.js';
@@ -43,8 +43,8 @@ describe(createMetricsHandler.name, () => {
             getOwnersCount: createGetOwnersCount({ db }),
             getDevicesCount: createGetDevicesCount({ db }),
             getOwnersAllocatedTotal: createGetOwnersAllocatedTotal({ db }),
-            getDevicesAllocatedTotal: createGetDevicesAllocatedTotal({ db }),
-            getDevicesUnspendTotal: createGetDevicesUnspendTotal({
+            getDevicesUsedTotal: createGetDevicesUsedTotal({ db }),
+            getDevicesUsedTotalBreakdown: createGetDevicesUsedTotalBreakdown({
                 db,
             }),
             getOwnersAllocatedTotalBreakdown: createGetOwnersAllocatedTotalBreakdown({ db }),
@@ -65,10 +65,12 @@ describe(createMetricsHandler.name, () => {
         expect(response.body).toContain('trezor_suite_sync_owners_count 1');
         expect(response.body).toContain('trezor_suite_sync_devices_count 1');
         expect(response.body).toContain('trezor_suite_sync_owners_allocated_total 2048');
-        expect(response.body).toContain('trezor_suite_sync_devices_allocated_total 4096');
-        expect(response.body).toContain('trezor_suite_sync_devices_unspend_total 1024');
+        expect(response.body).toContain('trezor_suite_sync_devices_used_total 3072');
         expect(response.body).toContain(
-            'trezor_suite_sync_owners_allocated_total_breakdown{bucket="1KB_10KB"} 1',
+            'trezor_suite_sync_owners_allocated_total_breakdown{bucket="1B_10KB"} 1',
+        );
+        expect(response.body).toContain(
+            'trezor_suite_sync_devices_used_total_breakdown{bucket="1B_10KB"} 1',
         );
         expect(response.body).not.toContain(privateOwnerId);
         expect(response.body).not.toContain(privatePublicKey);

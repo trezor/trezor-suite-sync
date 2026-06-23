@@ -1,8 +1,11 @@
 import { Result, err, ok } from '@evolu/common';
 
-import { GetDevicesAllocatedTotalDep } from './createGetDevicesAllocatedTotal.js';
 import { GetDevicesCountDep } from './createGetDevicesCount.js';
-import { GetDevicesUnspendTotalDep } from './createGetDevicesUnspendTotal.js';
+import { GetDevicesUsedTotalDep } from './createGetDevicesUsedTotal.js';
+import {
+    DevicesUsedTotalBreakdown,
+    GetDevicesUsedTotalBreakdownDep,
+} from './createGetDevicesUsedTotalBreakdown.js';
 import { GetOwnersAllocatedTotalDep } from './createGetOwnersAllocatedTotal.js';
 import {
     GetOwnersAllocatedTotalBreakdownDep,
@@ -15,8 +18,8 @@ export type RelayUsageMetrics = {
     ownersCount: number;
     devicesCount: number;
     ownersAllocatedTotal: number;
-    devicesAllocatedTotal: number;
-    devicesUnspendTotal: number;
+    devicesUsedTotal: number;
+    devicesUsedTotalBreakdown: DevicesUsedTotalBreakdown;
     ownersAllocatedTotalBreakdown: OwnersAllocatedTotalBreakdown;
 };
 
@@ -27,8 +30,8 @@ export type GetRelayUsageMetricsDep = { getRelayUsageMetrics: GetRelayUsageMetri
 export type GetRelayUsageMetricsDeps = GetOwnersCountDep &
     GetDevicesCountDep &
     GetOwnersAllocatedTotalDep &
-    GetDevicesAllocatedTotalDep &
-    GetDevicesUnspendTotalDep &
+    GetDevicesUsedTotalDep &
+    GetDevicesUsedTotalBreakdownDep &
     GetOwnersAllocatedTotalBreakdownDep;
 
 export const createGetRelayUsageMetrics =
@@ -38,15 +41,15 @@ export const createGetRelayUsageMetrics =
             ownersCount,
             devicesCount,
             ownersAllocatedTotal,
-            devicesAllocatedTotal,
-            devicesUnspendTotal,
+            devicesUsedTotal,
+            devicesUsedTotalBreakdown,
             ownersAllocatedTotalBreakdown,
         ] = await Promise.all([
             deps.getOwnersCount(),
             deps.getDevicesCount(),
             deps.getOwnersAllocatedTotal(),
-            deps.getDevicesAllocatedTotal(),
-            deps.getDevicesUnspendTotal(),
+            deps.getDevicesUsedTotal(),
+            deps.getDevicesUsedTotalBreakdown(),
             deps.getOwnersAllocatedTotalBreakdown(),
         ]);
 
@@ -62,12 +65,12 @@ export const createGetRelayUsageMetrics =
             return err(ownersAllocatedTotal.error);
         }
 
-        if (!devicesAllocatedTotal.ok) {
-            return err(devicesAllocatedTotal.error);
+        if (!devicesUsedTotal.ok) {
+            return err(devicesUsedTotal.error);
         }
 
-        if (!devicesUnspendTotal.ok) {
-            return err(devicesUnspendTotal.error);
+        if (!devicesUsedTotalBreakdown.ok) {
+            return err(devicesUsedTotalBreakdown.error);
         }
 
         if (!ownersAllocatedTotalBreakdown.ok) {
@@ -78,8 +81,8 @@ export const createGetRelayUsageMetrics =
             ownersCount: ownersCount.value,
             devicesCount: devicesCount.value,
             ownersAllocatedTotal: ownersAllocatedTotal.value,
-            devicesAllocatedTotal: devicesAllocatedTotal.value,
-            devicesUnspendTotal: devicesUnspendTotal.value,
+            devicesUsedTotal: devicesUsedTotal.value,
+            devicesUsedTotalBreakdown: devicesUsedTotalBreakdown.value,
             ownersAllocatedTotalBreakdown: ownersAllocatedTotalBreakdown.value,
         });
     };
