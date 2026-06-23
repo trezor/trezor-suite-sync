@@ -1,13 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: suite-sync-dev
-
 resources:
   - evolu-relay.yaml
   - quota-manager.yaml
   - ingress.yaml
-
 images:
   - name: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-dev
-    newTag: sha-33133654b4e82188c635f6137e72bef96214e48d
+    newTag: sha-a2ff81ee44c1c9217adc281384c279dcac88c23a
