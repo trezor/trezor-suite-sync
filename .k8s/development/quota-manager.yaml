@@ -88,6 +88,10 @@ spec:
               value: "info"
             - name: METRICS_PORT
               value: "4003"
+            - name: QUOTA_MANAGER_PORT    
+              value: "4001"
+            - name: HEALTH_PORT
+              value: "4002"  
             - name: POSTGRES_GATE_HOST
               valueFrom:
                 secretKeyRef:
