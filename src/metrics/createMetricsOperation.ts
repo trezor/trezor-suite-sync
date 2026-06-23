@@ -1,6 +1,7 @@
 import { Result, err, ok } from '@evolu/common';
 import { Gauge, Registry } from 'prom-client';
 
+import { DEVICES_USED_TOTAL_BREAKDOWN_BUCKETS } from '../storage/metrics/createGetDevicesUsedTotalBreakdown.js';
 import { OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS } from '../storage/metrics/createGetOwnersAllocatedTotalBreakdown.js';
 import { GetRelayUsageMetricsDep } from '../storage/metrics/createGetRelayUsageMetrics.js';
 import { DatabaseError } from '../storage/utils/dbQuery.js';
@@ -39,21 +40,22 @@ export const createMetricsOperation = (deps: MetricsOperationDeps): MetricsOpera
         registers: [registry],
     });
 
-    const devicesAllocatedTotal = new Gauge({
-        name: 'trezor_suite_sync_devices_allocated_total',
-        help: 'Total quota bytes registered by devices.',
-        registers: [registry],
-    });
-
-    const devicesUnspendTotal = new Gauge({
-        name: 'trezor_suite_sync_devices_unspend_total',
-        help: 'Registered device quota bytes not assigned to owners or burned.',
+    const devicesUsedTotal = new Gauge({
+        name: 'trezor_suite_sync_devices_used_total',
+        help: 'Total quota bytes used by devices.',
         registers: [registry],
     });
 
     const ownersAllocatedTotalBreakdown = new Gauge({
         name: 'trezor_suite_sync_owners_allocated_total_breakdown',
         help: 'Bucketed distribution of owner allocated quota bytes.',
+        labelNames: ['bucket'],
+        registers: [registry],
+    });
+
+    const devicesUsedTotalBreakdown = new Gauge({
+        name: 'trezor_suite_sync_devices_used_total_breakdown',
+        help: 'Bucketed distribution of device used quota bytes.',
         labelNames: ['bucket'],
         registers: [registry],
     });
@@ -68,13 +70,19 @@ export const createMetricsOperation = (deps: MetricsOperationDeps): MetricsOpera
         ownersCount.set(metricsResult.value.ownersCount);
         devicesCount.set(metricsResult.value.devicesCount);
         ownersAllocatedTotal.set(metricsResult.value.ownersAllocatedTotal);
-        devicesAllocatedTotal.set(metricsResult.value.devicesAllocatedTotal);
-        devicesUnspendTotal.set(metricsResult.value.devicesUnspendTotal);
+        devicesUsedTotal.set(metricsResult.value.devicesUsedTotal);
 
         for (const bucket of OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS) {
             ownersAllocatedTotalBreakdown.set(
                 { bucket: bucket.label },
                 metricsResult.value.ownersAllocatedTotalBreakdown[bucket.label],
+            );
+        }
+
+        for (const bucket of DEVICES_USED_TOTAL_BREAKDOWN_BUCKETS) {
+            devicesUsedTotalBreakdown.set(
+                { bucket: bucket.label },
+                metricsResult.value.devicesUsedTotalBreakdown[bucket.label],
             );
         }
 

@@ -1,9 +1,9 @@
 import { OwnerId } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
-import { createGetDevicesAllocatedTotal } from './createGetDevicesAllocatedTotal.js';
 import { createGetDevicesCount } from './createGetDevicesCount.js';
-import { createGetDevicesUnspendTotal } from './createGetDevicesUnspendTotal.js';
+import { createGetDevicesUsedTotal } from './createGetDevicesUsedTotal.js';
+import { createGetDevicesUsedTotalBreakdown } from './createGetDevicesUsedTotalBreakdown.js';
 import { createGetOwnersAllocatedTotal } from './createGetOwnersAllocatedTotal.js';
 import { createGetOwnersAllocatedTotalBreakdown } from './createGetOwnersAllocatedTotalBreakdown.js';
 import { createGetOwnersCount } from './createGetOwnersCount.js';
@@ -29,7 +29,7 @@ const size2Kb = getOrThrowTest(Size.from(2 * 1024));
 const size20Kb = getOrThrowTest(Size.from(20 * 1024));
 const size200Kb = getOrThrowTest(Size.from(200 * 1024));
 const size2Mb = getOrThrowTest(Size.from(2 * 1024 * 1024));
-const size11Mb = getOrThrowTest(Size.from(11 * 1024 * 1024));
+const size950Kb = getOrThrowTest(Size.from(950 * 1024));
 
 describe(createGetRelayUsageMetrics.name, () => {
     it('returns only aggregate relay usage metrics', async () => {
@@ -44,7 +44,7 @@ describe(createGetRelayUsageMetrics.name, () => {
                 { ownerId: ownerIdD, storageLimit: size20Kb },
                 { ownerId: ownerIdE, storageLimit: size200Kb },
                 { ownerId: ownerIdF, storageLimit: size2Mb },
-                { ownerId: ownerIdG, storageLimit: size11Mb },
+                { ownerId: ownerIdG, storageLimit: size950Kb },
             ])
             .execute();
 
@@ -68,8 +68,8 @@ describe(createGetRelayUsageMetrics.name, () => {
             getOwnersCount: createGetOwnersCount({ db }),
             getDevicesCount: createGetDevicesCount({ db }),
             getOwnersAllocatedTotal: createGetOwnersAllocatedTotal({ db }),
-            getDevicesAllocatedTotal: createGetDevicesAllocatedTotal({ db }),
-            getDevicesUnspendTotal: createGetDevicesUnspendTotal({
+            getDevicesUsedTotal: createGetDevicesUsedTotal({ db }),
+            getDevicesUsedTotalBreakdown: createGetDevicesUsedTotalBreakdown({
                 db,
             }),
             getOwnersAllocatedTotalBreakdown: createGetOwnersAllocatedTotalBreakdown({ db }),
@@ -80,17 +80,37 @@ describe(createGetRelayUsageMetrics.name, () => {
         expect(result.value).toEqual({
             ownersCount: 7,
             devicesCount: 2,
-            ownersAllocatedTotal: 13_859_316,
-            devicesAllocatedTotal: 3000,
-            devicesUnspendTotal: 1750,
+            ownersAllocatedTotal: 3_297_780,
+            devicesUsedTotal: 1250,
+            devicesUsedTotalBreakdown: {
+                '0_1B': 0,
+                '1B_10KB': 2,
+                '10KB_100KB': 0,
+                '100KB_200KB': 0,
+                '200KB_300KB': 0,
+                '300KB_400KB': 0,
+                '400KB_500KB': 0,
+                '500KB_600KB': 0,
+                '600KB_700KB': 0,
+                '700KB_800KB': 0,
+                '800KB_900KB': 0,
+                '900KB_1MB': 0,
+                '1MB_plus': 0,
+            },
             ownersAllocatedTotalBreakdown: {
-                '0': 1,
-                '1B_1KB': 1,
-                '1KB_10KB': 1,
+                '0_1B': 1,
+                '1B_10KB': 2,
                 '10KB_100KB': 1,
-                '100KB_1MB': 1,
-                '1MB_10MB': 1,
-                '10MB_plus': 1,
+                '100KB_200KB': 1,
+                '200KB_300KB': 0,
+                '300KB_400KB': 0,
+                '400KB_500KB': 0,
+                '500KB_600KB': 0,
+                '600KB_700KB': 0,
+                '700KB_800KB': 0,
+                '800KB_900KB': 0,
+                '900KB_1MB': 1,
+                '1MB_plus': 1,
             },
         });
     });

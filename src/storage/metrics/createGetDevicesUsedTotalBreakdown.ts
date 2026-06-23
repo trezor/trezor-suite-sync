@@ -1,12 +1,13 @@
 import { Result, ok } from '@evolu/common';
+import { sql } from 'kysely';
 
 import { toMetricNumber } from './utils.js';
 import { Size } from '../limitStorage/limitStorage.js';
 import { AppDatabaseDep } from '../postgres/createPostgreSql.js';
-import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../postgres/tables.js';
+import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from '../postgres/tables.js';
 import { DatabaseError, dbQuery } from '../utils/dbQuery.js';
 
-export const OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS = [
+export const DEVICES_USED_TOTAL_BREAKDOWN_BUCKETS = [
     { label: '0_1B', min: 0, max: 0 },
     { label: '1B_10KB', min: 1, max: 10 * 1024 },
     { label: '10KB_100KB', min: 10 * 1024 + 1, max: 100 * 1024 },
@@ -22,33 +23,45 @@ export const OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS = [
     { label: '1MB_plus', min: 1024 * 1024 + 1, max: null },
 ] as const;
 
-type OwnersAllocatedTotalBreakdownBucket =
-    (typeof OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS)[number]['label'];
+type DevicesUsedTotalBreakdownBucket =
+    (typeof DEVICES_USED_TOTAL_BREAKDOWN_BUCKETS)[number]['label'];
 
-export type GetOwnersAllocatedTotalBreakdownDeps = AppDatabaseDep;
+export type GetDevicesUsedTotalBreakdownDeps = AppDatabaseDep;
 
-export type OwnersAllocatedTotalBreakdown = Record<OwnersAllocatedTotalBreakdownBucket, number>;
+export type DevicesUsedTotalBreakdown = Record<DevicesUsedTotalBreakdownBucket, number>;
 
-export type GetOwnersAllocatedTotalBreakdown = () => Promise<
-    Result<OwnersAllocatedTotalBreakdown, DatabaseError>
+export type GetDevicesUsedTotalBreakdown = () => Promise<
+    Result<DevicesUsedTotalBreakdown, DatabaseError>
 >;
 
-export type GetOwnersAllocatedTotalBreakdownDep = {
-    getOwnersAllocatedTotalBreakdown: GetOwnersAllocatedTotalBreakdown;
+export type GetDevicesUsedTotalBreakdownDep = {
+    getDevicesUsedTotalBreakdown: GetDevicesUsedTotalBreakdown;
 };
 
-export const createGetOwnersAllocatedTotalBreakdown =
-    ({ db }: GetOwnersAllocatedTotalBreakdownDeps): GetOwnersAllocatedTotalBreakdown =>
+export const createGetDevicesUsedTotalBreakdown =
+    ({ db }: GetDevicesUsedTotalBreakdownDeps): GetDevicesUsedTotalBreakdown =>
     async () => {
         const result = await dbQuery(async () => {
-            const bucketQueries = OWNERS_ALLOCATED_TOTAL_BREAKDOWN_BUCKETS.map(bucket => {
+            const bucketQueries = DEVICES_USED_TOTAL_BREAKDOWN_BUCKETS.map(bucket => {
                 let query = db
-                    .selectFrom(OWNER_STORAGE_LIMITS_TABLE_NAME)
+                    .selectFrom(PUBKEY_STORAGE_LIMITS_TABLE_NAME)
                     .select(eb => eb.fn.countAll().as('count'))
-                    .where('storageLimit', '>=', bucket.min as Size);
+                    .where(eb => {
+                        const usedStorageSize = sql<number>`${eb.ref(
+                            'totalStorageSize',
+                        )} - ${eb.ref('unspentStorageSize')}`;
+
+                        return eb(usedStorageSize, '>=', bucket.min as Size);
+                    });
 
                 if (bucket.max !== null) {
-                    query = query.where('storageLimit', '<=', bucket.max as Size);
+                    query = query.where(eb => {
+                        const usedStorageSize = sql<number>`${eb.ref(
+                            'totalStorageSize',
+                        )} - ${eb.ref('unspentStorageSize')}`;
+
+                        return eb(usedStorageSize, '<=', bucket.max as Size);
+                    });
                 }
 
                 return query.executeTakeFirstOrThrow();

@@ -3,9 +3,9 @@ import fastify from 'fastify';
 import { createMetricsOperation } from './createMetricsOperation.js';
 import { MetricsServerDep, createMetricsServer } from './createMetricsServer.js';
 import { createMetricsHandler } from './endpoints/createMetricsHandler.js';
-import { createGetDevicesAllocatedTotal } from '../storage/metrics/createGetDevicesAllocatedTotal.js';
 import { createGetDevicesCount } from '../storage/metrics/createGetDevicesCount.js';
-import { createGetDevicesUnspendTotal } from '../storage/metrics/createGetDevicesUnspendTotal.js';
+import { createGetDevicesUsedTotal } from '../storage/metrics/createGetDevicesUsedTotal.js';
+import { createGetDevicesUsedTotalBreakdown } from '../storage/metrics/createGetDevicesUsedTotalBreakdown.js';
 import { createGetOwnersAllocatedTotal } from '../storage/metrics/createGetOwnersAllocatedTotal.js';
 import { createGetOwnersAllocatedTotalBreakdown } from '../storage/metrics/createGetOwnersAllocatedTotalBreakdown.js';
 import { createGetOwnersCount } from '../storage/metrics/createGetOwnersCount.js';
@@ -21,10 +21,10 @@ export const createMetricsCompositionRoot = (): MetricsServerDep => {
         getOwnersAllocatedTotal: createGetOwnersAllocatedTotal({
             db,
         }),
-        getDevicesAllocatedTotal: createGetDevicesAllocatedTotal({
+        getDevicesUsedTotal: createGetDevicesUsedTotal({
             db,
         }),
-        getDevicesUnspendTotal: createGetDevicesUnspendTotal({
+        getDevicesUsedTotalBreakdown: createGetDevicesUsedTotalBreakdown({
             db,
         }),
         getOwnersAllocatedTotalBreakdown: createGetOwnersAllocatedTotalBreakdown({ db }),
