@@ -73,6 +73,45 @@ spec:
               memory: 1024Mi
             limits:
               memory: 1024Mi
+        - name: metrics
+          image: 538326561891.dkr.ecr.eu-central-1.amazonaws.com/suite-sync-prod
+          command: ["yarn", "start-metrics"]
+          ports:
+            - name: metrics
+              containerPort: 4003
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: SERVER_ENV
+              value: "prod"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: METRICS_PORT
+              value: "4003"
+            - name: POSTGRES_GATE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-prod-secrets
+                  key: POSTGRES_GATE_RO_HOST
+            - name: POSTGRES_GATE_USER
+              value: "suite-sync"
+            - name: POSTGRES_GATE_PORT
+              value: "5432"
+            - name: POSTGRES_GATE_DB
+              value: "suite_sync_qm_prod"
+            - name: POSTGRES_GATE_SSL
+              value: "true"
+            - name: POSTGRES_GATE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: suite-sync-prod-secrets
+                  key: POSTGRES_GATE_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -92,3 +131,24 @@ spec:
     - name: health
       port: 4002
       targetPort: 4002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quota-manager-metrics
+  namespace: suite-sync
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "4003"
+  labels:
+    app.kubernetes.io/name: quota-manager
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: suite-sync
+spec:
+  selector:
+    app.kubernetes.io/name: quota-manager
+  ports:
+    - name: metrics
+      port: 4003
+      targetPort: metrics
