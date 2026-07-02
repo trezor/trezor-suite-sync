@@ -12,8 +12,16 @@ export type StorageRegisterHandler = EndpointHandler<{
 export const createStorageRegisterHandler =
     (deps: StorageRegisterOperationDeps): StorageRegisterHandler =>
     async (request, reply) => {
-        const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
-            request.body;
+        const {
+            publicKey,
+            size,
+            challenge,
+            sessionId,
+            proof,
+            certificateChain,
+            deviceModel,
+            rotationIndex,
+        } = request.body;
 
         const result = await deps.storageRegisterOperation({
             publicKey,
@@ -23,6 +31,7 @@ export const createStorageRegisterHandler =
             proof,
             certificateChain,
             deviceModel,
+            rotationIndex,
         });
 
         if (!result.ok) {

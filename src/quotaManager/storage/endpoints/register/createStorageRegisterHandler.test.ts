@@ -134,4 +134,28 @@ describe(createStorageRegisterHandler.name, () => {
 
         expect(response.statusCode).toBe(400);
     });
+
+    it('returns 400 when rotationIndex does not fit uint32', async () => {
+        const { app } = await createApp();
+
+        const response = await app.inject({
+            method: 'POST',
+            url: '/storage/register',
+            payload: {
+                publicKey: publicKey.toString(),
+                size: size100,
+                challenge: 'challenge-abc-123',
+                sessionId: 'session-123',
+                proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
+                certificateChain: {
+                    deviceCert: DEVICE_CERT_OPTIGA,
+                    caCert: CA_CERT_OPTIGA,
+                },
+                deviceModel: 'T2B1',
+                rotationIndex: 0x100000000,
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+    });
 });
