@@ -1,4 +1,4 @@
-import { NonNegativeInt, Number, String, brand } from '@evolu/common';
+import { NonNegativeInt, Number, String, type TypeError, brand, err, ok } from '@evolu/common';
 
 import { AppDatabaseDep } from '../postgres/createPostgreSql.js';
 import { AddLimitToPubkeyDep, createAddLimitToPubkey } from './methods/createAddLimitToPubkey.js';
@@ -49,6 +49,16 @@ export type Timestamp = typeof Timestamp.Type;
  */
 export const Proof = brand('Proof', String);
 export type Proof = typeof Proof.Type;
+
+export type RotationIndexError = TypeError<'RotationIndex'>;
+
+/**
+ * Rotation index of the delegated identity key used for V2 registration proofs.
+ */
+export const RotationIndex = brand('RotationIndex', NonNegativeInt, value =>
+    value <= 0xffffffff ? ok(value) : err<RotationIndexError>({ type: 'RotationIndex', value }),
+);
+export type RotationIndex = typeof RotationIndex.Type;
 
 type CreateLimitStorageDeps = AppDatabaseDep;
 

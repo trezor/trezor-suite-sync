@@ -12,11 +12,17 @@ import {
     SessionId,
 } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { ValidateAndConsumeChallengeDep } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
-import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import {
+    Proof,
+    PublicKey,
+    RotationIndex,
+    Size,
+} from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkeyDep } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkeyDep } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
 import { MAX_DEVICE_SIZE_QUOTA } from '../../../constants.js';
 import { Result } from '../../../types.js';
+import { numberToBuffer } from '../../utils/utils.js';
 
 type RegisterStorageError =
     | 'DatabaseError'
@@ -26,7 +32,8 @@ type RegisterStorageError =
     | 'ProofValidationFailed'
     | 'CertificateValidationFailed';
 
-const REGISTER_OPERATION_PROOF_HEADER = 'EvoluSignRegistrationRequestV1:';
+const REGISTER_OPERATION_PROOF_HEADER_V1 = 'EvoluSignRegistrationRequestV1:';
+const REGISTER_OPERATION_PROOF_HEADER_V2 = 'EvoluSignRegistrationRequestV2:';
 
 export type RegisterOperationInput = {
     publicKey: PublicKey;
@@ -39,6 +46,7 @@ export type RegisterOperationInput = {
         caCert: string;
     };
     deviceModel: string;
+    rotationIndex?: RotationIndex | undefined;
 };
 
 export type RegisterOperationOutput = {
@@ -59,8 +67,16 @@ export type StorageRegisterOperationDep = { storageRegisterOperation: StorageReg
 export const createStorageRegisterOperation =
     (deps: RegisterOperationDeps): StorageRegisterOperation =>
     async input => {
-        const { publicKey, size, challenge, sessionId, proof, certificateChain, deviceModel } =
-            input;
+        const {
+            publicKey,
+            size,
+            challenge,
+            sessionId,
+            proof,
+            certificateChain,
+            deviceModel,
+            rotationIndex,
+        } = input;
 
         const challengeValidation = await deps.validateAndConsumeChallenge({
             sessionId,
@@ -75,18 +91,23 @@ export const createStorageRegisterOperation =
             return err('ChallengeValidationFailed');
         }
 
-        const sizeBuffer = Buffer.alloc(4);
-        sizeBuffer.writeUInt32BE(size, 0);
+        const sizeBuffer = numberToBuffer(size);
 
         const bufferChunks = [
             Buffer.from(publicKey, 'hex'),
             Buffer.from(challenge, 'hex'),
             sizeBuffer,
         ];
+        let challengePrefix = REGISTER_OPERATION_PROOF_HEADER_V1;
+
+        if (rotationIndex !== undefined) {
+            challengePrefix = REGISTER_OPERATION_PROOF_HEADER_V2;
+            bufferChunks.push(numberToBuffer(rotationIndex));
+        }
 
         const proofValidation = await verifyAuthenticityProof({
             certificates: [certificateChain.deviceCert, certificateChain.caCert],
-            challengePrefix: REGISTER_OPERATION_PROOF_HEADER,
+            challengePrefix,
             challenge: Buffer.from(challenge, 'hex'),
             signature: proof,
             deviceModel: deviceModel as PROTO.DeviceModelInternal,
