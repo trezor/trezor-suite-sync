@@ -51,6 +51,17 @@ vi.mock('@trezor/device-authenticity', () => ({
 const publicKey = getOrThrowTest(PublicKey.from('test-pubkey-123'));
 const size100 = getOrThrowTest(Size.from(100));
 
+const registrationSuccessCases = [
+    {
+        name: 'without rotationIndex',
+        extraPayload: {},
+    },
+    {
+        name: 'with rotationIndex',
+        extraPayload: { rotationIndex: 42 },
+    },
+];
+
 /**
  * This is composition root of the app for tests. This is a lot of code as this is a heavy
  * integration test.
@@ -85,41 +96,45 @@ const createApp = async () => {
 };
 
 describe(createStorageRegisterHandler.name, () => {
-    it('successfully registers storage and returns 200 with correct response format', async () => {
-        const { app, storeChallenge } = await createApp();
+    it.each(registrationSuccessCases)(
+        'successfully registers storage $name and returns 200 with correct response format',
+        async ({ extraPayload }) => {
+            const { app, storeChallenge } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-123'));
-        const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
-        const storeResult = await storeChallenge({
-            sessionId,
-            challenge,
-        });
-        assert(storeResult.ok);
+            const sessionId = getOrThrowTest(SessionId.from('session-123'));
+            const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
+            const storeResult = await storeChallenge({
+                sessionId,
+                challenge,
+            });
+            assert(storeResult.ok);
 
-        const response = await app.inject({
-            method: 'POST',
-            url: '/storage/register',
-            payload: {
-                publicKey: publicKey.toString(),
-                size: size100,
-                challenge: challenge.toString(),
-                sessionId: sessionId.toString(),
-                proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
-                certificateChain: {
-                    deviceCert: DEVICE_CERT_OPTIGA,
-                    caCert: CA_CERT_OPTIGA,
+            const response = await app.inject({
+                method: 'POST',
+                url: '/storage/register',
+                payload: {
+                    publicKey: publicKey.toString(),
+                    size: size100,
+                    challenge: challenge.toString(),
+                    sessionId: sessionId.toString(),
+                    proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
+                    certificateChain: {
+                        deviceCert: DEVICE_CERT_OPTIGA,
+                        caCert: CA_CERT_OPTIGA,
+                    },
+                    deviceModel: 'T2B1',
+                    ...extraPayload,
                 },
-                deviceModel: 'T2B1',
-            },
-        });
+            });
 
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(body).toHaveProperty('totalStorageSize');
-        expect(body).toHaveProperty('unspentStorageSize');
-        expect(body.totalStorageSize).toBe(size100);
-        expect(body.unspentStorageSize).toBe(size100);
-    });
+            expect(response.statusCode).toBe(200);
+            const body = JSON.parse(response.body);
+            expect(body).toHaveProperty('totalStorageSize');
+            expect(body).toHaveProperty('unspentStorageSize');
+            expect(body.totalStorageSize).toBe(size100);
+            expect(body.unspentStorageSize).toBe(size100);
+        },
+    );
 
     it('returns 400 when schema validation fails', async () => {
         const { app } = await createApp();
@@ -129,6 +144,30 @@ describe(createStorageRegisterHandler.name, () => {
             url: '/storage/register',
             payload: {
                 publicKey: publicKey.toString(),
+            },
+        });
+
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('returns 400 when rotationIndex does not fit uint32', async () => {
+        const { app } = await createApp();
+
+        const response = await app.inject({
+            method: 'POST',
+            url: '/storage/register',
+            payload: {
+                publicKey: publicKey.toString(),
+                size: size100,
+                challenge: 'challenge-abc-123',
+                sessionId: 'session-123',
+                proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
+                certificateChain: {
+                    deviceCert: DEVICE_CERT_OPTIGA,
+                    caCert: CA_CERT_OPTIGA,
+                },
+                deviceModel: 'T2B1',
+                rotationIndex: 0x100000000,
             },
         });
 

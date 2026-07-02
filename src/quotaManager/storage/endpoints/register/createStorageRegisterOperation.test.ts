@@ -13,10 +13,16 @@ import {
     SessionId,
 } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { ValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
-import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import {
+    Proof,
+    PublicKey,
+    RotationIndex,
+    Size,
+} from '../../../../storage/limitStorage/limitStorage.js';
 import { AddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
 import { GetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
 import { MAX_DEVICE_SIZE_QUOTA } from '../../../constants.js';
+import { numberToBuffer } from '../../utils/utils.js';
 
 const SIGNATURE_OPTIGA =
     '3045022100c01793ffbe4f16d4efc84a4533d9bbfbbf1baa5349346678e07fdb6d848cca7902200df11b9d2850173d9c93993fca983c6d2a3f31ea69a0e19b69e18cc3b78424fe';
@@ -62,6 +68,7 @@ const size101 = getOrThrowTest(Size.from(101));
 
 const maxSize = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA));
 const maxSizeDouble = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA * 2));
+const rotationIndex42 = getOrThrowTest(RotationIndex.from(42));
 
 const createMockInput = (overrides?: Partial<RegisterOperationInput>): RegisterOperationInput => ({
     publicKey,
@@ -76,6 +83,35 @@ const createMockInput = (overrides?: Partial<RegisterOperationInput>): RegisterO
     deviceModel: 'T2B1',
     ...overrides,
 });
+
+const proofValidationCases: Array<{
+    name: string;
+    inputOverrides: Partial<RegisterOperationInput>;
+    expectedChallengePrefix: string;
+    expectedBufferChunks: Buffer[];
+}> = [
+    {
+        name: 'V1',
+        inputOverrides: {},
+        expectedChallengePrefix: 'EvoluSignRegistrationRequestV1:',
+        expectedBufferChunks: [
+            Buffer.from(publicKey, 'hex'),
+            Buffer.from(CHALLENGE, 'hex'),
+            numberToBuffer(size100),
+        ],
+    },
+    {
+        name: 'V2',
+        inputOverrides: { rotationIndex: rotationIndex42 },
+        expectedChallengePrefix: 'EvoluSignRegistrationRequestV2:',
+        expectedBufferChunks: [
+            Buffer.from(publicKey, 'hex'),
+            Buffer.from(CHALLENGE, 'hex'),
+            numberToBuffer(size100),
+            numberToBuffer(42),
+        ],
+    },
+];
 
 describe(createStorageRegisterOperation.name, () => {
     beforeEach(() => {
@@ -128,6 +164,38 @@ describe(createStorageRegisterOperation.name, () => {
             expect(result.value.unspentStorageSize).toBe(100);
         }
     });
+
+    it.each(proofValidationCases)(
+        'verifies $name registration proof',
+        async ({ inputOverrides, expectedChallengePrefix, expectedBufferChunks }) => {
+            const validateAndConsumeChallenge: ValidateAndConsumeChallenge = () =>
+                Promise.resolve(ok(true));
+
+            const getLimitsForPubkey = () => Promise.resolve(ok(null));
+            const addLimitToPubkey = () =>
+                Promise.resolve(
+                    ok({
+                        totalStorageSize: size100,
+                        unspentStorageSize: size100,
+                    }),
+                );
+
+            const storageRegisterOperation = createStorageRegisterOperation({
+                validateAndConsumeChallenge,
+                addLimitToPubkey,
+                getLimitsForPubkey,
+            });
+            const result = await storageRegisterOperation(createMockInput(inputOverrides));
+
+            expect(result.ok).toBe(true);
+            expect(verifyAuthenticityProof).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    challengePrefix: expectedChallengePrefix,
+                    bufferChunks: expectedBufferChunks,
+                }),
+            );
+        },
+    );
 
     it('returns ChallengeValidationFailed when challenge is invalid', async () => {
         const validateAndConsumeChallenge: ValidateAndConsumeChallenge = () =>

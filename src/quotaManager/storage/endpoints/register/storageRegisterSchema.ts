@@ -1,10 +1,15 @@
-import { String, object } from '@evolu/common';
+import { String, object, optional } from '@evolu/common';
 
 import {
     Challenge,
     SessionId,
 } from '../../../../storage/challengeStorage/createChallengeStorage.js';
-import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
+import {
+    Proof,
+    PublicKey,
+    RotationIndex,
+    Size,
+} from '../../../../storage/limitStorage/limitStorage.js';
 
 export const storageRegisterEvoluSchema = object({
     publicKey: PublicKey,
@@ -17,6 +22,7 @@ export const storageRegisterEvoluSchema = object({
     }),
     deviceModel: String,
     sessionId: SessionId,
+    rotationIndex: optional(RotationIndex),
 });
 
 export const storageRegisterRequestSchema = {
