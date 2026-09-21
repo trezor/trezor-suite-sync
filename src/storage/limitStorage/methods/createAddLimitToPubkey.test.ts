@@ -6,15 +6,15 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
-const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
-const PublicKeyBBB = getOrThrowTest(PublicKey.from('pubkey_BBBB'));
-const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.from('pubkey_ABCDEFGH'));
+const PublicKeyAAA = getOrThrowTest(PublicKey.fromUnknown('pubkey_AAAA'));
+const PublicKeyBBB = getOrThrowTest(PublicKey.fromUnknown('pubkey_BBBB'));
+const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.fromUnknown('pubkey_ABCDEFGH'));
 
-const size0 = getOrThrowTest(Size.from(0));
-const size30 = getOrThrowTest(Size.from(30));
-const size50 = getOrThrowTest(Size.from(50));
-const size100 = getOrThrowTest(Size.from(100));
-const size200 = getOrThrowTest(Size.from(200));
+const size0 = getOrThrowTest(Size.fromUnknown(0));
+const size30 = getOrThrowTest(Size.fromUnknown(30));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
+const size200 = getOrThrowTest(Size.fromUnknown(200));
 
 describe(createAddLimitToPubkey.name, () => {
     it('adds limit to the pubkey', async () => {

@@ -8,10 +8,10 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
-const session123 = getOrThrowTest(SessionId.from('session-123'));
-const sessionNonExistent = getOrThrowTest(SessionId.from('session-non-existent'));
-const challengeABC = getOrThrowTest(Challenge.from('challenge-abc'));
-const challengeWrong = getOrThrowTest(Challenge.from('challenge-wrong'));
+const session123 = getOrThrowTest(SessionId.fromUnknown('session-123'));
+const sessionNonExistent = getOrThrowTest(SessionId.fromUnknown('session-non-existent'));
+const challengeABC = getOrThrowTest(Challenge.fromUnknown('challenge-abc'));
+const challengeWrong = getOrThrowTest(Challenge.fromUnknown('challenge-wrong'));
 
 const createTestServices = async (deps: Partial<CreateTimeDep> = {}) => {
     const db = await createTestDatabase();

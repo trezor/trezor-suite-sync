@@ -15,8 +15,8 @@ import { createGetRelayUsageMetrics } from '../../storage/metrics/createGetRelay
 import { createTestDatabase } from '../../storage/postgres/createTestDatabase.js';
 import { createMetricsOperation } from '../createMetricsOperation.js';
 
-const privateOwnerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const privatePublicKey = getOrThrowTest(PublicKey.from('private-device-public-key-alpha'));
+const privateOwnerId = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
+const privatePublicKey = getOrThrowTest(PublicKey.fromUnknown('private-device-public-key-alpha'));
 
 describe(createMetricsHandler.name, () => {
     it('returns prometheus metrics without owner or device identifiers', async () => {
@@ -26,7 +26,7 @@ describe(createMetricsHandler.name, () => {
             .insertInto('owner_storage_limits')
             .values({
                 ownerId: privateOwnerId,
-                storageLimit: getOrThrowTest(Size.from(2048)),
+                storageLimit: getOrThrowTest(Size.fromUnknown(2048)),
             })
             .execute();
 
@@ -34,8 +34,8 @@ describe(createMetricsHandler.name, () => {
             .insertInto('pubkey_storage_limits')
             .values({
                 publicKey: privatePublicKey,
-                totalStorageSize: getOrThrowTest(Size.from(4096)),
-                unspentStorageSize: getOrThrowTest(Size.from(1024)),
+                totalStorageSize: getOrThrowTest(Size.fromUnknown(4096)),
+                unspentStorageSize: getOrThrowTest(Size.fromUnknown(1024)),
             })
             .execute();
 
@@ -77,7 +77,7 @@ describe(createMetricsHandler.name, () => {
 
         await db
             .updateTable('owner_storage_limits')
-            .set({ storageLimit: getOrThrowTest(Size.from(4096)) })
+            .set({ storageLimit: getOrThrowTest(Size.fromUnknown(4096)) })
             .where('ownerId', '=', privateOwnerId)
             .execute();
 

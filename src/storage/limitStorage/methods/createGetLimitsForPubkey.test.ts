@@ -6,12 +6,12 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
-const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.from('pubkey_ABCDEFGH'));
-const PublicKeyNonExistent = getOrThrowTest(PublicKey.from('PublicKeyNonExistent'));
+const PublicKeyABCDEFGH = getOrThrowTest(PublicKey.fromUnknown('pubkey_ABCDEFGH'));
+const PublicKeyNonExistent = getOrThrowTest(PublicKey.fromUnknown('PublicKeyNonExistent'));
 
-const size30 = getOrThrowTest(Size.from(30));
-const size50 = getOrThrowTest(Size.from(50));
-const size100 = getOrThrowTest(Size.from(100));
+const size30 = getOrThrowTest(Size.fromUnknown(30));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
 
 describe(createGetLimitsForPubkey.name, () => {
     it('returns null when publicKey does not exist', async () => {

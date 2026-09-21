@@ -9,13 +9,13 @@ import { createAssignSpaceToOwner } from './createAssignSpaceToOwner.js';
 import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
 import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 
-const publicKey = getOrThrowTest(PublicKey.from('pubkey-123'));
-const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const publicKey = getOrThrowTest(PublicKey.fromUnknown('pubkey-123'));
+const ownerId = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
 
-const size50 = getOrThrowTest(Size.from(50));
-const size30 = getOrThrowTest(Size.from(30));
-const size20 = getOrThrowTest(Size.from(20));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size30 = getOrThrowTest(Size.fromUnknown(30));
+const size20 = getOrThrowTest(Size.fromUnknown(20));
 
 const prepareDatabase = async () => {
     const db = await createTestDatabase();
@@ -96,7 +96,7 @@ describe(createAssignSpaceToOwner.name, () => {
     it('fails when publicKey does not exist', async () => {
         const db = await prepareDatabase();
 
-        const otherPublicKey = getOrThrowTest(PublicKey.from('unknown'));
+        const otherPublicKey = getOrThrowTest(PublicKey.fromUnknown('unknown'));
 
         const getLimitsForPubkey = createGetLimitsForPubkey({ db });
         const getLimitsForOwner = createGetLimitsForOwner({ db });

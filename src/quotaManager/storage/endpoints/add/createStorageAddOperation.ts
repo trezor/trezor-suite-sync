@@ -25,7 +25,7 @@ export const parseOwnerId = (value: string): OwnerIdParseResult => {
         return { ok: true, value: OWNER_ID_BURN };
     }
 
-    const result = OwnerId.from(value);
+    const result = OwnerId.fromUnknown(value);
 
     if (!result.ok) {
         return { ok: false, error: result.error };

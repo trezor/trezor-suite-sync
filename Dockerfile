@@ -4,7 +4,7 @@ FROM node:24-alpine AS builder
 RUN apk add --no-cache python3 make g++ git
 
 RUN corepack enable
-RUN corepack prepare yarn@4.12.0 --activate
+RUN corepack prepare yarn@4.18.0 --activate
 
 # Set environment variables for native module builds
 ENV npm_config_cache=/tmp/.npm
@@ -24,7 +24,7 @@ RUN yarn build
 FROM node:24-alpine
 
 RUN corepack enable
-RUN corepack prepare yarn@4.12.0 --activate
+RUN corepack prepare yarn@4.18.0 --activate
 
 WORKDIR /app
 

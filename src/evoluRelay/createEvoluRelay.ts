@@ -1,5 +1,5 @@
-import { createConsole, createConsoleFormatter } from '@evolu/common';
-import { createRelayDeps, createRun, startRelay } from '@evolu/nodejs';
+import { Port, createConsole, createConsoleFormatter, ok } from '@evolu/common';
+import { createRelay, createRelayDeps, runMain } from '@evolu/nodejs';
 
 import { IS_DEV_SERVER } from '../env.js';
 import { UpdateHealthDep } from '../health/createHealthServer.js';
@@ -25,17 +25,12 @@ export const createEvoluRelay =
             }),
         });
 
-        const run = createRun({
-            ...createRelayDeps(),
-            console,
-        });
-        const stack = new AsyncDisposableStack();
         let relayStarted = false;
 
-        try {
-            const relay = await run.orThrow(
-                startRelay({
-                    port,
+        await runMain({ ...createRelayDeps(), console })(async run => {
+            const relay = await run.ok(
+                createRelay({
+                    port: Port.orThrow(port),
 
                     /**
                      * Owner is allowed to access the relay if they have any registered storage limit.
@@ -60,23 +55,17 @@ export const createEvoluRelay =
                 }),
             );
 
-            stack.use(relay);
             relayStarted = true;
             deps.updateHealth({ relay: 'ok' });
 
-            await run.deps.shutdown;
-        } catch (error) {
-            console.error('Relay failed', error);
+            // Relay ownership is transferred to runMain, which disposes it on shutdown.
+            return ok(relay);
+        });
+
+        if (relayStarted) {
+            console.log('Evolu Relay is shutting down ...');
+            deps.updateHealth({ relay: 'exiting' });
+        } else {
             deps.updateHealth({ relay: 'error' });
-
-            return;
-        } finally {
-            if (relayStarted) {
-                console.log('Evolu Relay is shutting down ...');
-                deps.updateHealth({ relay: 'exiting' });
-            }
-
-            await stack[Symbol.asyncDispose]();
-            await run[Symbol.asyncDispose]();
         }
     };

@@ -6,7 +6,7 @@ import { TransferSpaceFromDeviceToOwnerDep } from '../../../../storage/limitStor
 export type DeleteHandlerDeps = TransferSpaceFromDeviceToOwnerDep;
 
 export type StorageDeleteHandler = EndpointHandler<{
-    Body: typeof deleteEvoluSchema.Type;
+    Body: typeof deleteEvoluSchema.Output;
 }>;
 
 export const createStorageDeleteHandler =

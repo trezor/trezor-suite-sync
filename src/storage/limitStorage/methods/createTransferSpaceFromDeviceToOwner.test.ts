@@ -9,15 +9,15 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 
-const PublicKeyAAA = getOrThrowTest(PublicKey.from('pubkey_AAAA'));
+const PublicKeyAAA = getOrThrowTest(PublicKey.fromUnknown('pubkey_AAAA'));
 
-const ownerIdAlice = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const ownerIdBob = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
+const ownerIdAlice = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
+const ownerIdBob = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg7g'));
 
-const size30 = getOrThrowTest(Size.from(30));
-const size50 = getOrThrowTest(Size.from(50));
-const size100 = getOrThrowTest(Size.from(100));
-const size200 = getOrThrowTest(Size.from(200));
+const size30 = getOrThrowTest(Size.fromUnknown(30));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
+const size200 = getOrThrowTest(Size.fromUnknown(200));
 
 describe(createTransferSpaceFromDeviceToOwner.name, () => {
     it('transfers space from pubkey to owner', async () => {

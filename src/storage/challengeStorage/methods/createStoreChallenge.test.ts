@@ -5,10 +5,10 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
-const session123 = getOrThrowTest(SessionId.from('session-123'));
-const challengeABC = getOrThrowTest(Challenge.from('challenge-abc'));
-const challengeOld = getOrThrowTest(Challenge.from('challenge-old'));
-const challengeNew = getOrThrowTest(Challenge.from('challenge-new'));
+const session123 = getOrThrowTest(SessionId.fromUnknown('session-123'));
+const challengeABC = getOrThrowTest(Challenge.fromUnknown('challenge-abc'));
+const challengeOld = getOrThrowTest(Challenge.fromUnknown('challenge-old'));
+const challengeNew = getOrThrowTest(Challenge.fromUnknown('challenge-new'));
 
 describe(createStoreChallenge.name, () => {
     it('stores challenge successfully', async () => {
