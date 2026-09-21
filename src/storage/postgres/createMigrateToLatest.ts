@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { FileMigrationProvider, Migrator } from 'kysely';
+import { FileMigrationProvider, Migrator } from 'kysely/migration';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 

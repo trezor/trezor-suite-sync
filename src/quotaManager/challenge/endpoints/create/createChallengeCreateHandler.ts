@@ -7,7 +7,7 @@ import { exhaustive } from '../../../../exhaustive.js';
 export type ChallengeCreateHandlerDeps = ChallengeCreateOperationDep;
 
 export type ChallengeCreateHandler = EndpointHandler<{
-    Body: typeof challengeCreateEvoluSchema.Type;
+    Body: typeof challengeCreateEvoluSchema.Output;
 }>;
 
 export const createChallengeCreateHandler =

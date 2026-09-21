@@ -27,14 +27,14 @@ vi.mock('@trezor/device-authenticity', () => ({
 }));
 
 const publicKey = getOrThrowTest(
-    PublicKey.from(
+    PublicKey.fromUnknown(
         '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
     ),
 );
-const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const ownerId = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
-const size50 = getOrThrowTest(Size.from(50));
-const size20 = getOrThrowTest(Size.from(20));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size20 = getOrThrowTest(Size.fromUnknown(20));
 
 /**
  * This is composition root of the app for tests. This is a lot of code as this is a heavy
@@ -87,9 +87,11 @@ describe(createStorageAddHandler.name, () => {
     it('successfully assigns space and returns 200 with correct response format', async () => {
         const { app, storeChallenge } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-123'));
+        const sessionId = getOrThrowTest(SessionId.fromUnknown('session-123'));
         const challenge = getOrThrowTest(
-            Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
+            Challenge.fromUnknown(
+                '29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920',
+            ),
         );
         const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
@@ -103,7 +105,7 @@ describe(createStorageAddHandler.name, () => {
                 size: size20,
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 
@@ -118,9 +120,11 @@ describe(createStorageAddHandler.name, () => {
     it('allows burning space when ownerId is zero', async () => {
         const { app, storeChallenge } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-456'));
+        const sessionId = getOrThrowTest(SessionId.fromUnknown('session-456'));
         const challenge = getOrThrowTest(
-            Challenge.from('39d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931'),
+            Challenge.fromUnknown(
+                '39d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7931',
+            ),
         );
         const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
@@ -134,7 +138,7 @@ describe(createStorageAddHandler.name, () => {
                 size: size20,
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 
@@ -161,9 +165,11 @@ describe(createStorageAddHandler.name, () => {
     it('returns 400 when challenge validation fails', async () => {
         const { app } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-789'));
+        const sessionId = getOrThrowTest(SessionId.fromUnknown('session-789'));
         const challenge = getOrThrowTest(
-            Challenge.from('49d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7942'),
+            Challenge.fromUnknown(
+                '49d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7942',
+            ),
         );
 
         const response = await app.inject({
@@ -175,7 +181,7 @@ describe(createStorageAddHandler.name, () => {
                 size: size20,
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 
@@ -189,9 +195,11 @@ describe(createStorageAddHandler.name, () => {
 
         const { app, storeChallenge } = await createApp();
 
-        const sessionId = getOrThrowTest(SessionId.from('session-proof-fail'));
+        const sessionId = getOrThrowTest(SessionId.fromUnknown('session-proof-fail'));
         const challenge = getOrThrowTest(
-            Challenge.from('59d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7953'),
+            Challenge.fromUnknown(
+                '59d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7953',
+            ),
         );
         const storeResult = await storeChallenge({ sessionId, challenge });
         assert(storeResult.ok);
@@ -205,7 +213,7 @@ describe(createStorageAddHandler.name, () => {
                 size: size20,
                 challenge: challenge.toString(),
                 sessionId: sessionId.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 
@@ -217,9 +225,11 @@ describe(createStorageAddHandler.name, () => {
     it('returns 400 when there is insufficient unspent space', async () => {
         const { app, storeChallenge } = await createApp();
 
-        const sessionId1 = getOrThrowTest(SessionId.from('session-1'));
+        const sessionId1 = getOrThrowTest(SessionId.fromUnknown('session-1'));
         const challenge1 = getOrThrowTest(
-            Challenge.from('69d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7964'),
+            Challenge.fromUnknown(
+                '69d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7964',
+            ),
         );
         const storeResult1 = await storeChallenge({
             sessionId: sessionId1,
@@ -236,15 +246,17 @@ describe(createStorageAddHandler.name, () => {
                 size: size50,
                 challenge: challenge1.toString(),
                 sessionId: sessionId1.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 
         expect(firstResponse.statusCode).toBe(200);
 
-        const sessionId2 = getOrThrowTest(SessionId.from('session-2'));
+        const sessionId2 = getOrThrowTest(SessionId.fromUnknown('session-2'));
         const challenge2 = getOrThrowTest(
-            Challenge.from('79d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7975'),
+            Challenge.fromUnknown(
+                '79d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7975',
+            ),
         );
         const storeResult2 = await storeChallenge({
             sessionId: sessionId2,
@@ -261,7 +273,7 @@ describe(createStorageAddHandler.name, () => {
                 size: size20,
                 challenge: challenge2.toString(),
                 sessionId: sessionId2.toString(),
-                proof: getOrThrowTest(Proof.from('deadbeef')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('deadbeef')).toString(),
             },
         });
 

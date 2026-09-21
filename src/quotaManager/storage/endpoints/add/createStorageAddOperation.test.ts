@@ -17,19 +17,19 @@ import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitSt
 import { AssignSpaceToOwner } from '../../../../storage/limitStorage/methods/createAssignSpaceToOwner.js';
 
 const publicKey = getOrThrowTest(
-    PublicKey.from(
+    PublicKey.fromUnknown(
         '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
     ),
 );
-const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const ownerId = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
-const size50 = getOrThrowTest(Size.from(50));
-const size20 = getOrThrowTest(Size.from(20));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size20 = getOrThrowTest(Size.fromUnknown(20));
 const challengeValue = getOrThrowTest(
-    Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
+    Challenge.fromUnknown('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
 );
-const sessionId = getOrThrowTest(SessionId.from('session-1'));
-const proof = getOrThrowTest(Proof.from('deadbeef'));
+const sessionId = getOrThrowTest(SessionId.fromUnknown('session-1'));
+const proof = getOrThrowTest(Proof.fromUnknown('deadbeef'));
 
 vi.mock('@trezor/device-authenticity', () => ({
     verifySignatureP256: vi.fn(),

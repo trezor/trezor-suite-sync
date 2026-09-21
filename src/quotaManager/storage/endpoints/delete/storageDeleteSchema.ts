@@ -1,4 +1,4 @@
-import { OwnerId, object } from '@evolu/common';
+import { type ObjectType, OwnerId, object } from '@evolu/common';
 
 import {
     Proof,
@@ -6,19 +6,22 @@ import {
     Size,
     Timestamp,
 } from '../../../../storage/limitStorage/limitStorage.js';
+import { type EvoluRequestSchema } from '../../../evoluValidatorCompiler.js';
 
-export const deleteEvoluSchema = object({
+const deleteProps = {
     proof: Proof,
     size: Size,
     timestamp: Timestamp,
     publicKey: PublicKey,
     ownerId: OwnerId,
-});
+};
 
-export const deleteRequestSchema = {
+export const deleteEvoluSchema: ObjectType<typeof deleteProps> = object(deleteProps);
+
+export const deleteRequestSchema: EvoluRequestSchema<typeof deleteEvoluSchema> = {
     schema: {
         body: {
             evoluSchema: deleteEvoluSchema,
         },
     },
-} as const;
+};

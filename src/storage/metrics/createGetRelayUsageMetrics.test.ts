@@ -12,24 +12,24 @@ import { getOrThrowTest } from '../../getOrThrowTest.js';
 import { PublicKey, Size } from '../limitStorage/limitStorage.js';
 import { createTestDatabase } from '../postgres/createTestDatabase.js';
 
-const ownerIdA = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const ownerIdB = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
-const ownerIdC = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg8g'));
-const ownerIdD = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg9g'));
-const ownerIdE = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJgag'));
-const ownerIdF = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJgbg'));
-const ownerIdG = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJgcg'));
+const ownerIdA = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
+const ownerIdB = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg7g'));
+const ownerIdC = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg8g'));
+const ownerIdD = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg9g'));
+const ownerIdE = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJgag'));
+const ownerIdF = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJgbg'));
+const ownerIdG = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJgcg'));
 
-const publicKeyA = getOrThrowTest(PublicKey.from('private-device-public-key-alpha'));
-const publicKeyB = getOrThrowTest(PublicKey.from('private-device-public-key-beta'));
+const publicKeyA = getOrThrowTest(PublicKey.fromUnknown('private-device-public-key-alpha'));
+const publicKeyB = getOrThrowTest(PublicKey.fromUnknown('private-device-public-key-beta'));
 
-const size0 = getOrThrowTest(Size.from(0));
-const size500 = getOrThrowTest(Size.from(500));
-const size2Kb = getOrThrowTest(Size.from(2 * 1024));
-const size20Kb = getOrThrowTest(Size.from(20 * 1024));
-const size200Kb = getOrThrowTest(Size.from(200 * 1024));
-const size2Mb = getOrThrowTest(Size.from(2 * 1024 * 1024));
-const size950Kb = getOrThrowTest(Size.from(950 * 1024));
+const size0 = getOrThrowTest(Size.fromUnknown(0));
+const size500 = getOrThrowTest(Size.fromUnknown(500));
+const size2Kb = getOrThrowTest(Size.fromUnknown(2 * 1024));
+const size20Kb = getOrThrowTest(Size.fromUnknown(20 * 1024));
+const size200Kb = getOrThrowTest(Size.fromUnknown(200 * 1024));
+const size2Mb = getOrThrowTest(Size.fromUnknown(2 * 1024 * 1024));
+const size950Kb = getOrThrowTest(Size.fromUnknown(950 * 1024));
 
 describe(createGetRelayUsageMetrics.name, () => {
     it('returns only aggregate relay usage metrics', async () => {
@@ -53,13 +53,13 @@ describe(createGetRelayUsageMetrics.name, () => {
             .values([
                 {
                     publicKey: publicKeyA,
-                    totalStorageSize: getOrThrowTest(Size.from(1000)),
-                    unspentStorageSize: getOrThrowTest(Size.from(250)),
+                    totalStorageSize: getOrThrowTest(Size.fromUnknown(1000)),
+                    unspentStorageSize: getOrThrowTest(Size.fromUnknown(250)),
                 },
                 {
                     publicKey: publicKeyB,
-                    totalStorageSize: getOrThrowTest(Size.from(2000)),
-                    unspentStorageSize: getOrThrowTest(Size.from(1500)),
+                    totalStorageSize: getOrThrowTest(Size.fromUnknown(2000)),
+                    unspentStorageSize: getOrThrowTest(Size.fromUnknown(1500)),
                 },
             ])
             .execute();
