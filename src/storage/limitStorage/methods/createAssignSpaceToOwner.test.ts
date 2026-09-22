@@ -145,4 +145,62 @@ describe(createAssignSpaceToOwner.name, () => {
             expect(secondResult.error.type).toBe('NoStorageAllowance');
         }
     });
+
+    it('credits the owner only for the assignment that succeeded', async () => {
+        const db = await prepareDatabase();
+
+        const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+        const getLimitsForOwner = createGetLimitsForOwner({ db });
+        const assignSpaceToOwner = createAssignSpaceToOwner({
+            db,
+            getLimitsForPubkey,
+            getLimitsForOwner,
+        });
+
+        const firstResult = await assignSpaceToOwner({ publicKey, ownerId, size: size30 });
+        assert(firstResult.ok);
+
+        const secondResult = await assignSpaceToOwner({ publicKey, ownerId, size: size30 });
+        assert(!secondResult.ok);
+
+        const ownerLimit = await getLimitsForOwner({ ownerId });
+        assert(ownerLimit.ok);
+        expect(ownerLimit.value).toBe(30);
+
+        const pubkeyLimits = await getLimitsForPubkey({ publicKey });
+        assert(pubkeyLimits.ok);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(20);
+    });
+
+    it('lets only one of two concurrent assignments spend the same space', async () => {
+        const db = await prepareDatabase();
+
+        const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+        const getLimitsForOwner = createGetLimitsForOwner({ db });
+        const assignSpaceToOwner = createAssignSpaceToOwner({
+            db,
+            getLimitsForPubkey,
+            getLimitsForOwner,
+        });
+
+        // Only one of the two can fit into the 50 bytes the publicKey holds.
+        const results = await Promise.all([
+            assignSpaceToOwner({ publicKey, ownerId, size: size30 }),
+            assignSpaceToOwner({ publicKey, ownerId, size: size30 }),
+        ]);
+
+        expect(results.filter(result => result.ok)).toHaveLength(1);
+
+        const failed = results.find(result => !result.ok);
+        assert(failed && !failed.ok);
+        expect(failed.error.type).toBe('NoStorageAllowance');
+
+        const pubkeyLimits = await getLimitsForPubkey({ publicKey });
+        assert(pubkeyLimits.ok);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(20);
+
+        const ownerLimit = await getLimitsForOwner({ ownerId });
+        assert(ownerLimit.ok);
+        expect(ownerLimit.value).toBe(30);
+    });
 });

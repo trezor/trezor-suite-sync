@@ -1,6 +1,6 @@
 import { OwnerId, err, ok } from '@evolu/common';
 import { verifySignatureP256 } from '@trezor/device-authenticity';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
     type StorageAddInputParsed,
@@ -14,7 +14,14 @@ import {
 } from '../../../../storage/challengeStorage/createChallengeStorage.js';
 import { ValidateAndConsumeChallenge } from '../../../../storage/challengeStorage/methods/createValidateAndConsumeChallenge.js';
 import { Proof, PublicKey, Size } from '../../../../storage/limitStorage/limitStorage.js';
-import { AssignSpaceToOwner } from '../../../../storage/limitStorage/methods/createAssignSpaceToOwner.js';
+import { createAddLimitToPubkey } from '../../../../storage/limitStorage/methods/createAddLimitToPubkey.js';
+import {
+    AssignSpaceToOwner,
+    createAssignSpaceToOwner,
+} from '../../../../storage/limitStorage/methods/createAssignSpaceToOwner.js';
+import { createGetLimitsForOwner } from '../../../../storage/limitStorage/methods/createGetLimitsForOwner.js';
+import { createGetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
+import { createTestDatabase } from '../../../../storage/postgres/createTestDatabase.js';
 
 const publicKey = getOrThrowTest(
     PublicKey.from(
@@ -25,6 +32,7 @@ const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
 const burnOwnerId = '0' as OwnerId;
 const size50 = getOrThrowTest(Size.from(50));
 const size20 = getOrThrowTest(Size.from(20));
+const size30 = getOrThrowTest(Size.from(30));
 const challengeValue = getOrThrowTest(
     Challenge.from('29d0be0f3cb191c80d108359c64d22984a77ad8b99433814be31db0b6e9e7920'),
 );
@@ -271,5 +279,44 @@ describe(createStorageAddOperation.name, () => {
         if (!result.ok) {
             expect(result.error).toBe('SqliteError');
         }
+    });
+
+    it('rejects the loser of two concurrent adds instead of overdrawing the publicKey', async () => {
+        const db = await createTestDatabase();
+
+        const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+        const getLimitsForOwner = createGetLimitsForOwner({ db });
+        const addLimitToPubkey = createAddLimitToPubkey({ db, getLimitsForPubkey });
+        const assignSpaceToOwner = createAssignSpaceToOwner({
+            db,
+            getLimitsForPubkey,
+            getLimitsForOwner,
+        });
+
+        await addLimitToPubkey({ publicKey, size: size50 });
+
+        const validateAndConsumeChallenge: ValidateAndConsumeChallenge = () =>
+            Promise.resolve(ok(true));
+
+        const storageAddOperation = createStorageAddOperation({
+            validateAndConsumeChallenge,
+            assignSpaceToOwner,
+        });
+
+        // Only one of the two can fit into the 50 bytes the publicKey holds.
+        const results = await Promise.all([
+            storageAddOperation(createMockInput({ size: size30 })),
+            storageAddOperation(createMockInput({ size: size30 })),
+        ]);
+
+        expect(results.filter(result => result.ok)).toHaveLength(1);
+
+        const failed = results.find(result => !result.ok);
+        assert(failed && !failed.ok);
+        expect(failed.error).toBe('NoStorageAllowance');
+
+        const pubkeyLimits = await getLimitsForPubkey({ publicKey });
+        assert(pubkeyLimits.ok);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(20);
     });
 });
