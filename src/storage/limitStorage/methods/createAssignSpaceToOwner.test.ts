@@ -1,4 +1,4 @@
-import { OwnerId } from '@evolu/common';
+import { OwnerId, err, ok } from '@evolu/common';
 import { assert, describe, expect, it } from 'vitest';
 
 import { getOrThrowTest } from '../../../getOrThrowTest.js';
@@ -6,8 +6,8 @@ import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { PublicKey, Size } from '../limitStorage.js';
 import { createAddLimitToPubkey } from './createAddLimitToPubkey.js';
 import { createAssignSpaceToOwner } from './createAssignSpaceToOwner.js';
-import { createGetLimitsForOwner } from './createGetLimitsForOwner.js';
-import { createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
+import { GetLimitsForOwner, createGetLimitsForOwner } from './createGetLimitsForOwner.js';
+import { GetLimitsForPubkey, createGetLimitsForPubkey } from './createGetLimitsForPubkey.js';
 
 const publicKey = getOrThrowTest(PublicKey.from('pubkey-123'));
 const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
@@ -16,6 +16,8 @@ const burnOwnerId = '0' as OwnerId;
 const size50 = getOrThrowTest(Size.from(50));
 const size30 = getOrThrowTest(Size.from(30));
 const size20 = getOrThrowTest(Size.from(20));
+const size80 = getOrThrowTest(Size.from(80));
+const size1000 = getOrThrowTest(Size.from(1000));
 
 const prepareDatabase = async () => {
     const db = await createTestDatabase();
@@ -202,5 +204,62 @@ describe(createAssignSpaceToOwner.name, () => {
         const ownerLimit = await getLimitsForOwner({ ownerId });
         assert(ownerLimit.ok);
         expect(ownerLimit.value).toBe(30);
+    });
+    it('rejects at the guarded update when the pre-check read is stale', async () => {
+        const db = await prepareDatabase();
+
+        const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+        const getLimitsForOwner = createGetLimitsForOwner({ db });
+        // Reports far more space than the row holds, the way a read that went stale under a
+        // concurrent debit would, so only the guard in the UPDATE can stop the overdraw.
+        const staleGetLimitsForPubkey: GetLimitsForPubkey = () =>
+            Promise.resolve(ok({ totalStorageSize: size1000, unspentStorageSize: size1000 }));
+        const assignSpaceToOwner = createAssignSpaceToOwner({
+            db,
+            getLimitsForPubkey: staleGetLimitsForPubkey,
+            getLimitsForOwner,
+        });
+
+        const result = await assignSpaceToOwner({ publicKey, ownerId, size: size80 });
+
+        assert(!result.ok);
+        expect(result.error.type).toBe('NoStorageAllowance');
+
+        const pubkeyLimits = await getLimitsForPubkey({ publicKey });
+        assert(pubkeyLimits.ok);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(50);
+
+        const ownerLimit = await getLimitsForOwner({ ownerId });
+        assert(ownerLimit.ok);
+        expect(ownerLimit.value).toBeNull();
+    });
+
+    it('rolls back the debit when crediting the owner fails', async () => {
+        const db = await prepareDatabase();
+
+        const getLimitsForPubkey = createGetLimitsForPubkey({ db });
+        const getLimitsForOwner = createGetLimitsForOwner({ db });
+        const failingGetLimitsForOwner: GetLimitsForOwner = () =>
+            Promise.resolve(
+                err({ type: 'DatabaseError', error: new Error('owner lookup failed') }),
+            );
+        const assignSpaceToOwner = createAssignSpaceToOwner({
+            db,
+            getLimitsForPubkey,
+            getLimitsForOwner: failingGetLimitsForOwner,
+        });
+
+        const result = await assignSpaceToOwner({ publicKey, ownerId, size: size20 });
+
+        assert(!result.ok);
+        expect(result.error.type).toBe('DatabaseError');
+
+        const pubkeyLimits = await getLimitsForPubkey({ publicKey });
+        assert(pubkeyLimits.ok);
+        expect(pubkeyLimits.value?.unspentStorageSize).toBe(50);
+
+        const ownerLimit = await getLimitsForOwner({ ownerId });
+        assert(ownerLimit.ok);
+        expect(ownerLimit.value).toBeNull();
     });
 });

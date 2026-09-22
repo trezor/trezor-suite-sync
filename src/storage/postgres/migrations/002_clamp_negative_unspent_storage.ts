@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 
 /**
- * Repairs rows that a concurrent, unguarded debit in `assignSpaceToOwner` drove below zero.
+ * Repairs rows that concurrent, unguarded debits of `unspentStorageSize` drove below zero.
  *
  * Clamping to zero keeps the already granted owner limits intact: the space was handed out, it
  * just was not accounted for on the device. Restoring it would grant the same space twice.
