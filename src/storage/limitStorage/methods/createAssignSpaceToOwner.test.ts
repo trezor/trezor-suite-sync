@@ -187,16 +187,17 @@ describe(createAssignSpaceToOwner.name, () => {
         });
 
         // Only one of the two can fit into the 50 bytes the publicKey holds.
-        const results = await Promise.all([
+        const [first, second] = await Promise.all([
             assignSpaceToOwner({ publicKey, ownerId, size: size30 }),
             assignSpaceToOwner({ publicKey, ownerId, size: size30 }),
         ]);
 
-        expect(results.filter(result => result.ok)).toHaveLength(1);
+        assert(first.ok);
+        expect(first.value.publicKeyLimits.unspentStorageSize).toBe(20);
+        expect(first.value.ownerStorageLimit).toBe(30);
 
-        const failed = results.find(result => !result.ok);
-        assert(failed && !failed.ok);
-        expect(failed.error.type).toBe('NoStorageAllowance');
+        assert(!second.ok);
+        expect(second.error.type).toBe('NoStorageAllowance');
 
         const pubkeyLimits = await getLimitsForPubkey({ publicKey });
         assert(pubkeyLimits.ok);
