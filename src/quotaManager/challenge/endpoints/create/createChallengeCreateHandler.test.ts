@@ -17,7 +17,7 @@ import { evoluValidatorCompiler } from '../../../evoluValidatorCompiler.js';
 const generateStaticRandomBytes: GenerateRandomBytes = () =>
     '751a1339214468ac23ad32844482f9c76e54d2e95afd1940fe6b7e3e5fbc2f61';
 
-const session1 = getOrThrowTest(SessionId.from('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
+const session1 = getOrThrowTest(SessionId.fromUnknown('krdo9P9YkVGUVM4nznXTZYIroFsTM3iM'));
 
 type CreateAppDeps = GenerateRandomBytesDep;
 

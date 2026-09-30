@@ -5,34 +5,35 @@
 
 import 'dotenv/config';
 
+import { Port } from '@evolu/common';
+import { installPolyfills } from '@evolu/common/polyfills';
+import { runMain } from '@evolu/nodejs';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
 import { config } from './config.js';
 import { createEvoluRelayCompositionRoot } from './evoluRelay/createEvoluRelayCompositionRoot.js';
+import { createEvoluRelayRunDeps } from './evoluRelay/createEvoluRelayRunDeps.js';
 import { createMetricsCompositionRoot } from './metrics/createMetricsCompositionRoot.js';
 import { createQuotaManagerCompositionRoot } from './quotaManager/createQuotaManagerCompositionRoot.js';
 
-const dataPath = join(process.cwd(), config.dataDir);
-mkdirSync(dataPath, { recursive: true });
-process.chdir(dataPath);
+installPolyfills();
 
-const runAll = async () => {
+await runMain(createEvoluRelayRunDeps())(async run => {
+    const dataPath = join(process.cwd(), config.dataDir);
+    mkdirSync(dataPath, { recursive: true });
+    process.chdir(dataPath);
+
     const { evoluRelay, healthServer } = createEvoluRelayCompositionRoot();
     const { quotaManagerServer, migrateToLatest } = createQuotaManagerCompositionRoot();
     const { metricsServer } = createMetricsCompositionRoot();
 
     await migrateToLatest();
 
-    healthServer.start({ port: config.health.port });
+    await using _healthServer = await healthServer.start({ port: config.health.port });
 
-    // Intentionally not awaited, we want to run both!
+    // Intentionally not awaited, we want to run all!
     quotaManagerServer({ port: config.quotaManager.port }).catch(error => {
-        console.error('Failed to start services:', error);
-        process.exitCode = 1;
-    });
-
-    evoluRelay({ port: config.relay.port }).catch(error => {
         console.error('Failed to start services:', error);
         process.exitCode = 1;
     });
@@ -41,7 +42,6 @@ const runAll = async () => {
         console.error('Failed to start services:', error);
         process.exitCode = 1;
     });
-};
 
-// Intentionally not awaited, we want to run all!
-runAll();
+    return await run(evoluRelay({ port: Port.orThrow(config.relay.port) }));
+});

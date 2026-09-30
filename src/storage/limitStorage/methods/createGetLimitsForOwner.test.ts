@@ -8,8 +8,8 @@ import { OWNER_STORAGE_LIMITS_TABLE_NAME } from '../../postgres/tables.js';
 import { dbQuery } from '../../utils/dbQuery.js';
 import { Size } from '../limitStorage.js';
 
-const ownerId123 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
-const ownerId456 = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg7g'));
+const ownerId123 = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
+const ownerId456 = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg7g'));
 
 describe(createGetLimitsForOwner.name, () => {
     it('returns null when no owner limit exists', async () => {

@@ -6,10 +6,10 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
-const session123 = getOrThrowTest(SessionId.from('session-123'));
-const session456 = getOrThrowTest(SessionId.from('session-456'));
-const challengeABC = getOrThrowTest(Challenge.from('challenge-abc'));
-const challengeXYZ = getOrThrowTest(Challenge.from('challenge-xyz'));
+const session123 = getOrThrowTest(SessionId.fromUnknown('session-123'));
+const session456 = getOrThrowTest(SessionId.fromUnknown('session-456'));
+const challengeABC = getOrThrowTest(Challenge.fromUnknown('challenge-abc'));
+const challengeXYZ = getOrThrowTest(Challenge.fromUnknown('challenge-xyz'));
 
 describe(createCleanupExpiredChallenges.name, () => {
     it('removes expired challenges', async () => {

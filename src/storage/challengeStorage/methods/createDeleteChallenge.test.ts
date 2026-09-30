@@ -6,9 +6,9 @@ import { getOrThrowTest } from '../../../getOrThrowTest.js';
 import { createTestDatabase } from '../../postgres/createTestDatabase.js';
 import { Challenge, SessionId } from '../createChallengeStorage.js';
 
-const session123 = getOrThrowTest(SessionId.from('session-123'));
-const session456 = getOrThrowTest(SessionId.from('session-456'));
-const challengeABC = getOrThrowTest(Challenge.from('challenge-abc'));
+const session123 = getOrThrowTest(SessionId.fromUnknown('session-123'));
+const session456 = getOrThrowTest(SessionId.fromUnknown('session-456'));
+const challengeABC = getOrThrowTest(Challenge.fromUnknown('challenge-abc'));
 
 describe(createDeleteChallenge.name, () => {
     it('deletes challenge successfully', async () => {

@@ -6,7 +6,7 @@ import { exhaustive } from '../../../../exhaustive.js';
 export type StorageRegisterOperationDeps = StorageRegisterOperationDep;
 
 export type StorageRegisterHandler = EndpointHandler<{
-    Body: typeof storageRegisterEvoluSchema.Type;
+    Body: typeof storageRegisterEvoluSchema.Output;
 }>;
 
 export const createStorageRegisterHandler =

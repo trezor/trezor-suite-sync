@@ -34,7 +34,7 @@ export const createChallengeCreateOperation =
     async input => {
         const { sessionId } = input;
 
-        const challengeResult = Challenge.from(deps.generateRandomBytes(32));
+        const challengeResult = Challenge.fromUnknown(deps.generateRandomBytes(32));
 
         if (!challengeResult.ok) {
             return err({ type: 'InvalidChallenge' });

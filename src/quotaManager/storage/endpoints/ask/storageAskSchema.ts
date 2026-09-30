@@ -1,16 +1,19 @@
-import { OwnerId, object, optional } from '@evolu/common';
+import { type ObjectType, OwnerId, object, optional } from '@evolu/common';
 
 import { PublicKey } from '../../../../storage/limitStorage/limitStorage.js';
+import { type EvoluRequestSchema } from '../../../evoluValidatorCompiler.js';
 
-export const askEvoluSchema = object({
+const askProps = {
     publicKey: optional(PublicKey),
     ownerId: optional(OwnerId),
-});
+};
 
-export const storageAskRequestSchema = {
+export const askEvoluSchema: ObjectType<typeof askProps> = object(askProps);
+
+export const storageAskRequestSchema: EvoluRequestSchema<typeof askEvoluSchema> = {
     schema: {
         body: {
             evoluSchema: askEvoluSchema,
         },
     },
-} as const;
+};
