@@ -12,7 +12,7 @@ type HealthServerParams = {
 };
 
 export type HealthServer = {
-    start: (paras: HealthServerParams) => void;
+    start: (params: HealthServerParams) => Promise<AsyncDisposable>;
     updateHealth: (updates: Partial<HealthState>) => void;
 };
 
@@ -29,29 +29,22 @@ export const createHealthServer = (): HealthServer => {
         Object.assign(healthState, updates);
     };
 
-    const start = ({ port }: HealthServerParams) => {
+    const start = async ({ port }: HealthServerParams): Promise<AsyncDisposable> => {
         const server = fastify();
 
         server.get('/', () => healthState);
 
-        function dispose() {
-            // eslint-disable-next-line no-console
-            console.log('Health server is shutting down ...');
-            server.close();
-        }
+        const address = await server.listen({ port, host: '0.0.0.0' });
+        // eslint-disable-next-line no-console
+        console.log(`Health server listening at ${address}`);
 
-        process.on('SIGINT', dispose);
-        process.on('SIGTERM', dispose);
-
-        server.listen({ port, host: '0.0.0.0' }, (err, address) => {
-            if (err) {
-                console.error('Health server failed to start:', err);
-                process.exit(1);
-            }
-
-            // eslint-disable-next-line no-console
-            console.log(`Health server listening at ${address}`);
-        });
+        return {
+            [Symbol.asyncDispose]: async () => {
+                // eslint-disable-next-line no-console
+                console.log('Health server is shutting down ...');
+                await server.close();
+            },
+        };
     };
 
     return { start, updateHealth };

@@ -49,8 +49,8 @@ vi.mock('@trezor/device-authenticity', () => ({
         },
     }),
 }));
-const publicKey = getOrThrowTest(PublicKey.from('test-pubkey-123'));
-const size100 = getOrThrowTest(Size.from(100));
+const publicKey = getOrThrowTest(PublicKey.fromUnknown('test-pubkey-123'));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
 
 const registrationSuccessCases = [
     {
@@ -102,8 +102,8 @@ describe(createStorageRegisterHandler.name, () => {
         async ({ extraPayload }) => {
             const { app, storeChallenge } = await createApp();
 
-            const sessionId = getOrThrowTest(SessionId.from('session-123'));
-            const challenge = getOrThrowTest(Challenge.from('challenge-abc-123'));
+            const sessionId = getOrThrowTest(SessionId.fromUnknown('session-123'));
+            const challenge = getOrThrowTest(Challenge.fromUnknown('challenge-abc-123'));
             const storeResult = await storeChallenge({
                 sessionId,
                 challenge,
@@ -118,7 +118,7 @@ describe(createStorageRegisterHandler.name, () => {
                     size: size100,
                     challenge: challenge.toString(),
                     sessionId: sessionId.toString(),
-                    proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
+                    proof: getOrThrowTest(Proof.fromUnknown('any-signature-hex')).toString(),
                     certificateChain: {
                         deviceCert: DEVICE_CERT_OPTIGA,
                         caCert: CA_CERT_OPTIGA,
@@ -162,7 +162,7 @@ describe(createStorageRegisterHandler.name, () => {
                 size: size100,
                 challenge: 'challenge-abc-123',
                 sessionId: 'session-123',
-                proof: getOrThrowTest(Proof.from('any-signature-hex')).toString(),
+                proof: getOrThrowTest(Proof.fromUnknown('any-signature-hex')).toString(),
                 certificateChain: {
                     deviceCert: DEVICE_CERT_OPTIGA,
                     caCert: CA_CERT_OPTIGA,

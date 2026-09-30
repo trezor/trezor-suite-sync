@@ -104,7 +104,7 @@ export const transferEndpoint = {
 export const transferHandler =
     (deps: TransferHandlerDeps) => (request: FastifyRequest, reply: FastifyReply) => {
         // 1. Validate input
-        const validationResult = transferEvoluSchema.from(request.body);
+        const validationResult = transferEvoluSchema.fromUnknown(request.body);
         if (!validationResult.ok) {
             return reply.code(400).send({ error: validationResult.error });
         }

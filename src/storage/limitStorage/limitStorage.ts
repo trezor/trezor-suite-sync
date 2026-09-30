@@ -29,36 +29,42 @@ import {
  * - constant over device wipe
  */
 export const PublicKey = brand('PublicKey', String);
-export type PublicKey = typeof PublicKey.Type;
+export type PublicKey = typeof PublicKey.Output;
 
 /**
  * Size of the storage limits in bytes.
  */
 export const Size = brand('Size', NonNegativeInt);
-export type Size = typeof Size.Type;
+export type Size = typeof Size.Output;
 
 /**
  * Timestamp in milliseconds
  */
 export const Timestamp = brand('Timestamp', Number);
-export type Timestamp = typeof Timestamp.Type;
+export type Timestamp = typeof Timestamp.Output;
 
 /**
  * Proof is the signature of PublicKey|OwnerId|Size|Challenge
  * signed by a private key corresponding to the PublicKey.
  */
 export const Proof = brand('Proof', String);
-export type Proof = typeof Proof.Type;
+export type Proof = typeof Proof.Output;
 
-export type RotationIndexError = TypeError<'RotationIndex'>;
+export interface RotationIndexError extends TypeError<'RotationIndex'> {
+    readonly value: number;
+}
 
 /**
  * Rotation index of the delegated identity key used for V2 registration proofs.
  */
-export const RotationIndex = brand('RotationIndex', NonNegativeInt, value =>
-    value <= 0xffffffff ? ok(value) : err<RotationIndexError>({ type: 'RotationIndex', value }),
+export const RotationIndex = brand(
+    'RotationIndex',
+    NonNegativeInt,
+    value =>
+        value <= 0xffffffff ? ok() : err<RotationIndexError>({ type: 'RotationIndex', value }),
+    () => 'RotationIndex must be an unsigned 32-bit integer.',
 );
-export type RotationIndex = typeof RotationIndex.Type;
+export type RotationIndex = typeof RotationIndex.Output;
 
 type CreateLimitStorageDeps = AppDatabaseDep;
 

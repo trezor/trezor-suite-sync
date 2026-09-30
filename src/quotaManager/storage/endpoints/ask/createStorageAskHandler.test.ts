@@ -8,14 +8,14 @@ import { GetLimitsForOwner } from '../../../../storage/limitStorage/methods/crea
 import { GetLimitsForPubkey } from '../../../../storage/limitStorage/methods/createGetLimitsForPubkey.js';
 import { createMockReply, createMockRequest } from '../../../../utils/mocks.js';
 
-const ownerId = getOrThrowTest(OwnerId.from('StbvdTPxk80z0cNVwDJg6g'));
+const ownerId = getOrThrowTest(OwnerId.fromUnknown('StbvdTPxk80z0cNVwDJg6g'));
 const publicKey = getOrThrowTest(
-    PublicKey.from(
+    PublicKey.fromUnknown(
         '049bbf06dad9ab5905e05471ce16d5222c89c2caa39f26267ac0747129885fbd441bcc7fa84de120a36755daf30a6f47e8c0d4bddc15036ed2a3447dfa7a1d3e88',
     ),
 );
-const size100 = getOrThrowTest(Size.from(100));
-const size80 = getOrThrowTest(Size.from(80));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
+const size80 = getOrThrowTest(Size.fromUnknown(80));
 
 const LEGACY_HTTP_404_VERSION = '26.3.1';
 const NEW_VERSION = '26.4.0';

@@ -64,22 +64,22 @@ vi.mock('@trezor/device-authenticity', () => ({
 }));
 
 const publicKey = getOrThrowTest(
-    PublicKey.from('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2'),
+    PublicKey.fromUnknown('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2'),
 );
-const size50 = getOrThrowTest(Size.from(50));
-const size100 = getOrThrowTest(Size.from(100));
-const size101 = getOrThrowTest(Size.from(101));
+const size50 = getOrThrowTest(Size.fromUnknown(50));
+const size100 = getOrThrowTest(Size.fromUnknown(100));
+const size101 = getOrThrowTest(Size.fromUnknown(101));
 
-const maxSize = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA));
-const maxSizeDouble = getOrThrowTest(Size.from(MAX_DEVICE_SIZE_QUOTA * 2));
-const rotationIndex42 = getOrThrowTest(RotationIndex.from(42));
+const maxSize = getOrThrowTest(Size.fromUnknown(MAX_DEVICE_SIZE_QUOTA));
+const maxSizeDouble = getOrThrowTest(Size.fromUnknown(MAX_DEVICE_SIZE_QUOTA * 2));
+const rotationIndex42 = getOrThrowTest(RotationIndex.fromUnknown(42));
 
 const createMockInput = (overrides?: Partial<RegisterOperationInput>): RegisterOperationInput => ({
     publicKey,
     size: size100,
-    challenge: getOrThrowTest(Challenge.from(CHALLENGE)),
-    sessionId: getOrThrowTest(SessionId.from('session-123')),
-    proof: getOrThrowTest(Proof.from(SIGNATURE_OPTIGA)),
+    challenge: getOrThrowTest(Challenge.fromUnknown(CHALLENGE)),
+    sessionId: getOrThrowTest(SessionId.fromUnknown('session-123')),
+    proof: getOrThrowTest(Proof.fromUnknown(SIGNATURE_OPTIGA)),
     certificateChain: {
         deviceCert: DEVICE_CERT_OPTIGA,
         caCert: CA_CERT_OPTIGA,
@@ -457,7 +457,7 @@ describe(createStorageRegisterOperation.name, () => {
         });
         const result = await storageRegisterOperation(
             createMockInput({
-                proof: getOrThrowTest(Proof.from(tamperedSignature)),
+                proof: getOrThrowTest(Proof.fromUnknown(tamperedSignature)),
             }),
         );
 
@@ -494,7 +494,7 @@ describe(createStorageRegisterOperation.name, () => {
         });
         const result = await storageRegisterOperation(
             createMockInput({
-                challenge: getOrThrowTest(Challenge.from(wrongChallenge)),
+                challenge: getOrThrowTest(Challenge.fromUnknown(wrongChallenge)),
             }),
         );
 

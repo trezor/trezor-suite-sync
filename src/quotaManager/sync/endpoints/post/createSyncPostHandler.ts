@@ -7,7 +7,7 @@ const DEFAULT_SUITE_SYNC_RELAY_URL = IS_DEV_SERVER
     : 'https://suite-sync.trezor.io/';
 
 export type SyncPostHandler = EndpointHandler<{
-    Body: typeof syncPostEvoluSchema.Type;
+    Body: typeof syncPostEvoluSchema.Output;
 }>;
 
 export const createSyncPostHandler = (): SyncPostHandler => (request, reply) =>

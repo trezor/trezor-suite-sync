@@ -6,8 +6,8 @@ import { PUBKEY_STORAGE_LIMITS_TABLE_NAME } from './tables.js';
 import { getOrThrowTest } from '../../getOrThrowTest.js';
 import { PublicKey, Size } from '../limitStorage/limitStorage.js';
 
-const overdrawnPublicKey = getOrThrowTest(PublicKey.from('pubkey-overdrawn'));
-const healthyPublicKey = getOrThrowTest(PublicKey.from('pubkey-healthy'));
+const overdrawnPublicKey = getOrThrowTest(PublicKey.fromUnknown('pubkey-overdrawn'));
+const healthyPublicKey = getOrThrowTest(PublicKey.fromUnknown('pubkey-healthy'));
 
 describe('002_clamp_negative_unspent_storage', () => {
     it('clamps negative unspent storage to zero and leaves other rows untouched', async () => {
@@ -18,13 +18,13 @@ describe('002_clamp_negative_unspent_storage', () => {
             .values([
                 {
                     publicKey: overdrawnPublicKey,
-                    totalStorageSize: getOrThrowTest(Size.from(100)),
+                    totalStorageSize: getOrThrowTest(Size.fromUnknown(100)),
                     unspentStorageSize: -30 as Size,
                 },
                 {
                     publicKey: healthyPublicKey,
-                    totalStorageSize: getOrThrowTest(Size.from(100)),
-                    unspentStorageSize: getOrThrowTest(Size.from(40)),
+                    totalStorageSize: getOrThrowTest(Size.fromUnknown(100)),
+                    unspentStorageSize: getOrThrowTest(Size.fromUnknown(40)),
                 },
             ])
             .execute();

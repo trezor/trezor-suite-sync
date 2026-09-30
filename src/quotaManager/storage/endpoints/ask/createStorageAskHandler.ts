@@ -34,7 +34,7 @@ const useNewBehavior = (request: FastifyRequest): boolean => {
 export type AskHandlerDeps = GetLimitsForOwnerDep & GetLimitsForPubkeyDep;
 
 export type StorageAskHandler = EndpointHandler<{
-    Body: typeof askEvoluSchema.Type;
+    Body: typeof askEvoluSchema.Output;
 }>;
 
 export const createStorageAskHandler =

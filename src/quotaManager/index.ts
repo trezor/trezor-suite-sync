@@ -8,7 +8,10 @@ const run = async () => {
         createQuotaManagerCompositionRoot();
 
     await migrateToLatest();
-    healthServer.start({ port: config.health.port });
+    const health = await healthServer.start({ port: config.health.port });
+    const closeHealthServer = () => health[Symbol.asyncDispose]();
+    process.on('SIGINT', closeHealthServer);
+    process.on('SIGTERM', closeHealthServer);
     quotaManagerServer({ port: config.quotaManager.port });
 };
 

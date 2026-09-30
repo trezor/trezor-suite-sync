@@ -8,7 +8,7 @@ import { EndpointHandler } from '../../../../EndpointHandler.js';
 import { exhaustive } from '../../../../exhaustive.js';
 
 export type StorageAddHandler = EndpointHandler<{
-    Body: typeof storageAddEvoluSchema.Type;
+    Body: typeof storageAddEvoluSchema.Output;
 }>;
 
 export type StorageAddHandlerDeps = StorageAddOperationDep;
